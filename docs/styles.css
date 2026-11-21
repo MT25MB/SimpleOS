@@ -112,12 +112,21 @@ a {
 }
 
 .brand__mark {
-  width: 2.75rem; /* 44px at 16px base, 49px at the 18px root */
-  height: 2.75rem;
+  /* The source image has generous padding around the mark, so it needs to be
+     displayed large for the house and wordmark to read clearly. */
+  width: 4.75rem;
+  height: 4.75rem;
   flex: none;
   aspect-ratio: 1 / 1;
   object-fit: contain;
-  border-radius: 0.45rem;
+  border-radius: 0.5rem;
+}
+
+@media (max-width: 45rem) {
+  .brand__mark {
+    width: 4rem;
+    height: 4rem;
+  }
 }
 
 .site-nav {
