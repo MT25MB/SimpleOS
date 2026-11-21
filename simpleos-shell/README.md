@@ -64,6 +64,18 @@ renderer-supplied string is only ever used as a lookup key.
 - Actions that matter — especially screen sharing — show a clear, dismissible
   banner with a distinct visual indicator.
 
+## Tests
+
+```sh
+npm run test        # Vitest: hooks, components, app integration, config contracts
+npm run test:watch  # watch mode while developing
+```
+
+The suite covers reminders persistence (Electron bridge and browser fallback),
+font scaling, the PIN screen (no renderer-side storage), tile→IPC wiring, and
+static contracts for the Electron security settings and system configs. Tests
+run in CI before the shell build.
+
 ## Development
 
 ```sh

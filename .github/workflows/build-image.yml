@@ -80,5 +80,8 @@ jobs:
         # Fail loudly if package.json and package-lock.json ever drift apart.
         run: npm ci
 
+      - name: Test
+        run: npm run test
+
       - name: Build
         run: npm run build

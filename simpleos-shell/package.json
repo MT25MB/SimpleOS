@@ -12,6 +12,8 @@
     "typecheck:electron": "tsc -p electron/tsconfig.json",
     "compile:electron": "esbuild electron/main.ts --bundle --platform=node --format=cjs --target=node20 --external:electron --outfile=dist-electron/main.js && esbuild electron/preload.ts --bundle --platform=node --format=cjs --target=node20 --external:electron --outfile=dist-electron/preload.js",
     "build": "npm run typecheck:electron && tsc --noEmit && vite build && npm run compile:electron",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "build:electron": "npm run build && electron-builder",
     "package": "electron-builder",
     "preview": "vite preview"
@@ -21,7 +23,10 @@
     "react-dom": "^18.3.1"
   },
   "devDependencies": {
-    "@types/node": "^20.14.0",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.1.0",
+    "@testing-library/user-event": "^14.5.2",
+    "@types/node": "^22.10.0",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react": "^5.2.0",
@@ -30,8 +35,10 @@
     "electron": "^42.11.16",
     "electron-builder": "^26.18.0",
     "esbuild": "^0.28.2",
+    "jsdom": "^25.0.1",
     "typescript": "^5.9.3",
     "vite": "^8.3.8",
+    "vitest": "^5.1.1",
     "wait-on": "^8.0.3"
   }
 }
