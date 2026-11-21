@@ -158,6 +158,7 @@ describe('system guardrails contract', () => {
     expect(containerfile).toContain('FROM node:22 AS shell-build')
     expect(containerfile).toContain('COPY docs/assets/ /docs/assets/')
     expect(containerfile).toContain('RUN npm run build')
+    expect(containerfile).toContain('test -x node_modules/electron/dist/electron')
     expect(containerfile).toContain('COPY --from=shell-build /src/dist /usr/lib/simpleos/app/dist')
     expect(containerfile).toContain(
       'COPY --from=shell-build /src/dist-electron /usr/lib/simpleos/app/dist-electron',

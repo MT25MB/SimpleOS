@@ -22,6 +22,11 @@ WORKDIR /src
 COPY docs/assets/ /docs/assets/
 COPY simpleos-shell/package.json simpleos-shell/package-lock.json ./
 RUN npm ci
+# npm's optional postinstall can be skipped in some environments. Fail the
+# build here if the Electron binary was not downloaded: a kiosk without it
+# would boot to a bare wallpaper.
+RUN node node_modules/electron/install.js \
+    && test -x node_modules/electron/dist/electron
 COPY simpleos-shell/ ./
 RUN npm run build
 
