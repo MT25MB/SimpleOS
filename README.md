@@ -8,7 +8,7 @@ It is built for older adults and for the family members who help them. The idea 
 
 <img src="docs/assets/simpleos-banner.png" alt="SimpleOS banner. A calm and unbreakable operating system with an immutable base, a simplified launcher, and built-in scam protection." width="1240" height="600" style="max-width:100%;height:auto;aspect-ratio:1240 / 600;display:block;border-radius:8px" />
 
-[Brand assets and how to save new versions](docs/assets/README.md)
+[Brand assets and how to save new versions](docs/assets/README.md) · [Plain-English caregiver guide](docs/caregiver-guide.md)
 
 ---
 

@@ -28,6 +28,14 @@ describe('docs links and assets', () => {
     }
   })
 
+  it('resolves relative document links', () => {
+    const links = [...site.matchAll(/href="([^"#]+\.md)"/g)].map((m) => m[1])
+    expect(links.length).toBeGreaterThan(0)
+    for (const link of links) {
+      expect(existsSync(resolve(root, 'docs', link)), link).toBe(true)
+    }
+  })
+
   it('uses only https external links to the expected repository', () => {
     const links = [...site.matchAll(/href="(https?:\/\/[^"]+)"/g)].map((m) => m[1])
     expect(links.length).toBeGreaterThan(0)
@@ -111,6 +119,7 @@ describe('shell script syntax', () => {
       'scripts/test-vm.sh',
       'scripts/test-all.sh',
       'scripts/generate-release-notes.sh',
+      'scripts/flash-usb.sh',
       'system-configs/labwc/autostart',
       'system-configs/systemd/simpleos-firstboot.sh',
     ]

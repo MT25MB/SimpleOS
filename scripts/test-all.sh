@@ -53,6 +53,7 @@ for script in \
   scripts/test-vm.sh \
   scripts/test-all.sh \
   scripts/generate-release-notes.sh \
+  scripts/flash-usb.sh \
   system-configs/labwc/autostart \
   system-configs/systemd/simpleos-firstboot.sh; do
   [[ -f "$script" ]] || die "Missing expected script: $script"
