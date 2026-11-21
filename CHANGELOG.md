@@ -6,6 +6,11 @@ All notable changes to SimpleOS are recorded here. The format follows
 
 ## [Unreleased]
 
+This entry brings three things together: **hardware readiness** for real laptops
+and desktops, **security hardening** of the desktop and browser boundaries, and
+the **community and governance docs** that make the project safe to contribute
+to. All of it is covered by the full local test loop and the shared CI gate.
+
 ### Added
 
 - Firmware and driver essentials for common Intel/AMD laptops and desktops,
@@ -36,6 +41,16 @@ All notable changes to SimpleOS are recorded here. The format follows
 - Added `CONTRIBUTING.md`, the Contributor Covenant `CODE_OF_CONDUCT.md` and
   `SECURITY.md`, plus Bug Report, Accessibility / Usability Feedback and
   Caregiver Feature Request issue forms.
+- Added regression tests for the governance documents and for every issue form
+  so a broken link or malformed YAML is caught before merge.
+
+### Changed
+
+- Grew the test suite from 127 to 167 passing tests across 20 files. The new
+  tests cover hardware packages and power config, Electron and Firefox
+  guardrails, PIN cooldown behaviour, and the community docs.
+- `bash scripts/test-all.sh` remains the single local gate: tests, type-check,
+  production build, shell syntax checks and the staged-artifact check all pass.
 
 ## [v0.3.0]
 
