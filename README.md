@@ -1,57 +1,37 @@
 # SimpleOS
 
-**SimpleOS** is a free, open-source, immutable Linux operating system designed for older adults and anyone who finds modern desktop computing stressful.
+A free, open-source Linux computer for people who want things to be simple.
 
-It is built around one idea: a computer should be dependable, readable, and hard to break by accident.
+It is built for older adults and for the family members who help them. The idea is straightforward. A computer should be easy to read, hard to break, and calm enough to use without worrying about clicking the wrong thing.
 
-> **Status:** Released as **v0.2.0**. The immutable image, accessible desktop, launcher, reminders, and caregiver tools are implemented; ISO/VM tooling, CI publishing, and a 76-test suite are in place. Features continue to be refined.
-
----
-
-## The problem we solve
-
-Mainstream desktops are optimised for power users, which leaves two groups behind:
-
-### Accessibility gaps
-- **Tiny text and low contrast.** Menus, labels, and dialogs are small and hard to read.
-- **Cluttered interfaces.** Dozens of icons, nested menus, and settings create constant decision fatigue.
-- **Inconsistent controls.** The same action behaves differently in different apps.
-- **Fear of "breaking it."** Users avoid exploring because they are afraid of clicking the wrong thing.
-
-### Safety gaps
-- **Scams and phishing.** Misleading pop-ups, fake "update" buttons, and predatory ads target less experienced users.
-- **Accidental system damage.** A mistaken click can delete files or change critical settings.
-- **Confusing update behaviour.** Updates that fail, nag, or silently change the interface.
-- **Malware and bloatware.** Pre-installed junk and risky default browser settings.
+> Released as v0.2.0. The image, desktop, launcher, reminders, and caregiver tools all work. There is a 76-test suite and an automated build.
 
 ---
 
-## How SimpleOS responds
+## Why we made it
 
-| Principle | What it means in SimpleOS |
-| --- | --- |
-| **Readable by default** | Large type, high-contrast theme, generous spacing, simple icon set. |
-| **Few, clear choices** | A minimal desktop with a small set of obvious, consistently placed actions. |
-| **Hard to break** | Immutable, read-only system root. User changes cannot corrupt the OS. |
-| **Safe by default** | Hardened browser policies, no account nags, no telemetry, no misleading prompts. |
-| **Recoverable** | Atomic, automatic updates. If something goes wrong, reboot into the previous version. |
-| **Free and open** | No subscriptions, no lock-in, no tracking. MIT licensed. |
+Most desktops are built for people who already know their way around a computer. That leaves a lot of people behind.
 
-### What is implemented
+The text is small. There are too many choices. A wrong click can cause real damage. Pop-ups and fake warnings are everywhere, and they are aimed squarely at people who are least likely to spot them.
 
-- A **bootable container** based on uBlue's immutable base (`os-image/Containerfile`) for versioned, atomic system builds.
-- A **labwc** Wayland desktop tuned for readability: dark high-contrast background, 48px cursor, 18px minimum text, maximized windows, no background click menus, and snapping disabled (`system-configs/labwc/`).
-- **greetd autologin** into an unprivileged `senior` account that is never in `wheel`/`sudo` (`system-configs/greetd/`).
-- A **first-boot service** that creates the account, fixes ownership, adds Flathub, and installs Firefox, Loupe and RustDesk — logging to journald and continuing past network hiccups (`system-configs/systemd/`).
-- A full-screen **React + TypeScript + Electron** launcher with large tiles, reminders saved to `~/.config/simpleos`, and a hashed PIN protecting caregiver settings (`simpleos-shell/`).
+SimpleOS takes those problems seriously. The system cannot be damaged by a stray click. The browser is locked down. The home screen shows six big buttons and nothing else.
 
-### Scam and safety guardrails
+### What that looks like day to day
 
-- **HTTPS everywhere.** Firefox is locked to HTTPS-Only mode, so insecure pages warn instead of loading silently.
-- **No fake "update" pop-ups or notification spam.** Website notification and location prompts are blocked by policy, and Firefox telemetry, Pocket, sponsored shortcuts and studies are disabled.
-- **uBlock Origin is force-installed and locked.** Other extensions cannot be installed, so a malicious "helper" add-on cannot be added by a scam page.
-- **Nothing to break.** The system root is immutable; a mistaken click cannot corrupt the OS. Updates are atomic and can be rolled back.
-- **No admin path.** The daily `senior` account has no sudo/wheel access; the caregiver PIN is hashed with scrypt and never stored in plain text.
+- **Readable.** Text starts at 18 pixels and goes bigger with one click. The cursor is large. Windows open full screen.
+- **Few choices.** Six tiles on one screen, each with one obvious job.
+- **Safe from scams.** Firefox only allows HTTPS, blocks notification and location pop-ups, and ships with uBlock Origin locked in. Other extensions cannot be added.
+- **Nothing to break.** The system files are read-only. Updates arrive in one piece, and the last working version is always kept.
+- **No admin account.** The everyday user is called `senior` and has no sudo or wheel access.
+- **Free.** No subscription, no account, no tracking, no telemetry. MIT licensed.
+
+### What is in the repository
+
+- `os-image/Containerfile` builds an immutable bootc image from uBlue's Fedora Atomic base. It includes labwc, greetd, Orca, CUPS, Flatpak, PipeWire, Firefox, Loupe and RustDesk. The clock defaults to UTC.
+- `system-configs/` holds the desktop, greetd autologin, Firefox policies, and the first-boot service. greetd signs straight into the `senior` account.
+- `simpleos-shell/` is the React and Electron launcher. It has six tiles, daily reminders saved to `~/.config/simpleos`, and caregiver settings behind a PIN.
+- `scripts/` has the ISO builder and a QEMU test script.
+- `.github/workflows/` builds and publishes the image to GHCR, publishes this site, and runs the tests.
 
 ---
 
@@ -59,89 +39,79 @@ Mainstream desktops are optimised for power users, which leaves two groups behin
 
 ```
 .
-├── os-image/
-│   └── Containerfile              # Immutable bootable image definition
+├── docs/                       static GitHub Pages site
+├── os-image/Containerfile      immutable image definition
 ├── system-configs/
-│   ├── labwc/                     # autostart, rc.xml, environment
-│   ├── greetd/                    # autologin into the "senior" session
-│   ├── firefox/                   # enterprise policies.json
-│   └── systemd/                   # first-boot service + helper script
+│   ├── labwc/                  desktop behaviour and environment
+│   ├── greetd/                 autologin as "senior"
+│   ├── firefox/                browser policies
+│   └── systemd/                first-boot setup
 ├── simpleos-shell/
-│   ├── electron/                  # main.ts + preload.ts (compiled to dist-electron/)
-│   ├── src/                       # React components, hooks, IPC types, Vitest tests
-│   └── package.json
+│   ├── electron/               main process and preload bridge
+│   └── src/                    React UI, hooks, and tests
 ├── scripts/
-│   ├── build-iso.sh               # Build/pull image → bootable ISO (+ USB flash checks)
-│   └── test-vm.sh                 # Build image → boot in QEMU/KVM (qcow2 or iso)
-└── .github/
-    ├── dependabot.yml             # Groups npm updates to avoid peer conflicts
-    └── workflows/build-image.yml  # Build/publish GHCR + test/build the shell
+│   ├── build-iso.sh            image to bootable ISO
+│   └── test-vm.sh              build and boot in QEMU/KVM
+└── .github/workflows/
+    ├── build-image.yml         test, build, publish to GHCR
+    └── deploy-pages.yml        publish docs/ to GitHub Pages
 ```
 
 ---
 
 ## Build and test for $0
 
-Everything below uses only free, open-source tooling and free tiers. No paid accounts, cloud credits, or proprietary licences are required.
+Everything here uses free software and free tiers.
 
-### Prerequisites (all free)
+### What you need
 
-- **Podman**, **sudo** and **Git** — image/ISO builds. Podman is required because `bootc-image-builder` mounts host container storage.
-- **QEMU/KVM** (with `ovmf`) or **VirtualBox** — to boot the image locally.
-- **Node.js + npm** — only for helper shell development.
-- A **GitHub** account — free CI and `ghcr.io` image hosting.
+- Podman and sudo, for the image and ISO builds. The ISO builder needs Podman because it mounts host container storage.
+- QEMU with KVM, or VirtualBox, if you want to boot it locally.
+- Node.js and npm, only if you are working on the launcher.
+- A GitHub account, for the free build and registry.
 
-### 1. Build the ISO
+### Build the ISO
 
 ```sh
-# From the repository root: pulls the CI-built image, then writes output/*.iso
+# Pulls the image built by CI, then writes an ISO into output/
 bash scripts/build-iso.sh
-```
 
-To build the image locally instead of pulling from GHCR:
-
-```sh
+# Or build the image on this machine first
 bash scripts/build-iso.sh --build
 ```
 
-To pull from a fork's registry:
+You can change `IMAGE_TAG`, `OUTPUT_DIR`, `BUILDER_IMAGE`, and `CONTAINER_ENGINE`. Run `bash scripts/build-iso.sh --help` for the full list.
 
-```sh
-REMOTE_IMAGE=ghcr.io/your-username/simpleos:latest bash scripts/build-iso.sh
-```
-
-Overrides: `IMAGE_TAG`, `OUTPUT_DIR`, `BUILDER_IMAGE`, `CONTAINER_ENGINE`. Run `bash scripts/build-iso.sh --help` for details.
-
-To flash a USB stick, the script adds safety checks (removable-device check, unmounted check, an acknowledgement variable, and typed confirmation):
+To flash a USB stick, use `--flash`. The script checks that the drive is removable and unmounted, then asks you to type the device name before it writes anything.
 
 ```sh
 SIMPLEOS_CONFIRM_FLASH=YES bash scripts/build-iso.sh --flash /dev/sdb
 ```
 
-**WARNING:** flashing erases everything on the target device. Back up your data first and double-check the device path.
+A warning first. Flashing erases everything on that drive. Check the device name twice.
 
-### 2. Run the tests and build the helper shell
+### Run the tests and build the launcher
 
 ```sh
 cd simpleos-shell
 npm ci
-npm run test       # Vitest: hooks, components, integration, config contracts
-npm run build      # type-check + Vite bundle + Electron compile
+npm run test
+npm run build
 ```
 
-### 3. Continuous integration
+### Continuous integration
 
-`.github/workflows/build-image.yml` rebuilds on every push to `main`, once a week (Monday 06:00 UTC), and on manual dispatch. It builds `os-image/Containerfile`, runs the shell tests and build, and publishes `ghcr.io/<owner>/simpleos` with `latest`, short-SHA and weekly tags using `GITHUB_TOKEN` (`packages: write`). Pull requests build without publishing. Everything runs on free GitHub runners.
+`.github/workflows/build-image.yml` runs on every push to `main`, every Monday morning, and whenever you start it by hand. It builds `os-image/Containerfile`, runs the shell tests and build, then pushes `ghcr.io/<owner>/simpleos` with a `latest` tag, a short commit SHA, and a weekly tag. It uses `GITHUB_TOKEN` with package write access. Pull requests build without publishing.
 
 ---
 
-## Quickstart for Testing in a VM
+## Testing in a virtual machine
 
-The image boots in **UEFI** mode. Give the VM at least **4 GB RAM**, **2 CPUs**, and **20 GB disk**. On first boot greetd signs in as `senior`, then the first-boot service creates the account, adds Flathub, and installs Firefox, Loupe and RustDesk. Wait a few minutes for the home launcher to appear.
+The image needs UEFI. Give the VM at least 4 GB of memory, 2 CPUs, and 20 GB of disk. On the first start, greetd signs in as `senior` and the setup service creates the account, adds Flathub, and installs Firefox, Loupe, and RustDesk. Give it a few minutes before the launcher appears.
 
-### Option A: one-command QEMU/KVM test (recommended)
+### The quick way, with QEMU on Linux
 
-Install the tools first:
+Install the tools:
 
 ```sh
 # Debian / Ubuntu
@@ -150,19 +120,19 @@ sudo apt install qemu-kvm qemu-system-gui qemu-utils ovmf
 sudo dnf install @virtualization qemu-img ovmf
 ```
 
-Then let the script build the image and boot it with KVM + virtio graphics:
+Then let the script do the work:
 
 ```sh
-bash scripts/test-vm.sh              # build image → boot qcow2 disk
-bash scripts/test-vm.sh --reset      # recreate the disk and re-test first boot
+bash scripts/test-vm.sh              # build the image and boot the disk
+bash scripts/test-vm.sh --reset      # start over and test first boot again
 bash scripts/test-vm.sh --iso        # build an ISO and boot the installer
 ```
 
-The disk lives at `build-vm/simpleos-test.qcow2`. Keep it between runs to preserve reminders and settings; use `--reset` when you want a clean first boot.
+The disk lives at `build-vm/simpleos-test.qcow2`. Keep it between runs to hold on to reminders and settings. Use `--reset` when you want a clean first boot.
 
-### Option B: manual QEMU/KVM command
+### Do it yourself with QEMU
 
-If you prefer to run QEMU yourself, locate the ISO with `find output -name '*.iso'` and boot:
+Find the ISO with `find output -name '*.iso'`, then:
 
 ```sh
 qemu-img create -f qcow2 simpleos-test.qcow2 20G
@@ -175,57 +145,53 @@ qemu-system-x86_64 \
   -vga virtio -display gtk
 ```
 
-Adjust the OVMF path for your distribution (`find /usr/share -name 'OVMF_CODE.fd'`). If KVM is unavailable, remove `-accel kvm` — slower, but it still works.
+The OVMF path changes between distributions. Use `find /usr/share -name 'OVMF_CODE.fd'` to locate it. Without KVM, drop `-accel kvm`. It will be slower, but it works.
 
-### Option C: VirtualBox
+### VirtualBox
 
-1. **New** → name it `SimpleOS`, Type **Linux**, Version **Fedora (64-bit)**.
-2. Allocate **4096 MB RAM**, **2 CPUs**, and a **20 GB** dynamic VDI.
-3. Settings → System → check **Enable EFI**; Processor → check **Enable I/O APIC**.
-4. Settings → Storage → attach the ISO (`output/bootiso/install.iso`) to the optical drive.
-5. Start the VM, choose **Install SimpleOS**, follow the prompts, then reboot and remove the ISO when asked.
+1. Create a machine called SimpleOS, Linux, Fedora 64-bit.
+2. Give it 4096 MB of memory, 2 CPUs, and a 20 GB dynamic disk.
+3. Turn on EFI in System settings and I/O APIC in Processor settings.
+4. Attach the ISO to the optical drive.
+5. Start it, install SimpleOS, then remove the ISO when asked.
 
-If the ISO is nested differently, locate it with `find output -name '*.iso'`.
+### If something looks wrong
 
-### Quick troubleshooting
-
-| Symptom | Check |
+| What you see | What to check |
 | --- | --- |
-| Black screen on boot | UEFI/OVMF must be enabled, not legacy BIOS. |
-| No network in the VM | Use NAT networking in the VM settings. |
-| First boot seems stuck | Flatpak apps are downloading; wait, then reboot if needed. |
-| Text too small | Caregiver Settings → Text size → Large or Extra Large. |
+| Black screen | UEFI must be on. Legacy BIOS will not boot this image. |
+| No network | Set the VM network to NAT. |
+| First boot looks stuck | Flatpak apps are still downloading. Wait, or restart if needed. |
+| Text is too small | Caregiver Settings, then Text size, then Large or Extra Large. |
 
 ---
 
-## Caregiver setup checklist (short version)
+## Caregiver setup, short version
 
-1. Set the caregiver PIN when prompted (at least 4 numbers — save it somewhere safe; there is no recovery).
-2. Open **Caregiver Settings → Text size** and pick Large or Extra Large.
-3. Add one or two **Daily Reminders** with times, then try **Mark Done** and **Start a new day**.
-4. Open **Ask for Help** and confirm RustDesk starts with the blue "Screen sharing is starting" banner.
-5. Reboot and confirm the PIN and reminders still work.
+1. Set the caregiver PIN when asked. Use at least four numbers and write them down. There is no reset yet.
+2. Open Caregiver Settings and choose Large or Extra Large text.
+3. Add a reminder with a time, then try Mark Done and Start a new day.
+4. Open Ask for Help and check that RustDesk starts with the blue sharing banner.
+5. Restart and check that the PIN and reminders are still there.
 
-## 15-Minute Caregiver Setup
+## The full fifteen-minute walkthrough
 
-For a full end-to-end walkthrough, run through this checklist on a fresh boot. Each step has a plain-English result you can verify.
-
-- [ ] **0–2 min** — Confirm the home screen shows six large tiles and that the text is comfortable to read.
-- [ ] **2–4 min** — Open **Caregiver Settings**. On first use you will be asked to **set a PIN** (at least 4 numbers). Save it somewhere safe — there is no default PIN and it cannot be recovered.
-- [ ] **4–5 min** — Set **Text size** to Large or Extra Large. Check that labels and buttons still fit on screen.
-- [ ] **5–7 min** — Open **Daily Reminders**. Add two reminders with times (for example "Call Anna" at 5:00 PM), press **Mark Done** on one, then press **Start a new day** to see the reset.
-- [ ] **7–9 min** — Open **Web & Email**. Confirm Firefox opens, uBlock Origin is present, and sites are upgraded to HTTPS. Check that no notification or location pop-ups appear.
-- [ ] **9–10 min** — Open **Photo Album** and view a photo.
-- [ ] **10–12 min** — Open **Ask for Help**. Confirm the blue "Screen sharing is starting" banner, then make sure RustDesk opens and that sharing can be stopped inside it.
-- [ ] **12–13 min** — In **Caregiver Settings**, open **Wi-Fi & Network**, **Printers** and **Open RustDesk**. Confirm each opens and closes cleanly.
-- [ ] **13–14 min** — Choose **Check for updates**. You should see a short sentence such as "Your system is up to date. Version 41."
-- [ ] **14–15 min** — Reboot. Confirm the PIN still unlocks Settings and both reminders are still on the list.
+- [ ] **0–2 min**. Check that the home screen shows six large tiles and that the text is comfortable.
+- [ ] **2–4 min**. Open Caregiver Settings. Set a PIN of at least four numbers and save it somewhere safe.
+- [ ] **4–5 min**. Set Text size to Large or Extra Large. Check that labels and buttons still fit.
+- [ ] **5–7 min**. Open Daily Reminders. Add two reminders with times, mark one done, then press Start a new day.
+- [ ] **7–9 min**. Open Web & Email. Check that Firefox opens, uBlock Origin is there, and sites use HTTPS. No notification or location prompts should appear.
+- [ ] **9–10 min**. Open Photo Album and look at a photo.
+- [ ] **10–12 min**. Open Ask for Help. Check the blue sharing banner, then make sure RustDesk opens and sharing can be stopped inside it.
+- [ ] **12–13 min**. In Caregiver Settings, open Wi-Fi & Network, Printers, and Open RustDesk. Each should open and close cleanly.
+- [ ] **13–14 min**. Choose Check for updates. You should see a short sentence such as "Your system is up to date. Version 41."
+- [ ] **14–15 min**. Restart. Check that the PIN still unlocks Settings and that both reminders are still listed.
 
 ---
 
 ## Contributing
 
-Contributions are welcome. Please keep changes focused, documented, and aligned with the accessibility and safety principles above. This project is in an early stage, so expect the structure to grow.
+Contributions are welcome. Keep them focused and documented, and keep the accessibility and safety ideas in mind. This is still a young project, so the shape will change.
 
 ## Licence
 

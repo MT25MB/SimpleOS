@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark" />
+    <meta
+      name="description"
+      content="SimpleOS is a free, immutable Linux desktop for older adults. Big text, clear choices, and built-in protection from scams."
+    />
+    <title>SimpleOS - a calm, unbreakable computer</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="script.js" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to main content</a>
+
+    <header class="site-header">
+      <div class="wrap header-inner">
+        <a class="brand" href="#top" aria-label="SimpleOS home">
+          <svg class="brand__mark" viewBox="0 0 48 48" aria-hidden="true" focusable="false">
+            <circle cx="24" cy="24" r="20" />
+            <path d="M15 25.5 24 17l9 8.5" />
+            <path d="M18 24.5V32h12v-7.5" />
+            <path d="M22 32v-5h4v5" />
+          </svg>
+          <span class="brand__name">SimpleOS</span>
+        </a>
+
+        <nav class="site-nav" aria-label="Main navigation">
+          <a href="#features">Features</a>
+          <a href="#caregiver">For Caregivers</a>
+          <a href="#how-it-works">How It Works</a>
+          <a href="https://github.com/MT25MB/SimpleOS">GitHub</a>
+        </nav>
+
+        <div class="text-size" role="group" aria-label="Text size">
+          <span class="text-size__label">Text size</span>
+          <div class="text-size__options">
+            <label>
+              <input type="radio" name="text-size" value="1" checked />
+              <span>Normal</span>
+            </label>
+            <label>
+              <input type="radio" name="text-size" value="1.15" />
+              <span>Large</span>
+            </label>
+            <label>
+              <input type="radio" name="text-size" value="1.35" />
+              <span>Extra Large</span>
+            </label>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main id="main">
+      <section class="hero" id="top" aria-labelledby="hero-title">
+        <div class="wrap hero__inner">
+          <div class="hero__copy">
+            <h1 id="hero-title">A calm, unbreakable computer for the people you care about</h1>
+            <p class="hero__lead">
+              SimpleOS is free software for older adults. Big text, a few clear
+              choices, and no pop-ups trying to trick anyone. If something goes
+              wrong, a restart brings back the version that worked.
+            </p>
+            <div class="hero__actions">
+              <a class="button button--primary" href="https://github.com/MT25MB/SimpleOS">
+                Get Started on GitHub
+              </a>
+              <a class="button button--secondary" href="#caregiver">
+                Caregiver Setup Guide
+              </a>
+            </div>
+            <p class="hero__note">Free and open source. No account, no tracking.</p>
+          </div>
+
+          <div class="preview" aria-labelledby="preview-title">
+            <p class="preview__caption" id="preview-title">
+              This is the whole home screen. Have a look around.
+            </p>
+            <div class="preview__frame">
+              <div class="preview__bar">
+                <span>SimpleOS</span>
+                <span>What can I help you with today?</span>
+              </div>
+              <ul class="preview__tiles">
+                <li>
+                  <button type="button" data-tile="Video Call Family">
+                    <svg viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+                      <rect x="3" y="8" width="18" height="16" rx="3" />
+                      <path d="m21 14 8-5v14l-8-5z" />
+                    </svg>
+                    <span>Video Call Family</span>
+                  </button>
+                </li>
+                <li>
+                  <button type="button" data-tile="Web &amp; Email">
+                    <svg viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+                      <circle cx="16" cy="16" r="12" />
+                      <path d="M4 16h24M16 4c3 3 4.5 7 4.5 12S19 25 16 28c-3-3-4.5-7-4.5-12S13 7 16 4Z" />
+                    </svg>
+                    <span>Web &amp; Email</span>
+                  </button>
+                </li>
+                <li>
+                  <button type="button" data-tile="Photo Album">
+                    <svg viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+                      <rect x="3" y="6" width="26" height="20" rx="3" />
+                      <circle cx="11" cy="13" r="2" />
+                      <path d="m5 23 7-7 6 6 4-4 5 5" />
+                    </svg>
+                    <span>Photo Album</span>
+                  </button>
+                </li>
+                <li>
+                  <button type="button" data-tile="Daily Reminders">
+                    <svg viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+                      <rect x="5" y="7" width="22" height="20" rx="3" />
+                      <path d="M10 4v6M22 4v6M5 15h22M11 21l2 2 4-4" />
+                    </svg>
+                    <span>Daily Reminders</span>
+                  </button>
+                </li>
+                <li>
+                  <button type="button" data-tile="Ask for Help">
+                    <svg viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+                      <path d="M16 27S5 20.5 5 12.5A5.5 5.5 0 0 1 16 9a5.5 5.5 0 0 1 11 3.5C27 20.5 16 27 16 27Z" />
+                      <path d="M12 16h8M16 12v8" />
+                    </svg>
+                    <span>Ask for Help</span>
+                  </button>
+                </li>
+                <li>
+                  <button type="button" data-tile="Caregiver Settings">
+                    <svg viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+                      <rect x="6" y="14" width="20" height="14" rx="3" />
+                      <path d="M11 14v-4a5 5 0 0 1 10 0v4M16 20v3" />
+                    </svg>
+                    <span>Caregiver Settings</span>
+                  </button>
+                </li>
+              </ul>
+            </div>
+            <p class="preview__status" id="preview-status" role="status" aria-live="polite">
+              Pick a tile to see what it does.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="features" aria-labelledby="features-title">
+        <div class="wrap">
+          <h2 id="features-title">What makes it different</h2>
+          <div class="pillars">
+            <article class="pillar">
+              <svg class="pillar__icon" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+                <path d="M16 3 5 8v8c0 7 4.5 11 11 13 6.5-2 11-6 11-13V8L16 3Z" />
+                <path d="m11 16 3.5 3.5L21 13" />
+              </svg>
+              <h3>Hard to break by accident</h3>
+              <p>
+                The system is read-only and updates in one piece in the
+                background. If an update misbehaves, the computer starts again
+                with the version that worked before.
+              </p>
+            </article>
+            <article class="pillar">
+              <svg class="pillar__icon" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+                <path d="M16 3 5 8v7c0 6 4 10 11 12 7-2 11-6 11-12V8L16 3Z" />
+                <path d="M12 16h8" />
+              </svg>
+              <h3>Scams are cut off early</h3>
+              <p>
+                Firefox comes set to HTTPS only, with uBlock Origin installed
+                and locked in place. Sites cannot ask for notification or
+                location access. The daily account has no admin rights, so a
+                clever pop-up cannot install anything either.
+              </p>
+            </article>
+            <article class="pillar">
+              <svg class="pillar__icon" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+                <path d="M2 12s5-6 14-6 14 6 14 6-5 6-14 6-14-6-14-6Z" />
+                <circle cx="16" cy="12" r="3" />
+              </svg>
+              <h3>Easy on eyes and hands</h3>
+              <p>
+                Text starts at 18 pixels and gets larger with one click. The
+                cursor is big, windows open full screen, and the launcher comes
+                straight back if it ever closes.
+              </p>
+            </article>
+            <article class="pillar">
+              <svg class="pillar__icon" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+                <circle cx="16" cy="16" r="12" />
+                <path d="M16 10v12M10 16h12" />
+              </svg>
+              <h3>Help is one button away</h3>
+              <p>
+                Ask for Help opens RustDesk so someone you trust can see the
+                screen and talk the person through a problem. Caregiver
+                settings sit behind a PIN.
+              </p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="section section--muted" id="caregiver" aria-labelledby="caregiver-title">
+        <div class="wrap">
+          <h2 id="caregiver-title">Set it up in fifteen minutes</h2>
+          <p class="section__lead">
+            You do this part once. After that, hand over the computer.
+          </p>
+          <ol class="steps">
+            <li>
+              <h3>Get the image</h3>
+              <p>
+                Download the latest release from GitHub, or build it yourself
+                with <code>bash scripts/build-iso.sh</code>. Both ways cost
+                nothing.
+              </p>
+            </li>
+            <li>
+              <h3>Put it on a USB stick</h3>
+              <p>
+                Use the flashing step in the build script. It checks the drive
+                twice before writing anything. Read the warning and choose the
+                right drive.
+              </p>
+            </li>
+            <li>
+              <h3>Start the computer and connect</h3>
+              <p>
+                Start from the USB stick, install SimpleOS, then connect Wi-Fi
+                and set up the printer in Caregiver Settings.
+              </p>
+            </li>
+            <li>
+              <h3>Choose the caregiver PIN</h3>
+              <p>
+                Open Caregiver Settings and pick at least four numbers. Write
+                them down, because there is no way to reset a forgotten PIN yet.
+              </p>
+            </li>
+            <li>
+              <h3>Hand it over</h3>
+              <p>
+                Show them the six big buttons and how to get back home. Then let
+                them try it while you are still in the room.
+              </p>
+            </li>
+          </ol>
+        </div>
+      </section>
+
+      <section class="section" id="how-it-works" aria-labelledby="faq-title">
+        <div class="wrap wrap--narrow">
+          <h2 id="faq-title">Questions people ask</h2>
+          <div class="faq">
+            <details>
+              <summary>Does it cost anything?</summary>
+              <p>
+                No. SimpleOS is free and open source. You can download a release
+                or build it yourself with tools that cost nothing.
+              </p>
+            </details>
+            <details>
+              <summary>What computer do I need?</summary>
+              <p>
+                An ordinary x86 computer from roughly the last decade, with 4 GB
+                of memory and 20 GB of free space. It needs to support UEFI.
+                Older machines that feel slow with a modern desktop often work
+                well here.
+              </p>
+            </details>
+            <details>
+              <summary>Is anything sent anywhere?</summary>
+              <p>
+                No telemetry, no accounts, no tracking. Firefox ships with
+                telemetry turned off, and reminders stay in a file on the
+                computer.
+              </p>
+            </details>
+            <details>
+              <summary>How do updates work?</summary>
+              <p>
+                Updates download quietly in the background. They only take
+                effect when the computer restarts, and the previous version
+                stays available if something goes wrong.
+              </p>
+            </details>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="wrap footer-inner">
+        <p>SimpleOS is free software under the MIT License.</p>
+        <nav aria-label="Footer links">
+          <a href="https://github.com/MT25MB/SimpleOS/blob/main/LICENSE">Read the license</a>
+          <a href="https://github.com/MT25MB/SimpleOS">Source on GitHub</a>
+          <a href="https://github.com/MT25MB/SimpleOS/issues">Report a problem</a>
+        </nav>
+      </div>
+    </footer>
+  </body>
+</html>

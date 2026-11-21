@@ -12,17 +12,17 @@ interface PinScreenProps {
 const COPY = {
   unlock: {
     title: 'Caregiver Settings',
-    intro: 'Enter your caregiver PIN to continue.',
+    intro: 'Enter your PIN to open Settings.',
     action: 'Unlock',
   },
   create: {
     title: 'Set a caregiver PIN',
-    intro: 'Choose a PIN of at least 4 numbers. Keep it somewhere safe.',
+    intro: 'Pick at least 4 numbers and keep them somewhere safe.',
     action: 'Save PIN',
   },
   change: {
     title: 'Change caregiver PIN',
-    intro: 'Enter your current PIN, then choose a new one.',
+    intro: 'Enter your old PIN, then pick a new one.',
     action: 'Change PIN',
   },
 } as const
@@ -99,7 +99,7 @@ export function PinScreen({ mode, onCancel, onSubmit }: PinScreenProps) {
         <form onSubmit={handleSubmit}>
           {mode !== 'create' && (
             <>
-              <label htmlFor="pin-current">{mode === 'unlock' ? 'PIN' : 'Current PIN'}</label>
+              <label htmlFor="pin-current">{mode === 'unlock' ? 'PIN' : 'Old PIN'}</label>
               <input
                 id="pin-current"
                 name="current-pin"
@@ -131,7 +131,7 @@ export function PinScreen({ mode, onCancel, onSubmit }: PinScreenProps) {
                 aria-invalid={error ? true : undefined}
               />
 
-              <label htmlFor="pin-confirm">Type the new PIN again</label>
+              <label htmlFor="pin-confirm">New PIN again</label>
               <input
                 id="pin-confirm"
                 name="confirm-pin"

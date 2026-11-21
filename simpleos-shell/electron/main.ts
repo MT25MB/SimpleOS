@@ -346,7 +346,7 @@ ipcMain.handle(
             ? 'Screen sharing is starting. You can stop it inside RustDesk.'
             : name === 'triggerUpdate'
               ? 'The update is starting. We will let you know when it is ready.'
-              : 'The settings window is opening.',
+              : 'Opening settings.',
       },
     }
   },

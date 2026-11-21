@@ -86,7 +86,7 @@ describe('caregiver runAction allowlist', () => {
 
   it('returns calm plain-English summaries for caregiver actions', () => {
     expect(electronMain).toContain('Screen sharing is starting')
-    expect(electronMain).toContain('The settings window is opening')
+    expect(electronMain).toContain('Opening settings.')
     expect(electronMain).toContain('The update is starting')
   })
 })

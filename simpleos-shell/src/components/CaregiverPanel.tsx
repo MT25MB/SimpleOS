@@ -31,7 +31,7 @@ export function CaregiverPanel({
     <section className="panel" aria-labelledby="caregiver-title">
       <h2 id="caregiver-title">Caregiver Settings</h2>
       <p className="panel__intro">
-        Make the computer more comfortable to read and use.
+        Make things easier to see and use.
       </p>
 
       {error && (
@@ -74,7 +74,7 @@ export function CaregiverPanel({
 
       <h3 className="panel__subheading">Remote help</h3>
       <p className="panel__note">
-        Open RustDesk to share the screen with someone you trust.
+        Let someone you trust see your screen and help.
       </p>
       <button type="button" className="button button--secondary" onClick={onOpenRemoteHelp}>
         Open RustDesk
@@ -82,10 +82,10 @@ export function CaregiverPanel({
 
       <h3 className="panel__subheading">Caregiver PIN</h3>
       <p className="panel__note">
-        Change the PIN used to open this area. Choose at least 4 numbers.
+        Change the PIN that opens Settings. Use at least 4 numbers.
       </p>
       <button type="button" className="button button--secondary" onClick={onChangePin}>
-        Change caregiver PIN
+        Change PIN
       </button>
     </section>
   )

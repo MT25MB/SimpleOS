@@ -49,7 +49,7 @@ export function RemindersPanel({
   return (
     <section className="panel" aria-labelledby="reminders-title">
       <h2 id="reminders-title">Daily Reminders</h2>
-      <p className="panel__intro">A short list of things to remember today.</p>
+      <p className="panel__intro">A few things to remember today.</p>
 
       {error && (
         <p className="status status--error" role="alert">
@@ -71,7 +71,7 @@ export function RemindersPanel({
                 id="reminder-input"
                 value={text}
                 onChange={(event) => setText(event.target.value)}
-                placeholder="For example: Call Anna"
+                placeholder="Call Anna"
               />
               <label className="reminders__time" htmlFor="reminder-time">
                 Time <span>(optional)</span>
@@ -89,7 +89,7 @@ export function RemindersPanel({
           <div className="reminders__toolbar">
             <p className="reminders__summary">
               {store.items.length === 0
-                ? 'Nothing on your list yet.'
+                ? 'Nothing here yet.'
                 : `${doneCount} of ${store.items.length} done today.`}
             </p>
             <button
@@ -104,7 +104,7 @@ export function RemindersPanel({
 
           {store.items.length === 0 ? (
             <p className="panel__empty" role="status">
-              Add a reminder above. It will be here tomorrow too.
+              Add one above, and it will be here tomorrow too.
             </p>
           ) : (
             <ul className="reminders__list">

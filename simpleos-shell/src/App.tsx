@@ -49,8 +49,8 @@ export default function App() {
       tone: target === 'rustdesk' ? 'sharing' : 'info',
       message:
         target === 'rustdesk'
-          ? 'Screen sharing is starting. RustDesk will open — you can stop sharing there at any time.'
-          : `${label} is starting.`,
+          ? 'Screen sharing is starting. RustDesk will open, and you can stop sharing any time.'
+          : `${label} is opening.`,
     })
   }
 
@@ -96,16 +96,16 @@ export default function App() {
 
     if (pinMode === 'create') {
       const result = await bridge.setPin('', newPin)
-      return result.ok ? pinSucceeded('Your caregiver PIN is saved.') : result.code
+      return result.ok ? pinSucceeded('Your PIN is saved.') : result.code
     }
 
     if (pinMode === 'change') {
       const result = await bridge.setPin(currentPin, newPin)
-      return result.ok ? pinSucceeded('Your caregiver PIN has been changed.') : result.code
+      return result.ok ? pinSucceeded('Your new PIN is saved.') : result.code
     }
 
     const result = await bridge.unlockWithPin(currentPin)
-    return result.ok ? pinSucceeded('Caregiver Settings are open.') : result.code
+    return result.ok ? pinSucceeded("You're in Caregiver Settings.") : result.code
   }
 
   async function handleOpenSettings(target: SettingsTarget) {
@@ -126,8 +126,8 @@ export default function App() {
       tone: 'caregiver',
       message:
         target === 'network'
-          ? 'Wi-Fi & Network settings are opening.'
-          : 'Printer settings are opening.',
+          ? 'Opening Wi-Fi settings.'
+          : 'Opening printer settings.',
     })
   }
 
@@ -155,7 +155,7 @@ export default function App() {
       <header className="app__header">
         <div>
           <h1>SimpleOS</h1>
-          <p className="app__tagline">What would you like to do today?</p>
+          <p className="app__tagline">What can I help you with today?</p>
         </div>
         <FontScaleControl value={scale} onChange={setFontScale} />
       </header>
@@ -166,7 +166,7 @@ export default function App() {
 
       <main className="app__main" ref={mainRef} tabIndex={-1}>
         {view === 'home' ? (
-          <ul className="tiles" aria-label="Home options">
+          <ul className="tiles" aria-label="Main menu">
             {TILES.map((tile) => (
               <li key={tile.id} className="tiles__item">
                 <Tile tile={tile} onSelect={handleSelect} />

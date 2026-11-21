@@ -30,7 +30,7 @@ describe('PinScreen', () => {
     await user.type(screen.getByLabelText('PIN'), '9999')
     await user.click(screen.getByRole('button', { name: 'Unlock' }))
     await waitForRtl(() => {
-      expect(screen.getByRole('alert')).toHaveTextContent('That PIN is not correct')
+      expect(screen.getByRole('alert')).toHaveTextContent("That PIN isn't right")
     })
   })
 
@@ -39,11 +39,11 @@ describe('PinScreen', () => {
     const onSubmit = vi.fn()
     render(<PinScreen mode="create" onCancel={vi.fn()} onSubmit={onSubmit} />)
     await user.type(screen.getByLabelText('New PIN'), '1234')
-    await user.type(screen.getByLabelText('Type the new PIN again'), '5678')
+    await user.type(screen.getByLabelText('New PIN again'), '5678')
     await user.click(screen.getByRole('button', { name: 'Save PIN' }))
     expect(onSubmit).not.toHaveBeenCalled()
     await waitForRtl(() => {
-      expect(screen.getByRole('alert')).toHaveTextContent('do not match')
+      expect(screen.getByRole('alert')).toHaveTextContent("don't match")
     })
   })
 

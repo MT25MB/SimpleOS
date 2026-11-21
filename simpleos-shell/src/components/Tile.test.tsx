@@ -10,7 +10,7 @@ describe('Tile', () => {
     const button = screen.getByRole('button')
     expect(button.tagName).toBe('BUTTON')
     expect(button).toHaveTextContent('Video Call Family')
-    expect(button).toHaveTextContent('Talk to family and friends')
+    expect(button).toHaveTextContent('See and talk to family')
   })
 
   it('calls onSelect with the tile when activated', async () => {

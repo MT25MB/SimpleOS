@@ -1,80 +1,52 @@
 # SimpleOS Shell
 
-The full-screen home launcher shown when the `senior` session starts. It is a
-React + TypeScript + Vite renderer inside a locked-down Electron window.
+The full-screen home launcher that appears when the `senior` session starts. It is a React and TypeScript renderer inside a locked-down Electron window.
 
 ## Accessibility
 
-- Root text is at least **18px** and scales with the **Normal / Large / Extra
-  Large** control in the header (1.0x / 1.15x / 1.35x). The choice is saved
-  locally.
-- High-contrast slate palette with a bright yellow focus ring.
-- Every tile and control is a native, keyboard-accessible element with a target
-  of at least 48px, and tiles are much larger than that.
-- `prefers-reduced-motion` is respected.
+Text starts at 18px and never goes smaller. The Normal, Large, and Extra Large control in the header scales the whole interface, and your choice is saved on the computer.
+
+The palette is high-contrast slate with a bright yellow focus ring. Every control is a real HTML element you can reach with a keyboard, and every target is at least 48px across. Tiles are much bigger than that. Reduced motion is respected.
 
 ## Daily reminders
 
-Reminders are stored as `~/.config/simpleos/reminders.json` (or
-`$XDG_CONFIG_HOME/simpleos/reminders.json`) through a narrow IPC API. Only the
-main process touches the filesystem. When running the Vite web preview (no
-Electron bridge), reminders fall back to `localStorage` so UI work still works.
+Reminders live in `~/.config/simpleos/reminders.json`, or under `$XDG_CONFIG_HOME` if your system sets it. Only the main process reads and writes the file. In the Vite browser preview there is no Electron bridge, so reminders use `localStorage` instead.
 
-- Add a reminder with an optional time, shown in plain English ("at 5:00 PM").
-- **Mark Done** toggles a reminder; a new day clears done marks automatically
-  and keeps the list.
-- **Start a new day** resets all done marks immediately.
-- Reminders and errors use calm, actionable language — never terminal output.
+You can add a reminder with an optional time, mark it done, remove it, or start a new day. A fresh day clears the done marks but keeps the list. Errors and confirmations are written in plain language, never as terminal output.
 
 ## Caregiver settings
 
-- On first use the caregiver is prompted to **set a PIN**. There is no default
-  or hardcoded PIN.
-- PIN entry is a dedicated full-screen component (`PinScreen`). The PIN exists
-  only in the transient input fields, is sent straight to IPC for verification,
-  and is cleared from component state immediately afterwards. It is never
-  stored in `localStorage` or any other renderer-side storage.
-- The PIN is hashed with `scryptSync` and a random salt in the main process and
-  saved with owner-only permissions. Only the hash lives on disk; the renderer
-  never sees it. `timingSafeEqual` is used for verification.
-- Caregiver Settings offers large, plain-language buttons for **Wi-Fi & Network**,
-  **Printers**, **Open RustDesk**, and **Check for updates**. Update status is
-  translated into a short sentence such as "Your system is up to date. Version
-  41." — raw `rpm-ostree` output is never displayed.
-- The `senior` account created at first boot is never added to `wheel`/`sudo`.
+The first time you open Settings you are asked to choose a PIN. There is no default PIN anywhere in the code.
 
-## App launcher
+The PIN is entered on its own full-screen page. It stays in the input fields just long enough to be sent to the main process, then those fields are cleared. It is never written to `localStorage` or any other browser storage. The main process hashes it with scrypt and a random salt, saves only the hash with owner-only permissions, and verifies it with a constant-time comparison.
 
-Tiles call `window.simpleOS.launchApp(target)` with one of a small set of fixed
-target names. The main process maps each name to a fixed flatpak command; a
-renderer-supplied string is only ever used as a lookup key.
+Inside Settings there are large buttons for Wi-Fi and network, printers, RustDesk, and checking for updates. Update results are turned into a short sentence like "Your system is up to date. Version 41." Raw `rpm-ostree` output never reaches the screen. The `senior` account created during first boot is never added to `wheel` or `sudo`.
 
-| Target | Tile | Command |
+## How apps open
+
+Each tile calls `window.simpleOS.launchApp(target)` with a fixed name. The main process looks that name up in an allowlist and runs a fixed flatpak command. Text from the renderer is only ever used as a lookup key, never as a command, argument, or URL.
+
+| Name | Tile | Command |
 | --- | --- | --- |
-| `jitsi` | Video Call Family | Firefox → `https://meet.jit.si` |
+| `jitsi` | Video Call Family | Firefox at `https://meet.jit.si` |
 | `firefox` | Web & Email | `org.mozilla.firefox` |
 | `photos` | Photo Album | `org.gnome.Loupe` |
 | `rustdesk` | Ask for Help | `com.rustdesk.RustDesk` |
 
-## Safety and status messages
+Caregiver actions use a second allowlist through `window.simpleOS.runAction(action)`. The accepted names are `screenShare`, `networkSettings`, `printerSettings`, `checkUpdates`, and `triggerUpdate`.
 
-- IPC handlers return only `{ ok, code? }`. The renderer maps codes to messages
-  from `src/messages.ts`, so stack traces and terminal jargon cannot reach the
-  screen.
-- Actions that matter — especially screen sharing — show a clear, dismissible
-  banner with a distinct visual indicator.
+## Messages
+
+IPC handlers return only `{ ok, code? }`. The renderer turns those codes into the calm messages in `src/messages.ts`, so a stack trace or terminal error can never appear on screen. Actions that matter, especially screen sharing, show a banner you can dismiss.
 
 ## Tests
 
 ```sh
-npm run test        # Vitest: hooks, components, app integration, config contracts
-npm run test:watch  # watch mode while developing
+npm run test        # run once
+npm run test:watch  # keep running while you edit
 ```
 
-The suite covers reminders persistence (Electron bridge and browser fallback),
-font scaling, the PIN screen (no renderer-side storage), tile→IPC wiring, and
-static contracts for the Electron security settings and system configs. Tests
-run in CI before the shell build.
+The suite covers reminders in both Electron and the browser, text scaling, the PIN screen, tile-to-IPC wiring, and contracts for the Electron settings and system configs. CI runs it before the shell build.
 
 ## Development
 
@@ -83,47 +55,26 @@ npm install
 npm run dev
 ```
 
-`npm run dev` runs Vite and Electron **concurrently**: Vite serves the renderer
-on http://localhost:5173, `wait-on` holds Electron until that server is ready,
-then Electron opens in a full-screen kiosk window against it.
+That starts Vite and Electron together. Vite serves the renderer on http://localhost:5173, `wait-on` waits until it is ready, and Electron then opens a full-screen kiosk window against it.
 
-For a browser-only preview without Electron:
-
-```sh
-npm run dev:vite
-```
-
-In the browser preview, features that need the desktop (PIN, settings, app
-launch) show a plain-English "works in the SimpleOS desktop app" message.
-Reminders still work via the browser fallback.
+For a browser-only preview, run `npm run dev:vite`. Features that need the desktop show a plain "works in the SimpleOS desktop app" message there. Reminders still work.
 
 ## Build and package
 
 ```sh
-npm run build          # type-checks Electron + renderer, Vite bundle, compile main/preload
-npm run build:electron # build, then package to an unpacked Linux directory
-npm run package        # package an existing build without rebuilding
+npm run build          # type-check, bundle, compile Electron files
+npm run build:electron # build, then package as an unpacked Linux directory
+npm run package        # package an existing build
 ```
 
-The Electron entry points are TypeScript sources in `electron/main.ts` and
-`electron/preload.ts`. `npm run compile:electron` bundles them (with esbuild) to
-standalone CommonJS files in `dist-electron/` (`main.js` and `preload.js`),
-which is what Electron actually loads. This keeps the sandbox-compatible
-preload as a single file while sharing IPC types with the renderer.
-`electron-builder.yml` packages Linux as a `dir` in `release/`.
+The Electron entry points are TypeScript files in `electron/main.ts` and `electron/preload.ts`. `npm run compile:electron` bundles them into `dist-electron/main.js` and `dist-electron/preload.js`, which are the files Electron actually loads. `electron-builder.yml` produces a directory in `release/`.
 
-Electron uses `--ozone-platform-hint=auto`, so it selects the native Wayland
-backend whenever a Wayland session is detected.
+Electron starts with `--ozone-platform-hint=auto`, so it picks the native Wayland backend when it finds a Wayland session.
 
-## Security boundary
+## Security
 
-- `contextIsolation: true`, `nodeIntegration: false`, `sandbox: true`.
-- The preload exposes a fixed set of methods. Main-process allowlists map
-  renderer keys to fixed commands; renderer input is never used as a command,
-  argument, or URL.
+Context isolation is on, Node integration is off, and the sandbox is on. The preload exposes a fixed set of methods. Main-process allowlists map each name to a fixed command, and nothing typed in the renderer becomes a shell string.
 
 ## Configuration
 
-`SIMPLEOS_OZONE_PLATFORM` — set to `x11` to debug on a non-Wayland host. The
-default is `wayland`. There is no PIN environment variable by design: the PIN
-is set through the app and stored as a salted hash.
+Set `SIMPLEOS_OZONE_PLATFORM=x11` only when debugging on a machine without Wayland. There is no PIN environment variable by design. The PIN is chosen in the app and stored as a salted hash.
