@@ -45,7 +45,28 @@ die() {
 }
 
 usage() {
-  sed -n '2,24p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'
+  cat <<EOF
+Usage: $(basename "$0") [OPTIONS]
+
+Build (or pull) the SimpleOS container image, then use bootc-image-builder to
+write a bootable ISO installer into ./output.
+
+Options:
+  --build              Build the image locally from os-image/Containerfile
+  --pull               Pull the published image instead (default)
+  --image REF          Image reference to pull (default: \$REMOTE_IMAGE)
+  --output DIR         Directory for the generated ISO (default: ./output)
+  --flash DEVICE       After building, write the ISO to this USB device
+  -h, --help           Show this help
+
+Examples:
+  bash $0                            # pull ghcr.io image, build ISO
+  bash $0 --build                    # build locally, then build ISO
+  bash $0 --flash /dev/sdb           # also flash a USB stick (with checks)
+
+SAFETY: flashing OVERWRITES the target drive. Double-check the device path
+before you confirm; every file on that drive will be erased.
+EOF
 }
 
 require_command() {
