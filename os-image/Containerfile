@@ -1,7 +1,8 @@
 # SimpleOS system image
 # -----------------------------------------------------------------------------
-# Built on uBlue's immutable/atomic base. Packages are layered with rpm-ostree
-# and committed into the image so every build is reproducible and bootable.
+# Built on uBlue's immutable/atomic base: an OCI-native Fedora Atomic image.
+# Packages are layered with rpm-ostree and committed into the image so every
+# build is reproducible, bootable, and upgradeable atomically.
 #
 # Build context is the repository root (see scripts/build-iso.sh), which is why
 # the COPY sources below are relative to that directory.
@@ -13,13 +14,20 @@ LABEL org.opencontainers.image.title="SimpleOS" \
       org.opencontainers.image.description="A calm, accessible, immutable Linux desktop" \
       org.opencontainers.image.licenses="MIT"
 
+# UTC is the default timezone for the whole system.
+ENV TZ=UTC
+
 # Desktop stack, display manager, accessibility, printing, apps, and readable
-# fonts. Package names are Fedora's (rsms-inter-fonts = Inter;
+# fonts. Fedora package names are used (rsms-inter-fonts = Inter;
 # google-noto-sans-fonts = Noto Sans).
+#
+# foot is installed for caregiver/recovery use but is hidden from the user's
+# application menus further down this file.
 RUN rpm-ostree install --assumeyes \
         labwc \
         greetd \
         swaybg \
+        foot \
         flatpak \
         pipewire \
         wireplumber \
@@ -31,19 +39,44 @@ RUN rpm-ostree install --assumeyes \
         google-noto-sans-fonts \
     && ostree container commit
 
-# Audited desktop configuration.
+# Audited desktop and browser configuration.
 COPY system-configs/labwc/ /etc/xdg/labwc/
 COPY system-configs/firefox/policies.json /etc/firefox/policies/policies.json
 
-# Display manager: autologin the unprivileged "senior" user into labwc.
+# greetd autologin. system-configs/greetd/config.toml contains:
+#   [initial_session]
+#   command = "labwc"
+#   user = "senior"
+# so the machine boots straight into an unprivileged Labwc session with no
+# password prompt. The "greeter" fallback is only used if autologin fails.
 COPY system-configs/greetd/config.toml /etc/greetd/config.toml
 
-# First-boot setup: create "senior", add Flathub, install core applications.
+# First-boot setup: create "senior" (never in wheel/sudo), add Flathub, and
+# install the applications shown on the launcher.
 COPY system-configs/systemd/simpleos-firstboot.service /etc/systemd/system/simpleos-firstboot.service
 COPY system-configs/systemd/simpleos-firstboot.sh /etc/simpleos/firstboot.sh
 
+# The final layer sets the hostname and UTC timezone, hides foot's desktop
+# entry so it stays invisible to the user, and enables the boot services.
 RUN chmod 0755 /etc/simpleos/firstboot.sh /etc/xdg/labwc/autostart \
     && echo "simpleos" > /etc/hostname \
+    && ln -sf /usr/share/zoneinfo/UTC /etc/localtime \
+    && printf 'UTC\n' > /etc/timezone \
+    && mkdir -p /usr/share/applications \
+    && if [ -f /usr/share/applications/foot.desktop ]; then \
+        sed -i '/^NoDisplay=/d;/^Hidden=/d' /usr/share/applications/foot.desktop \
+        && printf 'NoDisplay=true\nHidden=true\n' >> /usr/share/applications/foot.desktop; \
+       else \
+        printf '%s\n' \
+          '[Desktop Entry]' \
+          'Type=Application' \
+          'Name=Terminal' \
+          'Exec=foot' \
+          'Terminal=false' \
+          'NoDisplay=true' \
+          'Hidden=true' \
+          > /usr/share/applications/foot.desktop; \
+       fi \
     && systemctl enable \
         greetd.service \
         cups.service \
