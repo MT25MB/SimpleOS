@@ -13,6 +13,8 @@ on:
     - cron: '0 6 * * 1'
   workflow_dispatch:
 
+# packages: write is required to publish to ghcr.io. The repository's Actions
+# workflow permissions are also set to Read and write in GitHub settings.
 permissions:
   contents: read
   packages: write
@@ -47,7 +49,7 @@ jobs:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
             type=raw,value=latest
-            type=sha
+            type=sha,format=short
             type=schedule,pattern=weekly-{{date 'YYYYMMDD'}}
 
       - name: Build image

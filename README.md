@@ -83,14 +83,20 @@ Everything below uses only free, open-source tooling and free tiers. No paid acc
 ### 1. Build the ISO
 
 ```sh
-# From the repository root: builds the image, then writes output/*.iso
+# From the repository root: pulls the CI-built image, then writes output/*.iso
 bash scripts/build-iso.sh
 ```
 
-To use the published image instead of building locally:
+To build the image locally instead of pulling from GHCR:
 
 ```sh
-REMOTE_IMAGE=ghcr.io/your-username/simpleos:latest bash scripts/build-iso.sh --pull
+bash scripts/build-iso.sh --build
+```
+
+To pull from a fork's registry:
+
+```sh
+REMOTE_IMAGE=ghcr.io/your-username/simpleos:latest bash scripts/build-iso.sh
 ```
 
 Overrides: `IMAGE_TAG`, `OUTPUT_DIR`, `BUILDER_IMAGE`, `CONTAINER_ENGINE`. Run `bash scripts/build-iso.sh --help` for details.

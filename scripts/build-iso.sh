@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 # -----------------------------------------------------------------------------
-# Build a bootable SimpleOS ISO from the Containerfile in this repository.
+# Build a bootable SimpleOS ISO installer from the published container image.
 #
 # What it does:
-#   1. Builds the image locally (default) or pulls the published image (--pull).
+#   1. Pulls the image built by CI (default) or builds it locally (--build).
 #   2. Feeds that image to bootc-image-builder, which produces a bootable ISO
-#      in ./output (override with --output).
+#      installer in ./output (override with --output).
 #   3. Optionally flashes the ISO to a USB stick (--flash) behind strict checks
 #      and an explicit typed confirmation.
 #
@@ -14,9 +14,9 @@
 #   - bootc-image-builder is pulled automatically as a container image.
 #
 # Examples:
-#   bash scripts/build-iso.sh                       # build + ISO
-#   bash scripts/build-iso.sh --pull                # use published image
-#   IMAGE_TAG=ghcr.io/you/simpleos:latest bash scripts/build-iso.sh --pull
+#   bash scripts/build-iso.sh                       # pull published image + ISO
+#   bash scripts/build-iso.sh --build               # build locally first + ISO
+#   REMOTE_IMAGE=ghcr.io/you/simpleos:latest bash scripts/build-iso.sh
 #   bash scripts/build-iso.sh --flash /dev/sdb      # flash after checks
 #
 # NOTE: ISO generation needs root privileges because bootc-image-builder mounts
@@ -30,11 +30,12 @@ CONTAINERFILE="$REPO_ROOT/os-image/Containerfile"
 
 OUTPUT_DIR="${OUTPUT_DIR:-$REPO_ROOT/output}"
 IMAGE_TAG="${IMAGE_TAG:-localhost/simpleos:local}"
-REMOTE_IMAGE="${REMOTE_IMAGE:-ghcr.io/${GITHUB_REPOSITORY_OWNER:-your-github-username}/simpleos:latest}"
+REMOTE_IMAGE="${REMOTE_IMAGE:-ghcr.io/${GITHUB_REPOSITORY_OWNER:-MT25MB}/simpleos:latest}"
 BUILDER_IMAGE="${BUILDER_IMAGE:-quay.io/centos-bootc/bootc-image-builder:latest}"
 CONTAINER_ENGINE="${CONTAINER_ENGINE:-podman}"
 
-MODE="build"
+MODE="pull"
+IMAGE_EXPLICIT=0
 FLASH_DEVICE=""
 ISO_PATH=""
 
@@ -66,6 +67,7 @@ while [[ $# -gt 0 ]]; do
     --image)
       [[ $# -ge 2 ]] || die "--image needs an image reference."
       IMAGE_TAG="$2"
+      IMAGE_EXPLICIT=1
       shift 2
       ;;
     --output)
@@ -109,9 +111,14 @@ if [[ "$MODE" == "build" ]]; then
     --tag "$IMAGE_TAG" \
     "$REPO_ROOT"
 else
-  echo "==> Pulling published image '$REMOTE_IMAGE'"
-  "${SUDO[@]}" "$CONTAINER_ENGINE" pull "$REMOTE_IMAGE"
-  IMAGE_TAG="$REMOTE_IMAGE"
+  if [[ "$IMAGE_EXPLICIT" -eq 1 ]]; then
+    echo "==> Pulling image '$IMAGE_TAG'"
+    "${SUDO[@]}" "$CONTAINER_ENGINE" pull "$IMAGE_TAG"
+  else
+    echo "==> Pulling published image '$REMOTE_IMAGE'"
+    "${SUDO[@]}" "$CONTAINER_ENGINE" pull "$REMOTE_IMAGE"
+    IMAGE_TAG="$REMOTE_IMAGE"
+  fi
 fi
 
 # ------------------------------------------------------------------ ISO build
@@ -152,9 +159,10 @@ echo "SAFETY: Do NOT flash this image to a disk you need. Back up your data firs
 if [[ -n "$FLASH_DEVICE" ]]; then
   echo
   echo "########################################################################"
-  echo "# WARNING: Flashing ERASES EVERYTHING on $FLASH_DEVICE."
+  echo "# WARNING: This will OVERWRITE the USB drive $FLASH_DEVICE."
+  echo "# EVERYTHING on it will be ERASED. This cannot be undone."
   echo "# Unplug every other USB drive before continuing."
-  echo "# This cannot be undone. Verify the device path carefully."
+  echo "# Verify the device path carefully before typing it below."
   echo "########################################################################"
 
   [[ -b "$FLASH_DEVICE" ]] || die "'$FLASH_DEVICE' is not a block device."
