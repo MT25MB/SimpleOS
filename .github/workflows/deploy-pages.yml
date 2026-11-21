@@ -33,6 +33,12 @@ jobs:
         with:
           path: ./docs
 
+      # The artifact metadata API can lag a moment behind a successful upload.
+      # Without this pause the first deploy of a run intermittently reports
+      # "Found 0 artifact(s)" even though the upload step succeeded.
+      - name: Allow artifact metadata to propagate
+        run: sleep 10
+
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v5
