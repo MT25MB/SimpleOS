@@ -1,9 +1,11 @@
 # SimpleOS first-boot setup
 # -----------------------------------------------------------------------------
-# Runs once on a machine's very first start. The ConditionPathExists guard is
-# the "run only once" switch; the marker created by ExecStartPost disables the
-# unit on every later boot. Ordering before greetd ensures the "senior" account
-# exists before the display manager tries to auto-login into it.
+# Runs ONCE on a machine's very first start. Ordering before greetd guarantees
+# the unprivileged "senior" account exists before autologin is attempted.
+#
+# The ConditionPathExists guard is the "run once" switch: the marker written by
+# ExecStartPost makes every later boot skip this unit. The script is idempotent
+# and logs to journald, so it is safe to re-run manually if needed.
 # -----------------------------------------------------------------------------
 
 [Unit]
@@ -16,9 +18,16 @@ ConditionPathExists=!/var/lib/simpleos/firstboot-complete
 [Service]
 Type=oneshot
 RemainAfterExit=yes
+# Flatpak downloads can be slow; give the installer time to finish.
+TimeoutStartSec=900
 ExecStart=/usr/bin/bash /etc/simpleos/firstboot.sh
+# Mark complete even if an optional app install failed, so a network hiccup
+# never blocks the desktop from starting.
 ExecStartPost=/usr/bin/mkdir -p /var/lib/simpleos
 ExecStartPost=/usr/bin/touch /var/lib/simpleos/firstboot-complete
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=simpleos-firstboot
 
 [Install]
 WantedBy=multi-user.target

@@ -46,4 +46,47 @@ describe('preload bridge contract', () => {
     expect(preload).not.toContain('require(')
     expect(preload).not.toMatch(/exposeInMainWorld\(\s*['"]electron/)
   })
+
+  it('exposes the unified runAction dispatcher', () => {
+    expect(preload).toContain("runAction: (action) => ipcRenderer.invoke('simpleos:run-action', action)")
+  })
+})
+
+describe('caregiver runAction allowlist', () => {
+  it('accepts only fixed action names and rejects everything else', () => {
+    expect(electronMain).toContain("'simpleos:run-action'")
+    expect(electronMain).toContain('Object.hasOwn(SAFE_ACTIONS, action)')
+    expect(electronMain).toContain('return fail(\'UNKNOWN_TARGET\')')
+  })
+
+  it('maps all five caregiver/help actions to fixed commands', () => {
+    for (const action of [
+      'screenShare',
+      'networkSettings',
+      'printerSettings',
+      'checkUpdates',
+      'triggerUpdate',
+    ]) {
+      expect(electronMain).toContain(`${action}:`)
+    }
+    expect(electronMain).toContain('com.rustdesk.RustDesk')
+    expect(electronMain).toContain('nm-connection-editor')
+    expect(electronMain).toContain('system-config-printer')
+  })
+
+  it('never forwards renderer strings into spawned commands or arguments', () => {
+    // Every spawn in main.ts uses an allowlisted ApprovedCommand, whose values
+    // are literals from the frozen maps — never the `action`/`target` argument.
+    expect(electronMain).toContain('spawnApproved(SAFE_ACTIONS[name])')
+    expect(electronMain).not.toContain('spawn(action')
+    expect(electronMain).not.toContain('spawn(target')
+    expect(electronMain).not.toContain('execFile(action')
+    expect(electronMain).not.toContain('[action]')
+  })
+
+  it('returns calm plain-English summaries for caregiver actions', () => {
+    expect(electronMain).toContain('Screen sharing is starting')
+    expect(electronMain).toContain('The settings window is opening')
+    expect(electronMain).toContain('The update is starting')
+  })
 })

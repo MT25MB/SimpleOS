@@ -11,6 +11,7 @@ const rc = read('system-configs/labwc/rc.xml')
 const policies = JSON.parse(read('system-configs/firefox/policies.json'))
 const greetd = read('system-configs/greetd/config.toml')
 const firstboot = read('system-configs/systemd/simpleos-firstboot.sh')
+const firstbootService = read('system-configs/systemd/simpleos-firstboot.service')
 const buildIso = read('scripts/build-iso.sh')
 const workflow = read('.github/workflows/build-image.yml')
 
@@ -38,6 +39,39 @@ describe('system guardrails contract', () => {
     expect(greetd).toContain('command = "labwc"')
     expect(greetd).toContain('user = "senior"')
     expect(firstboot).toMatch(/for group in wheel sudo admin/)
+    expect(firstboot).toContain('useradd --create-home --user-group')
+  })
+
+  it('runs first boot once, after the network is ready, before greetd', () => {
+    expect(firstbootService).toContain('ConditionPathExists=!/var/lib/simpleos/firstboot-complete')
+    expect(firstbootService).toContain('After=local-fs.target network-online.target')
+    expect(firstbootService).toContain('Wants=network-online.target')
+    expect(firstbootService).toContain('Before=greetd.service')
+    expect(firstbootService).toContain('Type=oneshot')
+    expect(firstbootService).toContain('ExecStartPost=/usr/bin/touch /var/lib/simpleos/firstboot-complete')
+  })
+
+  it('sets senior ownership on home and config directories', () => {
+    expect(firstboot).toContain('chown -R "$SENIOR_USER:$SENIOR_USER" "$SENIOR_HOME"')
+    expect(firstboot).toContain('mkdir -p "$SENIOR_HOME/.config/simpleos"')
+    expect(firstboot).toContain('chmod 0700')
+  })
+
+  it('logs to journald and never fails the boot on a network hiccup', () => {
+    expect(firstbootService).toContain('StandardOutput=journal')
+    expect(firstbootService).toContain('SyslogIdentifier=simpleos-firstboot')
+    expect(firstboot).toContain('logger -t simpleos-firstboot')
+    expect(firstboot).toContain('network problem?')
+    // The network steps are wrapped so a failure cannot trip strict mode.
+    expect(firstboot).toContain('if ! flatpak remote-add')
+    expect(firstboot).toContain('if ! flatpak install')
+    expect(firstboot.trimEnd()).toMatch(/exit 0$/)
+  })
+
+  it('installs the three core flatpaks', () => {
+    expect(firstboot).toContain('org.mozilla.firefox')
+    expect(firstboot).toContain('org.gnome.Loupe')
+    expect(firstboot).toContain('com.rustdesk.RustDesk')
   })
 
   it('keeps the shell supervised with a dark background and large cursor', () => {

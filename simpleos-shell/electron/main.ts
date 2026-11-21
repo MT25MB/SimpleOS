@@ -22,6 +22,7 @@ import fs from 'node:fs'
 import crypto from 'node:crypto'
 import { spawn, execFile } from 'node:child_process'
 import type {
+  CaregiverAction,
   ErrorCode,
   Reminder,
   RemindersFile,
@@ -241,76 +242,130 @@ ipcMain.handle(
 
 // ------------------------------------------------------------ caregiver shortcuts
 
+/**
+ * Fixed, audited commands for caregiver/help actions. The renderer only ever
+ * supplies an action NAME; it can never supply a command, argument or URL.
+ */
 const ALLOWED_SETTINGS: Readonly<Record<string, ApprovedCommand>> = Object.freeze({
   network: { command: 'nm-connection-editor', args: Object.freeze([]) },
   printer: { command: 'system-config-printer', args: Object.freeze([]) },
 })
 
+const SAFE_ACTIONS: Readonly<Record<CaregiverAction, ApprovedCommand>> = Object.freeze({
+  screenShare: ALLOWED_APPS.rustdesk,
+  networkSettings: ALLOWED_SETTINGS.network,
+  printerSettings: ALLOWED_SETTINGS.printer,
+  // 'checkUpdates' and 'triggerUpdate' are handled separately below: they
+  // return a plain-English summary rather than just launching a process.
+  checkUpdates: Object.freeze({ command: 'rpm-ostree', args: Object.freeze(['status', '--json']) }),
+  triggerUpdate: Object.freeze({ command: 'rpm-ostree', args: Object.freeze(['upgrade']) }),
+})
+
+function spawnApproved(approved: ApprovedCommand): Promise<Result> {
+  return spawnDetached(approved.command, approved.args)
+}
+
+/** Read rpm-ostree state and turn it into a short, calm sentence. */
+function checkUpdateStatus(): Promise<ValueResult<{ summary: string }>> {
+  return new Promise((resolve) => {
+    execFile(
+      'rpm-ostree',
+      ['status', '--json'],
+      { timeout: 15000, maxBuffer: 2 * 1024 * 1024 },
+      (error, stdout) => {
+        if (error) {
+          resolve(fail('UPDATE_CHECK_FAILED'))
+          return
+        }
+        try {
+          const data: unknown = JSON.parse(stdout)
+          if (!data || typeof data !== 'object') {
+            resolve(fail('UPDATE_CHECK_FAILED'))
+            return
+          }
+          const deployments = (data as { deployments?: unknown }).deployments
+          const list = Array.isArray(deployments) ? deployments : []
+          const booted = list.find(
+            (item) => Boolean(item) && (item as { booted?: boolean }).booted === true,
+          ) as { version?: unknown } | undefined
+          const staged = list.find(
+            (item) => Boolean(item) && (item as { staged?: boolean }).staged === true,
+          )
+
+          if (staged) {
+            resolve({
+              ok: true,
+              value: { summary: 'An update is ready. Restart the computer to finish installing it.' },
+            })
+            return
+          }
+
+          if (booted && typeof booted.version === 'string') {
+            const version = booted.version.replace(/[^A-Za-z0-9._-]/g, '').slice(0, 40)
+            resolve({
+              ok: true,
+              value: { summary: `Your system is up to date. Version ${version}.` },
+            })
+            return
+          }
+
+          resolve({ ok: true, value: { summary: 'Your system is up to date.' } })
+        } catch {
+          resolve(fail('UPDATE_CHECK_FAILED'))
+        }
+      },
+    )
+  })
+}
+
+/**
+ * The single caregiver/help entry point. Only fixed action names are accepted;
+ * anything else is rejected with a code that the renderer maps to plain text.
+ */
+ipcMain.handle(
+  'simpleos:run-action',
+  async (_event, action: unknown): Promise<ValueResult<{ summary?: string }>> => {
+    if (typeof action !== 'string' || !Object.hasOwn(SAFE_ACTIONS, action)) {
+      return fail('UNKNOWN_TARGET')
+    }
+
+    const name = action as CaregiverAction
+    if (name === 'checkUpdates') {
+      const result = await checkUpdateStatus()
+      return result.ok ? { ok: true, value: { summary: result.value.summary } } : result
+    }
+
+    const result = await spawnApproved(SAFE_ACTIONS[name])
+    if (!result.ok) return result
+
+    return {
+      ok: true,
+      value: {
+        summary:
+          name === 'screenShare'
+            ? 'Screen sharing is starting. You can stop it inside RustDesk.'
+            : name === 'triggerUpdate'
+              ? 'The update is starting. We will let you know when it is ready.'
+              : 'The settings window is opening.',
+      },
+    }
+  },
+)
+
+// Legacy channels kept as thin wrappers so existing UI builds keep working;
+// both delegate to the same allowlists and helpers used by `runAction`.
 ipcMain.handle(
   'simpleos:open-settings',
   async (_event, target: unknown): Promise<Result> => {
     if (typeof target !== 'string' || !Object.hasOwn(ALLOWED_SETTINGS, target)) {
       return fail('UNKNOWN_TARGET')
     }
-    const approved = ALLOWED_SETTINGS[target]
-    return spawnDetached(approved.command, approved.args)
+    return spawnApproved(ALLOWED_SETTINGS[target])
   },
 )
 
-ipcMain.handle(
-  'simpleos:update-status',
-  async (): Promise<ValueResult<{ summary: string }>> =>
-    new Promise((resolve) => {
-      execFile(
-        'rpm-ostree',
-        ['status', '--json'],
-        { timeout: 15000, maxBuffer: 2 * 1024 * 1024 },
-        (error, stdout) => {
-          if (error) {
-            resolve(fail('UPDATE_CHECK_FAILED'))
-            return
-          }
-          try {
-            const data: unknown = JSON.parse(stdout)
-            if (!data || typeof data !== 'object') {
-              resolve(fail('UPDATE_CHECK_FAILED'))
-              return
-            }
-            const deployments = (data as { deployments?: unknown }).deployments
-            const list = Array.isArray(deployments) ? deployments : []
-            const booted = list.find(
-              (item) => Boolean(item) && (item as { booted?: boolean }).booted === true,
-            ) as { version?: unknown } | undefined
-            const staged = list.find(
-              (item) => Boolean(item) && (item as { staged?: boolean }).staged === true,
-            )
-
-            if (staged) {
-              resolve({
-                ok: true,
-                value: {
-                  summary: 'An update is ready. Restart the computer to finish installing it.',
-                },
-              })
-              return
-            }
-
-            if (booted && typeof booted.version === 'string') {
-              const version = booted.version.replace(/[^A-Za-z0-9._-]/g, '').slice(0, 40)
-              resolve({
-                ok: true,
-                value: { summary: `Your system is up to date. Version ${version}.` },
-              })
-              return
-            }
-
-            resolve({ ok: true, value: { summary: 'Your system is up to date.' } })
-          } catch {
-            resolve(fail('UPDATE_CHECK_FAILED'))
-          }
-        },
-      )
-    }),
+ipcMain.handle('simpleos:update-status', async (): Promise<ValueResult<{ summary: string }>> =>
+  checkUpdateStatus(),
 )
 
 // -------------------------------------------------------------------- window setup

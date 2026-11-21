@@ -1,6 +1,17 @@
 export type LaunchTarget = 'firefox' | 'jitsi' | 'photos' | 'rustdesk'
 export type SettingsTarget = 'network' | 'printer'
 
+/**
+ * Caregiver/help actions exposed through the single `runAction` IPC method.
+ * These are fixed names — never free-form commands from the renderer.
+ */
+export type CaregiverAction =
+  | 'screenShare'
+  | 'networkSettings'
+  | 'printerSettings'
+  | 'checkUpdates'
+  | 'triggerUpdate'
+
 export type IconName = 'video' | 'web' | 'photos' | 'reminders' | 'help' | 'settings'
 
 export type TileAction =
@@ -58,4 +69,6 @@ export interface SimpleOSBridge {
   setPin(currentPin: string, newPin: string): Promise<Result>
   openSettings(target: string): Promise<Result>
   getUpdateStatus(): Promise<ValueResult<{ summary: string }>>
+  /** Unified, allowlisted caregiver/help action dispatcher. */
+  runAction(action: CaregiverAction): Promise<ValueResult<{ summary?: string }>>
 }
