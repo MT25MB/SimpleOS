@@ -8,6 +8,27 @@
 # the COPY sources below are relative to that directory.
 # -----------------------------------------------------------------------------
 
+# -----------------------------------------------------------------------------
+# Stage 1: build the launcher that the desktop session supervises.
+#
+# The React/Electron shell is built here so the immutable image contains a real
+# kiosk application, not just a wallpaper and a supervisor waiting for a binary.
+# Electron is a dev dependency in package.json, so npm ci installs it here and
+# only its runtime directory is copied into the final image.
+# -----------------------------------------------------------------------------
+FROM node:22 AS shell-build
+
+WORKDIR /src
+COPY docs/assets/ /docs/assets/
+COPY simpleos-shell/package.json simpleos-shell/package-lock.json ./
+RUN npm ci
+COPY simpleos-shell/ ./
+RUN npm run build
+
+# -----------------------------------------------------------------------------
+# Stage 2: the bootable SimpleOS system.
+# -----------------------------------------------------------------------------
+
 FROM ghcr.io/ublue-os/base-main:latest
 
 LABEL org.opencontainers.image.title="SimpleOS" \
@@ -51,6 +72,13 @@ RUN rpm-ostree install --assumeyes \
         upower \
         brightnessctl \
         pulseaudio-utils \
+        gtk3 \
+        nss \
+        alsa-lib \
+        libgbm \
+        at-spi2-atk \
+        libxkbcommon \
+        libdrm \
     && ostree container commit
 
 # Audited desktop and browser configuration.
@@ -75,9 +103,22 @@ COPY system-configs/systemd/simpleos-firstboot.sh /etc/simpleos/firstboot.sh
 COPY system-configs/systemd/logind.conf.d/10-simpleos-power.conf /etc/systemd/logind.conf.d/10-simpleos-power.conf
 COPY system-configs/systemd/sleep.conf.d/10-simpleos-sleep.conf /etc/systemd/sleep.conf.d/10-simpleos-sleep.conf
 
+# The kiosk launcher itself. main.js resolves its renderer at ../dist from
+# dist-electron, so keeping both folders together preserves that contract.
+COPY --from=shell-build /src/dist /usr/lib/simpleos/app/dist
+COPY --from=shell-build /src/dist-electron /usr/lib/simpleos/app/dist-electron
+COPY --from=shell-build /src/node_modules/electron /usr/lib/simpleos/app/node_modules/electron
+
 # The final layer sets the hostname and UTC timezone, hides foot's desktop
 # entry so it stays invisible to the user, and enables the boot services.
-RUN chmod 0755 /etc/simpleos/firstboot.sh /etc/xdg/labwc/autostart \
+RUN mkdir -p /usr/libexec/simpleos \
+    && printf '%s\n' \
+      '#!/bin/sh' \
+      '# Kiosk launcher supervised by labwc/autostart.' \
+      'exec /usr/lib/simpleos/app/node_modules/electron/dist/electron \' \
+      '  /usr/lib/simpleos/app/dist-electron/main.js' \
+      > /usr/libexec/simpleos/simpleos-shell \
+    && chmod 0755 /etc/simpleos/firstboot.sh /etc/xdg/labwc/autostart /usr/libexec/simpleos/simpleos-shell \
     && echo "simpleos" > /etc/hostname \
     && ln -sf /usr/share/zoneinfo/UTC /etc/localtime \
     && printf 'UTC\n' > /etc/timezone \

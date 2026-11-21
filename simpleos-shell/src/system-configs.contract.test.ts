@@ -154,6 +154,21 @@ describe('system guardrails contract', () => {
     expect(sleep).toContain('AllowHibernation=no')
   })
 
+  it('builds and installs the launcher that the desktop session supervises', () => {
+    expect(containerfile).toContain('FROM node:22 AS shell-build')
+    expect(containerfile).toContain('COPY docs/assets/ /docs/assets/')
+    expect(containerfile).toContain('RUN npm run build')
+    expect(containerfile).toContain('COPY --from=shell-build /src/dist /usr/lib/simpleos/app/dist')
+    expect(containerfile).toContain(
+      'COPY --from=shell-build /src/dist-electron /usr/lib/simpleos/app/dist-electron',
+    )
+    expect(containerfile).toContain(
+      'COPY --from=shell-build /src/node_modules/electron /usr/lib/simpleos/app/node_modules/electron',
+    )
+    expect(containerfile).toContain('/usr/libexec/simpleos/simpleos-shell')
+    expect(autostart).toContain('/usr/libexec/simpleos/simpleos-shell')
+  })
+
   it('gives senior hardware groups without ever granting admin rights', () => {
     expect(firstboot).toContain('for group in video audio lp')
     expect(firstboot).toContain('usermod --append --groups')

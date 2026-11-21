@@ -18,6 +18,8 @@ describe('scripts/test-vm.sh contract', () => {
     expect(testVm).toContain('--qcow2)')
     expect(testVm).toContain('--iso)')
     expect(testVm).toContain('--reset)')
+    expect(testVm).toMatch(/\n    qcow2\)/)
+    expect(testVm).toMatch(/\n    iso\)/)
     expect(testVm).toContain('build-vm/simpleos-test.qcow2')
     expect(testVm).toContain('rm -f "$DISK"')
   })

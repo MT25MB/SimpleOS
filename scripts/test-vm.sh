@@ -55,8 +55,8 @@ Usage: $(basename "$0") [OPTIONS]
 Build the SimpleOS image locally with podman and boot it in QEMU/KVM.
 
 Options:
-  --qcow2           Boot a bootable qcow2 disk (default)
-  --iso             Build an ISO installer and boot from CD-ROM
+  qcow2, --qcow2    Boot a bootable qcow2 disk (default)
+  iso, --iso        Build an ISO installer and boot from CD-ROM
   --reset           Delete and recreate the qcow2 disk to re-test first boot
   --image TAG       Local image tag (default: $IMAGE_TAG)
   --memory MB       VM memory in MB (default: $MEMORY)
@@ -84,6 +84,14 @@ while [[ $# -gt 0 ]]; do
       shift
       ;;
     --iso)
+      MODE="iso"
+      shift
+      ;;
+    qcow2)
+      MODE="qcow2"
+      shift
+      ;;
+    iso)
       MODE="iso"
       shift
       ;;
