@@ -1,0 +1,64 @@
+{
+  "policies": {
+    "HttpsOnlyMode": "force_enabled",
+    "Homepage": {
+      "URL": "https://www.mozilla.org/",
+      "Locked": true,
+      "StartPage": "homepage-locked"
+    },
+    "DisableTelemetry": true,
+    "DisableFirefoxStudies": true,
+    "DisableFirefoxAccounts": true,
+    "DontCheckDefaultBrowser": true,
+    "NoDefaultBookmarks": true,
+
+    "Permissions": {
+      "Notifications": {
+        "BlockNewRequests": true,
+        "Locked": true
+      },
+      "Location": {
+        "BlockNewRequests": true,
+        "Locked": true
+      }
+    },
+
+    "ExtensionSettings": {
+      "*": {
+        "installation_mode": "blocked",
+        "blocked_install_message": "SimpleOS only allows approved extensions."
+      },
+      "uBlock0@raymondhill.net": {
+        "installation_mode": "force_installed",
+        "install_url": "https://addons.mozilla.org/firefox/downloads/latest/uBlock0@raymondhill.net/latest.xpi"
+      }
+    },
+
+    "DisplayBookmarksToolbar": "always",
+    "ManagedBookmarks": [
+      {
+        "toplevel_name": "SimpleOS"
+      },
+      {
+        "name": "Email",
+        "url": "https://mail.google.com"
+      },
+      {
+        "name": "News",
+        "url": "https://www.bbc.com/news"
+      },
+      {
+        "name": "Weather",
+        "url": "https://www.weather.com"
+      },
+      {
+        "name": "Video calls",
+        "url": "https://meet.google.com"
+      },
+      {
+        "name": "Firefox Help",
+        "url": "https://support.mozilla.org"
+      }
+    ]
+  }
+}

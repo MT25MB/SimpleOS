@@ -1,0 +1,15 @@
+appId: org.simpleos.shell
+productName: SimpleOS Shell
+copyright: Copyright (c) 2026 SimpleOS contributors
+
+directories:
+  output: release
+
+files:
+  - dist/**/*
+  - electron/dist/**/*
+  - package.json
+
+linux:
+  target: AppImage
+  category: Utility

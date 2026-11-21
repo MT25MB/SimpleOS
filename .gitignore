@@ -1,0 +1,52 @@
+# Dependencies
+node_modules/
+.pnp/
+.pnp.js
+
+# Build output (matches any directory named dist, including electron/dist)
+dist/
+dist-electron/
+build/
+out/
+*.tsbuildinfo
+
+# Packaged application output
+release/
+
+# Generated OS images and installers
+*.iso
+*.img
+*.raw
+*.qcow2
+*.vdi
+*.vmdk
+*.vhdx
+*.ova
+
+# ISO builder output and local VM state (large binaries — never commit)
+output/
+build-vm/
+vm-images/
+*.qcow2.*
+.vagrant/
+
+# Caches, logs, and temporary files
+.cache/
+.tmp/
+tmp/
+*.log
+
+# Editor and OS temp files
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+
+# Environment / secrets
+.env
+.env.local
+.env.*.local

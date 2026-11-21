@@ -1,0 +1,12 @@
+# labwc session environment
+# -----------------------------------------------------------------------------
+# labwc reads this file at startup and exports the values to the whole session.
+# Full-line comments are allowed; trailing comments are not.
+
+# Large pointer: labwc only honours XCURSOR_SIZE when a theme is also set.
+XCURSOR_THEME=Adwaita
+XCURSOR_SIZE=48
+
+# Accessible text scaling for GTK and Qt applications.
+GDK_DPI_SCALE=1.25
+QT_SCALE_FACTOR=1.25

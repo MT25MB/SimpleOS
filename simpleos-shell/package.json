@@ -1,0 +1,34 @@
+{
+  "name": "simpleos-shell",
+  "version": "0.3.0",
+  "private": true,
+  "description": "Full-screen accessibility launcher for SimpleOS",
+  "license": "MIT",
+  "type": "module",
+  "main": "electron/dist/main.cjs",
+  "scripts": {
+    "dev": "vite",
+    "dev:electron": "npm run compile:electron && electron .",
+    "typecheck:electron": "tsc -p electron/tsconfig.json",
+    "compile:electron": "esbuild electron/main.ts --bundle --platform=node --format=cjs --target=node20 --external:electron --outfile=electron/dist/main.cjs && esbuild electron/preload.ts --bundle --platform=node --format=cjs --target=node20 --external:electron --outfile=electron/dist/preload.cjs",
+    "build": "npm run typecheck:electron && tsc --noEmit && vite build && npm run compile:electron",
+    "build:electron": "npm run build && electron-builder --linux",
+    "package": "electron-builder --linux",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "@vitejs/plugin-react": "^4.3.1",
+    "electron": "^31.0.0",
+    "electron-builder": "^25.1.8",
+    "esbuild": "^0.21.5",
+    "typescript": "^5.5.4",
+    "vite": "^5.4.0"
+  }
+}

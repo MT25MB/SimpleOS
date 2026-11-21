@@ -1,0 +1,47 @@
+import type { LauncherTile } from '../types'
+
+/** The six calm, fixed tiles of the SimpleOS home screen. */
+export const TILES: readonly LauncherTile[] = [
+  {
+    id: 'video-calls',
+    title: 'Video Call Family',
+    subtitle: 'Talk to family and friends',
+    icon: 'video',
+    action: { kind: 'launch', target: 'videoCalls' },
+  },
+  {
+    id: 'web-email',
+    title: 'Web & Email',
+    subtitle: 'Websites, email and messages',
+    icon: 'web',
+    action: { kind: 'launch', target: 'webEmail' },
+  },
+  {
+    id: 'photo-album',
+    title: 'Photo Album',
+    subtitle: 'Look at your photos',
+    icon: 'photos',
+    action: { kind: 'launch', target: 'photos' },
+  },
+  {
+    id: 'daily-reminders',
+    title: 'Daily Reminders',
+    subtitle: 'Your list for today',
+    icon: 'reminders',
+    action: { kind: 'view', view: 'reminders' },
+  },
+  {
+    id: 'ask-for-help',
+    title: 'Ask for Help',
+    subtitle: 'Share your screen with RustDesk',
+    icon: 'help',
+    action: { kind: 'launch', target: 'remoteHelp' },
+  },
+  {
+    id: 'caregiver-settings',
+    title: 'Caregiver Settings',
+    subtitle: 'PIN protected',
+    icon: 'settings',
+    action: { kind: 'view', view: 'caregiver' },
+  },
+] as const

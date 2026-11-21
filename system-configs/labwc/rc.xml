@@ -1,0 +1,68 @@
+<?xml version="1.0"?>
+<!--
+  SimpleOS desktop configuration for labwc.
+
+  Design goals:
+    - ONE desktop, nowhere to get lost.
+    - Large, high-contrast text (Inter, 18px).
+    - Every normal window opens maximized and without decorations.
+    - No right-click root menu and no hidden mouse gestures.
+
+  Cursor size (48) and text scaling live in the sibling "environment" file,
+  which is the mechanism labwc documents for those settings.
+-->
+<labwc_config>
+
+  <core>
+    <decoration>server</decoration>
+    <keyboard>
+      <numlock>on</numlock>
+      <!-- A deliberately tiny set of predictable keyboard actions. -->
+      <keybind key="A-Tab">
+        <action name="NextWindow"/>
+      </keybind>
+      <keybind key="A-F4">
+        <action name="Close"/>
+      </keybind>
+    </keyboard>
+  </core>
+
+  <desktops>
+    <number>1</number>
+    <firstdesk>1</firstdesk>
+    <names>
+      <name>Desktop</name>
+    </names>
+  </desktops>
+
+  <theme>
+    <name>Adwaita</name>
+    <cornerRadius>4</cornerRadius>
+    <!-- Maximized windows have no titlebar: fewer buttons, fewer mistakes. -->
+    <maximizedDecoration>none</maximizedDecoration>
+    <font name="Inter" size="18" weight="medium"/>
+  </theme>
+
+  <mouse>
+    <!--
+      Defining any mousebind disables labwc's default mousebinds. These empty
+      bindings explicitly remove the right-click root menu on the background.
+    -->
+    <context name="Desktop">
+      <mousebind button="Right" action="Press"/>
+      <mousebind button="Right" action="Click"/>
+    </context>
+    <context name="Root">
+      <mousebind button="Right" action="Press"/>
+      <mousebind button="Right" action="Click"/>
+    </context>
+  </mouse>
+
+  <windowRules>
+    <!-- All normal application windows open maximized. -->
+    <windowRule identifier="*" type="normal">
+      <action name="Maximize"/>
+    </windowRule>
+  </windowRules>
+
+</labwc_config>

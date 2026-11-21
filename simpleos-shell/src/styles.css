@@ -1,0 +1,545 @@
+/*
+  SimpleOS launcher design tokens.
+  Root text is never smaller than 18px (1.125rem); --font-scale multiplies it.
+  All spacing is in rem so the whole interface scales with the user's choice.
+*/
+:root {
+  --font-scale: 1;
+  font-size: calc(1.125rem * var(--font-scale));
+
+  --bg: #0b1120;
+  --surface: #1e293b;
+  --surface-raised: #27354b;
+  --border: #64748b;
+  --border-strong: #94a3b8;
+  --text: #f8fafc;
+  --text-soft: #e2e8f0;
+  --accent: #38bdf8;
+  --accent-strong: #0ea5e9;
+  --focus: #fde047;
+  --error: #fca5a5;
+  --success: #86efac;
+
+  font-family: "Inter", "Noto Sans", system-ui, sans-serif;
+  color: var(--text);
+  background: var(--bg);
+  line-height: 1.5;
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+/* A bright, unmistakable focus ring on every interactive element. */
+:where(button, input, a, [tabindex]):focus-visible {
+  outline: 4px solid var(--focus);
+  outline-offset: 3px;
+}
+
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 2rem clamp(1rem, 4vw, 4rem) 1.25rem;
+  max-width: 90rem;
+  margin: 0 auto;
+}
+
+.app__header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.app__header h1 {
+  margin: 0;
+  font-size: 2.25rem;
+  letter-spacing: -0.02em;
+}
+
+.app__tagline {
+  margin: 0.25rem 0 0;
+  color: var(--text-soft);
+  font-size: 1.125rem;
+}
+
+.app__main {
+  flex: 1;
+}
+
+.app__main:focus {
+  outline: none;
+}
+
+.app__footer {
+  color: var(--text-soft);
+  font-size: 0.875rem;
+}
+
+.app__footer p {
+  margin: 0;
+}
+
+/* ------------------------------------------------------------------ tiles */
+
+.tiles {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.25rem;
+}
+
+.tiles__item {
+  display: flex;
+}
+
+.tile {
+  width: 100%;
+  min-height: 10rem;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 0.5rem;
+  text-align: left;
+  color: var(--text);
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: 0.75rem;
+  cursor: pointer;
+  transition: background 120ms ease, border-color 120ms ease, transform 120ms ease;
+}
+
+.tile:hover {
+  background: var(--surface-raised);
+  border-color: var(--accent);
+}
+
+.tile:active {
+  transform: translateY(1px);
+}
+
+.tile__icon {
+  color: var(--accent);
+  margin-bottom: 0.5rem;
+}
+
+.tile__title {
+  font-size: 1.375rem;
+  font-weight: 700;
+}
+
+.tile__subtitle {
+  font-size: 1rem;
+  color: var(--text-soft);
+}
+
+/* --------------------------------------------------------------- controls */
+
+.button {
+  min-height: 3.25rem;
+  padding: 0.75rem 1.5rem;
+  color: #04121f;
+  background: var(--accent);
+  border: 2px solid var(--accent);
+  border-radius: 0.5rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.button:hover {
+  background: var(--accent-strong);
+  border-color: var(--accent-strong);
+}
+
+.button--secondary {
+  color: var(--text);
+  background: transparent;
+  border-color: var(--border-strong);
+}
+
+.button--secondary:hover {
+  background: var(--surface-raised);
+  border-color: var(--text);
+}
+
+.button--back {
+  margin-bottom: 1.5rem;
+}
+
+.font-scale {
+  margin: 0;
+  padding: 0.75rem 1rem 1rem;
+  border: 2px solid var(--border);
+  border-radius: 0.75rem;
+  background: var(--surface);
+}
+
+.font-scale legend {
+  padding: 0 0.4rem;
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.font-scale__options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.font-scale__option {
+  min-height: 3rem;
+  padding: 0.5rem 1rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: 2px solid var(--border);
+  border-radius: 0.5rem;
+  cursor: pointer;
+}
+
+.font-scale__option:has(input:checked) {
+  border-color: var(--accent);
+  background: var(--surface-raised);
+}
+
+.font-scale__option input {
+  width: 1.25rem;
+  height: 1.25rem;
+  accent-color: var(--accent);
+}
+
+/* ------------------------------------------------------------------ panels */
+
+.panel {
+  max-width: 44rem;
+  padding: 1.75rem;
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: 0.75rem;
+}
+
+.panel h2 {
+  margin: 0;
+  font-size: 1.75rem;
+}
+
+.panel__intro,
+.panel__note {
+  color: var(--text-soft);
+}
+
+.panel__empty {
+  padding: 1rem;
+  border: 2px dashed var(--border);
+  border-radius: 0.5rem;
+  color: var(--text-soft);
+}
+
+.font-scale + .panel__note {
+  margin-top: 1.5rem;
+}
+
+/* --------------------------------------------------------------- reminders */
+
+.reminders__form {
+  margin: 1.5rem 0;
+}
+
+.reminders__form label {
+  display: block;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.reminders__row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.reminders__row input,
+.pin-dialog input {
+  flex: 1 1 16rem;
+  min-height: 3.25rem;
+  padding: 0.75rem 1rem;
+  color: var(--text);
+  background: var(--bg);
+  border: 2px solid var(--border-strong);
+  border-radius: 0.5rem;
+}
+
+.reminders__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.reminders__item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: var(--surface-raised);
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+}
+
+/* ------------------------------------------------------------------ status */
+
+.status {
+  margin: 0;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  border: 2px solid var(--border-strong);
+  background: var(--surface);
+}
+
+.status--error {
+  border-color: var(--error);
+  color: var(--error);
+}
+
+.status--info {
+  border-color: var(--success);
+  color: var(--success);
+}
+
+/* ------------------------------------------------------------------- dialog */
+
+.pin-dialog {
+  width: min(32rem, calc(100vw - 2rem));
+  padding: 1.75rem;
+  color: var(--text);
+  background: var(--surface);
+  border: 2px solid var(--border-strong);
+  border-radius: 0.75rem;
+}
+
+.pin-dialog::backdrop {
+  background: rgb(0 0 0 / 75%);
+}
+
+.pin-dialog h2 {
+  margin: 0 0 0.5rem;
+  font-size: 1.75rem;
+}
+
+.pin-dialog label {
+  display: block;
+  font-weight: 700;
+  margin: 1.25rem 0 0.5rem;
+}
+
+.pin-dialog__error {
+  color: var(--error);
+  font-weight: 700;
+}
+
+.pin-dialog__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+/* -------------------------------------------------------------- responsive */
+
+@media (max-width: 1100px) {
+  .tiles {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 700px) {
+  .tiles {
+    grid-template-columns: 1fr;
+  }
+
+  .app__header h1 {
+    font-size: 1.875rem;
+  }
+}
+
+/* ------------------------------------------------------- daily reminders detail */
+
+.reminders__time {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-weight: 700;
+}
+
+.reminders__time span {
+  font-weight: 400;
+  font-size: 0.875rem;
+  color: var(--text-soft);
+}
+
+.reminders__time input {
+  flex: 0 1 11rem;
+  min-height: 3.25rem;
+  padding: 0.75rem 1rem;
+  color: var(--text);
+  background: var(--bg);
+  border: 2px solid var(--border-strong);
+  border-radius: 0.5rem;
+}
+
+.reminders__toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin: 1.5rem 0 1rem;
+}
+
+.reminders__summary {
+  margin: 0;
+  font-weight: 700;
+}
+
+.reminders__text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.reminders__label {
+  font-weight: 700;
+}
+
+.reminders__time-label {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.reminders__item--done {
+  border-color: var(--success);
+}
+
+.reminders__item--done .reminders__label {
+  color: var(--text-soft);
+  text-decoration: line-through;
+}
+
+.reminders__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* ------------------------------------------------------------ caregiver detail */
+
+.panel__subheading {
+  margin: 2rem 0 0.75rem;
+  font-size: 1.25rem;
+}
+
+.panel__button-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.status__dismiss,
+.notice__dismiss {
+  min-height: 3.25rem;
+  margin-left: 0.5rem;
+  padding: 0.6rem 1.25rem;
+  color: inherit;
+  background: transparent;
+  border: 2px solid currentColor;
+  border-radius: 0.4rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* -------------------------------------------------------------------- notices */
+
+.notice {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.85rem 1rem;
+  background: var(--surface);
+  border: 2px solid var(--border-strong);
+  border-radius: 0.75rem;
+}
+
+.notice--sharing {
+  border-color: var(--accent);
+}
+
+.notice--caregiver {
+  border-color: var(--success);
+}
+
+.notice__mark {
+  display: inline-grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  flex: none;
+  border-radius: 50%;
+  background: var(--bg);
+  color: var(--accent);
+  font-size: 1.25rem;
+}
+
+.notice--caregiver .notice__mark {
+  color: var(--success);
+}
+
+.notice__message {
+  flex: 1 1 18rem;
+  font-weight: 700;
+}
+
+.pin-dialog input {
+  width: 100%;
+  flex: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tile {
+    transition: none;
+  }
+
+  .tile:active {
+    transform: none;
+  }
+}

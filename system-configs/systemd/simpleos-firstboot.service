@@ -1,0 +1,24 @@
+# SimpleOS first-boot setup
+# -----------------------------------------------------------------------------
+# Runs once on a machine's very first start. The ConditionPathExists guard is
+# the "run only once" switch; the marker created by ExecStartPost disables the
+# unit on every later boot. Ordering before greetd ensures the "senior" account
+# exists before the display manager tries to auto-login into it.
+# -----------------------------------------------------------------------------
+
+[Unit]
+Description=SimpleOS First Boot Setup
+After=local-fs.target network-online.target
+Wants=network-online.target
+Before=greetd.service
+ConditionPathExists=!/var/lib/simpleos/firstboot-complete
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/bin/bash /etc/simpleos/firstboot.sh
+ExecStartPost=/usr/bin/mkdir -p /var/lib/simpleos
+ExecStartPost=/usr/bin/touch /var/lib/simpleos/firstboot-complete
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,16 @@
+# greetd configuration for SimpleOS
+# -----------------------------------------------------------------------------
+# Auto-login the unprivileged "senior" user straight into labwc. The fallback
+# greeter is only used if the initial session cannot be started.
+# -----------------------------------------------------------------------------
+
+[terminal]
+vt = 1
+
+[default_session]
+command = "agreety --cmd labwc"
+user = "greeter"
+
+[initial_session]
+command = "labwc"
+user = "senior"

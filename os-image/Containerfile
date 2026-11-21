@@ -1,0 +1,57 @@
+# SimpleOS system image
+# -----------------------------------------------------------------------------
+# Built on uBlue's immutable/atomic base. Packages are layered with rpm-ostree
+# and committed into the image so every build is reproducible and bootable.
+#
+# Build context is the repository root (see scripts/build-iso.sh), which is why
+# the COPY sources below are relative to that directory.
+# -----------------------------------------------------------------------------
+
+FROM ghcr.io/ublue-os/base-main:latest
+
+LABEL org.opencontainers.image.title="SimpleOS" \
+      org.opencontainers.image.description="A calm, accessible, immutable Linux desktop" \
+      org.opencontainers.image.licenses="MIT"
+
+# Desktop stack, display manager, accessibility, printing, apps, and readable
+# fonts. Package names are Fedora's (rsms-inter-fonts = Inter;
+# google-noto-sans-fonts = Noto Sans).
+RUN rpm-ostree install --assumeyes \
+        labwc \
+        greetd \
+        swaybg \
+        flatpak \
+        pipewire \
+        wireplumber \
+        cups \
+        system-config-printer \
+        nm-connection-editor \
+        orca \
+        rsms-inter-fonts \
+        google-noto-sans-fonts \
+    && ostree container commit
+
+# Audited desktop configuration.
+COPY system-configs/labwc/ /etc/xdg/labwc/
+COPY system-configs/firefox/policies.json /etc/firefox/policies/policies.json
+
+# Display manager: autologin the unprivileged "senior" user into labwc.
+COPY system-configs/greetd/config.toml /etc/greetd/config.toml
+
+# First-boot setup: create "senior", add Flathub, install core applications.
+COPY system-configs/systemd/simpleos-firstboot.service /etc/systemd/system/simpleos-firstboot.service
+COPY system-configs/systemd/simpleos-firstboot.sh /etc/simpleos/firstboot.sh
+
+RUN chmod 0755 /etc/simpleos/firstboot.sh /etc/xdg/labwc/autostart \
+    && echo "simpleos" > /etc/hostname \
+    && systemctl enable \
+        greetd.service \
+        cups.service \
+        rpm-ostreed-automatic.timer \
+        simpleos-firstboot.service \
+    && ostree container commit
+
+# Future work (intentionally not implemented yet):
+#   - generate a full disk image / ISO from this bootable container
+#   - sign and verify update commits
+#   - strip unused locales and drivers to reduce image size
