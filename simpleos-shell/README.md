@@ -50,32 +50,40 @@ fall back to `localStorage` so UI work still works.
 
 ```sh
 npm install
-npm run dev          # Vite web preview (http://localhost:5173)
+npm run dev
 ```
 
-In a second terminal, run the real Electron shell against that preview:
+`npm run dev` runs Vite and Electron **concurrently**: Vite serves the renderer
+on http://localhost:5173, `wait-on` holds Electron until that server is ready,
+then Electron opens in a full-screen kiosk window against it.
+
+For a browser-only preview without Electron:
 
 ```sh
-VITE_DEV_SERVER_URL=http://localhost:5173 npm run dev:electron
+npm run dev:vite
 ```
 
-In the web preview, features that need the desktop (PIN, settings, app launch)
-show a plain-English "works in the SimpleOS desktop app" message. Reminders
-still work via the browser fallback.
+In the browser preview, features that need the desktop (PIN, settings, app
+launch) show a plain-English "works in the SimpleOS desktop app" message.
+Reminders still work via the browser fallback.
 
 ## Build and package
 
 ```sh
 npm run build          # type-checks Electron + renderer, Vite bundle, compile main/preload
-npm run build:electron # build, then produce a Linux AppImage in release/
-npm run package        # package an existing dist/ without rebuilding
+npm run build:electron # build, then package to an unpacked Linux directory
+npm run package        # package an existing build without rebuilding
 ```
 
 The Electron entry points are TypeScript sources in `electron/main.ts` and
 `electron/preload.ts`. `npm run compile:electron` bundles them (with esbuild) to
-standalone CommonJS files in `electron/dist/`, which is what Electron actually
-loads. This keeps the sandbox-compatible preload as a single file while sharing
-IPC types with the renderer.
+standalone CommonJS files in `dist-electron/` (`main.js` and `preload.js`),
+which is what Electron actually loads. This keeps the sandbox-compatible
+preload as a single file while sharing IPC types with the renderer.
+`electron-builder.yml` packages Linux as a `dir` in `release/`.
+
+Electron uses `--ozone-platform-hint=auto`, so it selects the native Wayland
+backend whenever a Wayland session is detected.
 
 ## Security boundary
 

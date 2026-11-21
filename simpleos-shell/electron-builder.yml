@@ -5,11 +5,13 @@ copyright: Copyright (c) 2026 SimpleOS contributors
 directories:
   output: release
 
+# Produce an unpackaged directory rather than an AppImage. This keeps the
+# launcher easy to inspect, drop into the immutable image, and update.
 files:
   - dist/**/*
-  - electron/dist/**/*
+  - dist-electron/**/*
   - package.json
 
 linux:
-  target: AppImage
+  target: dir
   category: Utility

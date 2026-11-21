@@ -9,10 +9,11 @@
  *   - every handler returns { ok, code? } so raw errors and terminal output
  *     never reach the user interface
  *
- * Wayland is the default session on SimpleOS. Override with
- * SIMPLEOS_OZONE_PLATFORM=x11 when debugging on a non-Wayland host.
+ * Wayland is the default session on SimpleOS. Ozone auto-detection selects the
+ * native Wayland backend when a compositor is present. Set
+ * SIMPLEOS_OZONE_PLATFORM=x11 only when debugging on an X11-only host.
  *
- * This file is compiled to electron/dist/main.cjs by `npm run compile:electron`.
+ * This file is compiled to dist-electron/main.js by `npm run compile:electron`.
  */
 import { app, BrowserWindow, ipcMain } from 'electron'
 import path from 'node:path'
@@ -29,14 +30,19 @@ import type {
 
 const devUrl = process.env.VITE_DEV_SERVER_URL
 
-// Wayland/Ozone flags must be set before app.ready().
-const ozonePlatform = process.env.SIMPLEOS_OZONE_PLATFORM || 'wayland'
-app.commandLine.appendSwitch('ozone-platform', ozonePlatform)
-const enabledFeatures = ['UseOzonePlatform']
-if (ozonePlatform === 'wayland') {
-  enabledFeatures.push('WaylandWindowDecorations')
+// Wayland/Ozone flags must be set before app.ready(). "auto" makes Electron
+// pick the native Wayland backend whenever a Wayland session is detected.
+app.commandLine.appendSwitch('ozone-platform-hint', 'auto')
+app.commandLine.appendSwitch(
+  'enable-features',
+  'UseOzonePlatform,WaylandWindowDecorations',
+)
+
+// Escape hatch for debugging on a machine without Wayland.
+const forcedOzonePlatform = process.env.SIMPLEOS_OZONE_PLATFORM
+if (forcedOzonePlatform) {
+  app.commandLine.appendSwitch('ozone-platform', forcedOzonePlatform)
 }
-app.commandLine.appendSwitch('enable-features', enabledFeatures.join(','))
 
 // --------------------------------------------------------------- shared helpers
 
@@ -307,11 +313,12 @@ ipcMain.handle(
 function createWindow(): void {
   const window = new BrowserWindow({
     fullscreen: true,
+    kiosk: true,
     resizable: false,
     autoHideMenuBar: true,
     backgroundColor: '#0B1120',
     webPreferences: {
-      preload: path.join(__dirname, 'preload.cjs'),
+      preload: path.join(__dirname, 'preload.js'),
       contextIsolation: true,
       nodeIntegration: false,
       sandbox: true,
@@ -320,9 +327,11 @@ function createWindow(): void {
   })
 
   if (devUrl) {
+    // Development only: the concurrently-run Vite dev server.
     void window.loadURL(devUrl)
   } else {
-    void window.loadFile(path.join(__dirname, '..', '..', 'dist', 'index.html'))
+    // Production: load the bundled renderer from the repository dist/ folder.
+    void window.loadFile(path.join(__dirname, '..', 'dist', 'index.html'))
   }
 }
 

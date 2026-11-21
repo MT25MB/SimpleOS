@@ -7,7 +7,10 @@
  * returns a plain { ok, code? } result, so no stack trace or terminal output
  * can cross this boundary.
  *
- * Compiled to electron/dist/preload.cjs by `npm run compile:electron`.
+ * Compiled to dist-electron/preload.js by `npm run compile:electron`.
+ *
+ * No Node.js APIs, ipcRenderer instance, or arbitrary channel names are exposed
+ * to the renderer — only these fixed, allowlisted functions.
  */
 import { contextBridge, ipcRenderer } from 'electron'
 import type { SimpleOSBridge } from '../src/types'
