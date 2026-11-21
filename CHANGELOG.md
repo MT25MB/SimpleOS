@@ -43,6 +43,8 @@ to. All of it is covered by the full local test loop and the shared CI gate.
   Caregiver Feature Request issue forms.
 - Added regression tests for the governance documents and for every issue form
   so a broken link or malformed YAML is caught before merge.
+- Added `LAUNCH.md` with launch copy drafts for caregiver communities and for
+  technical/open-source audiences, plus an accuracy and tone checklist.
 
 ### Changed
 

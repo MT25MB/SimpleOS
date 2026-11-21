@@ -90,6 +90,22 @@ describe('community and governance docs', () => {
     expect(security).toContain('senior')
   })
 
+  it('keeps launch copy link-complete and honest about maturity', () => {
+    const launch = read('LAUNCH.md')
+    const repoLink = 'https://github.com/MT25MB/SimpleOS'
+    const siteLink = 'https://mt25mb.github.io/SimpleOS/'
+    expect(launch).toContain(repoLink)
+    expect(launch).toContain(siteLink)
+    const drafts = launch.split(/### Draft [A-D]/).slice(1)
+    expect(drafts.length).toBe(4)
+    for (const draft of drafts) {
+      expect(draft, 'repo link missing from a draft').toContain(repoLink)
+      expect(draft, 'site link missing from a draft').toContain(siteLink)
+    }
+    expect(launch).toContain('v0.2.0')
+    expect(launch).toContain('167')
+  })
+
   it('parses every issue form and the template config as valid YAML', () => {
     const dir = resolve(root, '.github/ISSUE_TEMPLATE')
     const files = readdirSync(dir).filter((file) => file.endsWith('.yml'))
