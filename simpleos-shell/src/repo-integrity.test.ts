@@ -103,7 +103,7 @@ describe('community and governance docs', () => {
       expect(draft, 'site link missing from a draft').toContain(siteLink)
     }
     expect(launch).toContain('v0.2.0')
-    expect(launch).toContain('167')
+    expect(launch).toContain('181')
   })
 
   it('parses every issue form and the template config as valid YAML', () => {
@@ -148,8 +148,8 @@ describe('updates and release alignment', () => {
     const changelog = read('CHANGELOG.md')
     expect(changelog).toContain(`## [v${pkg.version}]`)
     expect(changelog).toContain('## [Unreleased]')
-    // The last published tag is v0.2.0, so the Unreleased link must not 404.
-    expect(changelog).toContain('compare/v0.2.0...HEAD')
+    // Unreleased must compare from the newest release, so the link does not 404.
+    expect(changelog).toContain('compare/v0.3.0...HEAD')
   })
 
   it('keeps releases tag-driven and behind the shared test gate', () => {
