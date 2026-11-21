@@ -1,0 +1,17 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /simpleos-shell
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    # Keep tightly-coupled packages (Vite, its React plugin, esbuild, Electron)
+    # in a single PR so a major bump cannot leave an incompatible peer behind.
+    groups:
+      npm-dependencies:
+        patterns:
+          - '*'
+        update-types:
+          - major
+          - minor
+          - patch
