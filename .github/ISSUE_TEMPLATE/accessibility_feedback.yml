@@ -1,0 +1,82 @@
+name: Accessibility / Usability Feedback
+description: Something was hard to read, hear, tap, or understand
+title: "[Accessibility]: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        We treat this as a real bug, not a nice-to-have. SimpleOS is for people
+        who deserve a computer that is easy to read and hard to get wrong.
+
+        Tell us what got in the way, not how to fix it. We will work out the fix
+        together.
+
+  - type: textarea
+    id: barrier
+    attributes:
+      label: What was hard to use or understand?
+      description: Please describe the screen, button, or message and the problem it caused.
+      placeholder: The words on the reminder buttons were hard to read in bright sunlight.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: kind
+    attributes:
+      label: What kind of barrier was it?
+      options:
+        - Text too small
+        - Hard to read (contrast or colour)
+        - Button or target too small
+        - Hard to use with the keyboard
+        - Confusing or technical wording
+        - Too many choices or steps
+        - Something moves or flashes too much
+        - Something else
+    validations:
+      required: true
+
+  - type: dropdown
+    id: where
+    attributes:
+      label: Where did you notice it?
+      options:
+        - Launcher or home screen
+        - Daily Reminders
+        - Caregiver Settings or PIN
+        - Ask for Help / RustDesk
+        - Website or caregiver guide
+        - Somewhere else
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Who was using the computer, and what were they trying to do?
+      description: Optional, but it helps us understand the situation.
+    validations:
+      required: false
+
+  - type: textarea
+    id: easier
+    attributes:
+      label: What would make it easier?
+      description: A plain-English example of better wording is very welcome.
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: rules
+    attributes:
+      label: Our accessibility rules
+      description: We will check these as part of any fix.
+      options:
+        - label: Text stays at 18px or larger
+          required: false
+        - label: Contrast stays at WCAG AAA (over 7 to 1)
+          required: false
+        - label: Tap targets stay at least 48 by 48 pixels
+          required: false
+        - label: Senior-facing screens use no technical jargon
+          required: false

@@ -1,0 +1,70 @@
+name: Caregiver Feature Request
+description: Suggest something that would make helping someone easier
+title: "[Caregiver]: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        This form is for the people who set up and support SimpleOS. Describe the
+        real situation first — a feature is only useful if it makes that situation
+        calmer or safer.
+
+        If you are reporting a broken feature, please use the Bug Report form.
+
+  - type: textarea
+    id: situation
+    attributes:
+      label: What is the situation you are trying to help with?
+      description: For example, a reminder that is missed, or a printer that someone cannot use alone.
+    validations:
+      required: true
+
+  - type: textarea
+    id: idea
+    attributes:
+      label: What would you like the computer to do?
+      description: Describe the outcome, not the implementation.
+    validations:
+      required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Which part of SimpleOS would it affect?
+      options:
+        - Daily Reminders
+        - Caregiver Settings or PIN
+        - Remote help with RustDesk
+        - Wi-Fi or network setup
+        - Printers or sound
+        - Text size or accessibility
+        - Onboarding or setup
+        - Something else
+    validations:
+      required: true
+
+  - type: textarea
+    id: today
+    attributes:
+      label: What do you do today instead?
+      description: Tell us about workarounds, even awkward ones.
+    validations:
+      required: false
+
+  - type: textarea
+    id: safety
+    attributes:
+      label: Could this make the computer easier to escape or misuse?
+      description: Think about the person using it alone, without you in the room.
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: rules
+    attributes:
+      label: Before you finish
+      options:
+        - label: This would not give the daily user admin or sudo rights
+          required: true
+        - label: It can be explained in plain English on a senior-facing screen
+          required: true

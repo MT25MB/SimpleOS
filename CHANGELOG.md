@@ -31,6 +31,12 @@ All notable changes to SimpleOS are recorded here. The format follows
   a 30-second cooldown), with a matching pause in the PIN screen.
 - Automated security regression tests cover every one of these guardrails.
 
+### Community
+
+- Added `CONTRIBUTING.md`, the Contributor Covenant `CODE_OF_CONDUCT.md` and
+  `SECURITY.md`, plus Bug Report, Accessibility / Usability Feedback and
+  Caregiver Feature Request issue forms.
+
 ## [v0.3.0]
 
 The first release candidate for general testing. It adds the public website, a

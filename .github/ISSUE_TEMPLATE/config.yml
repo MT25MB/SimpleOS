@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Security or kiosk escape
+    url: https://github.com/MT25MB/SimpleOS/security/advisories/new
+    about: Please report security problems privately. Never post them in a public issue.
+  - name: Contributor guide
+    url: https://github.com/MT25MB/SimpleOS/blob/main/CONTRIBUTING.md
+    about: How to run the tests, boot in QEMU, and follow our accessibility and plain-English rules.

@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { readFileSync, existsSync } from 'node:fs'
+import { readFileSync, existsSync, readdirSync } from 'node:fs'
 import { spawnSync } from 'node:child_process'
 import { resolve } from 'node:path'
 import yaml from 'js-yaml'
@@ -51,6 +51,68 @@ describe('docs links and assets', () => {
     for (const ref of refs) {
       expect(existsSync(resolve(root, ref)), ref).toBe(true)
     }
+  })
+})
+
+describe('community and governance docs', () => {
+  const readme = read('README.md')
+  const governance = ['CONTRIBUTING.md', 'CODE_OF_CONDUCT.md', 'SECURITY.md']
+
+  it('ships the governance documents and links them from the README', () => {
+    for (const doc of governance) {
+      expect(existsSync(resolve(root, doc)), doc).toBe(true)
+      expect(readme, doc).toContain(doc)
+    }
+  })
+
+  it('keeps the contributor guide practical and accessibility-first', () => {
+    const guide = read('CONTRIBUTING.md')
+    expect(guide).toContain('bash scripts/test-all.sh')
+    expect(guide).toContain('bash scripts/test-vm.sh')
+    expect(guide).toContain('18px')
+    expect(guide).toContain('WCAG AAA')
+    expect(guide).toContain('48 × 48px')
+    expect(guide).toContain('Plain-English UI rules')
+    expect(guide).toContain('messages.ts')
+  })
+
+  it('uses the official Contributor Covenant with a private contact method', () => {
+    const conduct = read('CODE_OF_CONDUCT.md')
+    expect(conduct).toContain('Contributor Covenant')
+    expect(conduct).toContain('version 2.1')
+    expect(conduct).toContain('security/advisories/new')
+  })
+
+  it('keeps security reporting private and focused on escape risks', () => {
+    const security = read('SECURITY.md')
+    expect(security).toContain('security/advisories/new')
+    expect(security).toContain('kiosk escape')
+    expect(security).toContain('senior')
+  })
+
+  it('parses every issue form and the template config as valid YAML', () => {
+    const dir = resolve(root, '.github/ISSUE_TEMPLATE')
+    const files = readdirSync(dir).filter((file) => file.endsWith('.yml'))
+    expect(files).toEqual(
+      expect.arrayContaining([
+        'bug_report.yml',
+        'accessibility_feedback.yml',
+        'caregiver_feature_request.yml',
+        'config.yml',
+      ]),
+    )
+    for (const file of files.filter((name) => name !== 'config.yml')) {
+      const form = yaml.load(readFileSync(resolve(dir, file), 'utf8')) as Record<string, unknown>
+      expect(form.name, file).toBeTruthy()
+      expect(form.description, file).toBeTruthy()
+      expect(Array.isArray(form.body), file).toBe(true)
+    }
+    const config = yaml.load(readFileSync(resolve(dir, 'config.yml'), 'utf8')) as Record<
+      string,
+      unknown
+    >
+    expect(config.blank_issues_enabled).toBe(true)
+    expect(Array.isArray(config.contact_links)).toBe(true)
   })
 })
 
