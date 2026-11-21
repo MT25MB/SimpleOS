@@ -50,6 +50,8 @@ describe('GitHub Actions workflows', () => {
   it('parses as valid YAML with the required triggers and permissions', () => {
     const build = yaml.load(read('.github/workflows/build-image.yml')) as Record<string, unknown>
     const pages = yaml.load(read('.github/workflows/deploy-pages.yml')) as Record<string, unknown>
+    const test = yaml.load(read('.github/workflows/test.yml')) as Record<string, unknown>
+    const release = yaml.load(read('.github/workflows/release.yml')) as Record<string, unknown>
 
     const buildOn = (build.on ?? build.true) as Record<string, unknown>
     expect(Object.keys(buildOn)).toEqual(expect.arrayContaining(['push', 'schedule', 'workflow_dispatch']))
@@ -60,6 +62,33 @@ describe('GitHub Actions workflows', () => {
     const pagePerms = pages.permissions as Record<string, unknown>
     expect(pagePerms.pages).toBe('write')
     expect(pagePerms['id-token']).toBe('write')
+
+    const testOn = (test.on ?? test.true) as Record<string, unknown>
+    expect(Object.keys(testOn)).toEqual(
+      expect.arrayContaining(['pull_request', 'push', 'workflow_call']),
+    )
+
+    const releaseOn = (release.on ?? release.true) as Record<string, unknown>
+    expect(releaseOn.push).toBeDefined()
+    expect(releaseOn.workflow_dispatch).toBeDefined()
+    expect((release.permissions as Record<string, unknown>).contents).toBe('read')
+  })
+
+  it('gates the image, Pages and release workflows on the test workflow', () => {
+    for (const file of [
+      '.github/workflows/build-image.yml',
+      '.github/workflows/deploy-pages.yml',
+      '.github/workflows/release.yml',
+    ]) {
+      const workflow = yaml.load(read(file)) as { jobs: Record<string, { needs?: string; uses?: string }> }
+      expect(workflow.jobs.test?.uses, file).toBe('./.github/workflows/test.yml')
+      const publishingJob = file.includes('build-image')
+        ? workflow.jobs['build-image']
+        : file.includes('deploy-pages')
+          ? workflow.jobs.deploy
+          : workflow.jobs.release
+      expect(publishingJob?.needs, file).toBe('test')
+    }
   })
 })
 
@@ -81,6 +110,7 @@ describe('shell script syntax', () => {
       'scripts/build-iso.sh',
       'scripts/test-vm.sh',
       'scripts/test-all.sh',
+      'scripts/generate-release-notes.sh',
       'system-configs/labwc/autostart',
       'system-configs/systemd/simpleos-firstboot.sh',
     ]

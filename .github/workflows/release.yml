@@ -1,0 +1,102 @@
+# Publish a GitHub Release for a version tag, or on demand with a version input.
+# The quality gate must pass before a release is created.
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version, for example v0.3.0'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Quality gate
+    uses: ./.github/workflows/test.yml
+
+  release:
+    name: Publish GitHub Release
+    needs: test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Check out full history
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+
+      - name: Resolve and validate version
+        id: version
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          REF_NAME: ${{ github.ref_name }}
+          INPUT_VERSION: ${{ inputs.version }}
+        run: |
+          if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+            VERSION="$INPUT_VERSION"
+          else
+            VERSION="$REF_NAME"
+          fi
+
+          if ! printf '%s' "$VERSION" | grep -Eq '^v[0-9]+\.[0-9]+\.[0-9]+$'; then
+            echo "Version must look like v0.3.0, got: $VERSION" >&2
+            exit 1
+          fi
+
+          echo "value=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Ensure the tag exists
+        env:
+          VERSION: ${{ steps.version.outputs.value }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          if git rev-parse --verify "refs/tags/$VERSION" >/dev/null 2>&1; then
+            echo "Tag $VERSION already exists; using it."
+          else
+            git tag -a "$VERSION" -m "SimpleOS $VERSION"
+            git push origin "$VERSION"
+            echo "Created tag $VERSION."
+          fi
+
+      - name: Find the previous release tag
+        id: previous
+        env:
+          VERSION: ${{ steps.version.outputs.value }}
+        run: |
+          PREVIOUS="$(git tag --list 'v*.*.*' --sort=-version:refname | grep -v "^$VERSION$" | head -n 1 || true)"
+          echo "value=$PREVIOUS" >> "$GITHUB_OUTPUT"
+
+      - name: Generate release notes
+        env:
+          VERSION: ${{ steps.version.outputs.value }}
+          PREVIOUS: ${{ steps.previous.outputs.value }}
+        run: |
+          bash scripts/generate-release-notes.sh "$VERSION" "$PREVIOUS" > release-notes.md
+          echo "--- generated notes (first 40 lines) ---"
+          head -n 40 release-notes.md
+
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERSION: ${{ steps.version.outputs.value }}
+        run: |
+          if gh release view "$VERSION" >/dev/null 2>&1; then
+            echo "Release $VERSION already exists; updating its notes."
+            gh release edit "$VERSION" --notes-file release-notes.md --title "SimpleOS $VERSION"
+          else
+            gh release create "$VERSION" \
+              --title "SimpleOS $VERSION" \
+              --notes-file release-notes.md \
+              --target main
+          fi

@@ -1,0 +1,52 @@
+# Shared quality gate. Runs on pull requests, pushes to main, and as a
+# reusable workflow called by the image, Pages and release workflows.
+name: Test
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  quality-gate:
+    name: Syntax, configs, tests and build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+
+      - name: Check shell syntax
+        run: |
+          for file in scripts/*.sh \
+                      system-configs/labwc/autostart \
+                      system-configs/systemd/simpleos-firstboot.sh; do
+            echo "Checking $file"
+            bash -n "$file"
+          done
+
+      - name: Install shell dependencies
+        working-directory: simpleos-shell
+        # Fails if package.json and package-lock.json drift apart.
+        run: npm ci
+
+      - name: Validate JSON and YAML configs
+        working-directory: simpleos-shell
+        run: npm run validate:configs
+
+      - name: Run test suite
+        working-directory: simpleos-shell
+        run: npm run test
+
+      - name: Type-check and build launcher
+        working-directory: simpleos-shell
+        run: npm run build

@@ -24,8 +24,14 @@ env:
   IMAGE_NAME: ${{ github.repository_owner }}/simpleos
 
 jobs:
+  # Every image build is gated on the shared test workflow.
+  test:
+    name: Quality gate
+    uses: ./.github/workflows/test.yml
+
   build-image:
     name: Build and push SimpleOS image
+    needs: test
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
@@ -61,8 +67,11 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
+  # Legacy job name kept for branch-protection compatibility. The real work
+  # now happens in the reusable test workflow above.
   check-shell:
     name: Type-check and build helper shell
+    needs: test
     runs-on: ubuntu-latest
     defaults:
       run:

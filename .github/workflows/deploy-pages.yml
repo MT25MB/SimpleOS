@@ -16,7 +16,13 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  # Do not publish the site until the full quality gate has passed.
+  test:
+    name: Quality gate
+    uses: ./.github/workflows/test.yml
+
   deploy:
+    needs: test
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
