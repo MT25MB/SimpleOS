@@ -4,9 +4,11 @@
 
   Design goals:
     - ONE desktop, nowhere to get lost.
+    - Every window opens maximized, with no titlebar for maximized windows.
+    - No desktop background mouse bindings at all: no right-click menu, no
+      accidental drag or resize gestures.
+    - Snapping is disabled so a stray drag cannot tile a window.
     - Large, high-contrast text (Inter, 18px).
-    - Every normal window opens maximized and without decorations.
-    - No right-click root menu and no hidden mouse gestures.
 
   Cursor size (48) and text scaling live in the sibling "environment" file,
   which is the mechanism labwc documents for those settings.
@@ -45,22 +47,45 @@
 
   <mouse>
     <!--
-      Defining any mousebind disables labwc's default mousebinds. These empty
-      bindings explicitly remove the right-click root menu on the background.
+      Defining any mousebind disables labwc's default mousebinds. Empty bindings
+      on Desktop/Root remove every click action on the background, including
+      the right-click root menu.
     -->
     <context name="Desktop">
+      <mousebind button="Left" action="Press"/>
+      <mousebind button="Left" action="Click"/>
+      <mousebind button="Left" action="DoubleClick"/>
+      <mousebind button="Middle" action="Press"/>
+      <mousebind button="Middle" action="Click"/>
       <mousebind button="Right" action="Press"/>
       <mousebind button="Right" action="Click"/>
     </context>
     <context name="Root">
+      <mousebind button="Left" action="Press"/>
+      <mousebind button="Left" action="Click"/>
+      <mousebind button="Left" action="DoubleClick"/>
+      <mousebind button="Middle" action="Press"/>
+      <mousebind button="Middle" action="Click"/>
       <mousebind button="Right" action="Press"/>
       <mousebind button="Right" action="Click"/>
     </context>
   </mouse>
 
+  <snapping>
+    <!-- Zero thresholds disable edge/corner snapping and accidental tiling. -->
+    <range>
+      <inner>0</inner>
+      <outer>0</outer>
+    </range>
+    <cornerRange>0</cornerRange>
+    <overlay>
+      <enabled>no</enabled>
+    </overlay>
+  </snapping>
+
   <windowRules>
-    <!-- All normal application windows open maximized. -->
-    <windowRule identifier="*" type="normal">
+    <!-- Every window, including dialogs, opens maximized. -->
+    <windowRule identifier="*">
       <action name="Maximize"/>
     </windowRule>
   </windowRules>

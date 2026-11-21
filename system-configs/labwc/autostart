@@ -1,18 +1,28 @@
 #!/bin/sh
 # SimpleOS desktop autostart
 # -----------------------------------------------------------------------------
-# labwc runs this as a shell script after reading rc.xml and environment.
-# Keep it quiet and predictable: a calm background and a supervised shell.
-# Cursor size and text scaling are set in the sibling "environment" file.
+# labwc runs this as a shell script after reading rc.xml and the sibling
+# "environment" file. Nothing here should ever leave the user staring at a bare
+# desktop: a calm wallpaper is drawn, then the SimpleOS shell is supervised.
 # -----------------------------------------------------------------------------
 
-# Calm, high-contrast solid background (dark navy). No animated wallpaper.
-swaybg -c '#0B1120' >/dev/null 2>&1 &
+# Large pointer. labwc itself reads these from the "environment" file; exporting
+# them here as well makes every child application use the same large cursor.
+XCURSOR_THEME="${XCURSOR_THEME:-Adwaita}"
+XCURSOR_SIZE="${XCURSOR_SIZE:-48}"
+export XCURSOR_THEME XCURSOR_SIZE
 
-# Keep the SimpleOS shell on screen at all times.
-# The supervisor restarts the shell if it exits, so the user is never left with
-# an empty desktop. Until the shell package is installed, it waits quietly and
-# logs once rather than failing. Override the path with SIMPLEOS_SHELL_BIN.
+# Calm, high-contrast dark slate background (#0b1120). No animation, no photos.
+swaybg -c '#0b1120' >/dev/null 2>&1 &
+
+# -----------------------------------------------------------------------------
+# Shell supervisor
+#
+# The SimpleOS shell is the entire user interface. If it crashes or exits, the
+# loop relaunches it immediately so the user is never dropped onto the desktop.
+# The executable is not built yet; until it is installed the loop waits quietly
+# and logs once instead of spinning. Override the path with SIMPLEOS_SHELL_BIN.
+# -----------------------------------------------------------------------------
 SHELL_BIN="${SIMPLEOS_SHELL_BIN:-/usr/libexec/simpleos/simpleos-shell}"
 (
   warned=0
@@ -20,7 +30,9 @@ SHELL_BIN="${SIMPLEOS_SHELL_BIN:-/usr/libexec/simpleos/simpleos-shell}"
     if [ -x "$SHELL_BIN" ]; then
       "$SHELL_BIN" || true
       warned=0
-      sleep 1
+      # Immediate restart. The tiny pause only prevents a broken binary from
+      # hammering the CPU in a tight crash loop.
+      sleep 0.2
     else
       if [ "$warned" -eq 0 ]; then
         logger -t simpleos "Shell not installed yet at $SHELL_BIN; waiting"

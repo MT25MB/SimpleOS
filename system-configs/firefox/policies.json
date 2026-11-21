@@ -6,11 +6,29 @@
       "Locked": true,
       "StartPage": "homepage-locked"
     },
+
     "DisableTelemetry": true,
     "DisableFirefoxStudies": true,
     "DisableFirefoxAccounts": true,
+    "DisablePocket": true,
     "DontCheckDefaultBrowser": true,
     "NoDefaultBookmarks": true,
+
+    "FirefoxHome": {
+      "Pocket": false,
+      "Stories": false,
+      "SponsoredPocket": false,
+      "SponsoredStories": false,
+      "SponsoredTopSites": false,
+      "Snippets": false,
+      "Locked": true
+    },
+    "FirefoxSuggest": {
+      "WebSuggestions": false,
+      "SponsoredSuggestions": false,
+      "OnlineEnabled": false,
+      "Locked": true
+    },
 
     "Permissions": {
       "Notifications": {
