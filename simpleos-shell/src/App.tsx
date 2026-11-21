@@ -196,11 +196,13 @@ export default function App() {
                 store={reminders.store}
                 loaded={reminders.loaded}
                 error={reminders.error}
+                notice={reminders.notice}
                 onAdd={reminders.add}
                 onToggle={reminders.toggle}
                 onRemove={reminders.remove}
                 onReset={reminders.reset}
                 onDismissError={reminders.clearError}
+                onDismissNotice={reminders.clearNotice}
               />
             ) : (
               <CaregiverPanel

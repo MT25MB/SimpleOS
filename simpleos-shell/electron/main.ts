@@ -60,16 +60,51 @@ const simpleosConfigDir = (): string =>
 const remindersPath = (): string => path.join(simpleosConfigDir(), 'reminders.json')
 const pinPath = (): string => path.join(simpleosConfigDir(), 'caregiver-pin.json')
 
+const MAX_REMINDERS = 100
+const MAX_REMINDER_TEXT = 200
+const TIME_PATTERN = /^([01]\d|2[0-3]):[0-5]\d$/
+
+/** Accept only data we can render safely and predictably. */
 function isReminder(value: unknown): value is Reminder {
   if (!value || typeof value !== 'object') return false
   const item = value as Record<string, unknown>
   return (
     typeof item.id === 'string' &&
+    item.id.length > 0 &&
+    item.id.length <= 64 &&
     typeof item.text === 'string' &&
+    item.text.trim().length > 0 &&
+    item.text.length <= MAX_REMINDER_TEXT &&
     typeof item.time === 'string' &&
+    (item.time === '' || TIME_PATTERN.test(item.time)) &&
     typeof item.done === 'boolean' &&
-    typeof item.createdAt === 'number'
+    typeof item.createdAt === 'number' &&
+    Number.isFinite(item.createdAt)
   )
+}
+
+function isRemindersFile(value: unknown): value is RemindersFile {
+  if (!value || typeof value !== 'object') return false
+  const file = value as Partial<RemindersFile>
+  return (
+    typeof file.date === 'string' &&
+    Array.isArray(file.items) &&
+    file.items.length <= MAX_REMINDERS &&
+    file.items.every(isReminder)
+  )
+}
+
+/** Write to a temp file first so a crash cannot leave a half-written file. */
+function writeJsonAtomically(target: string, data: string): void {
+  const temp = `${target}.tmp-${process.pid}`
+  fs.mkdirSync(path.dirname(target), { recursive: true })
+  fs.writeFileSync(temp, data, { encoding: 'utf8', mode: 0o600 })
+  fs.renameSync(temp, target)
+  try {
+    fs.chmodSync(target, 0o600)
+  } catch {
+    // Best effort: the file was already created with 0600 above.
+  }
 }
 
 function spawnDetached(command: string, args: readonly string[]): Promise<Result> {
@@ -128,16 +163,8 @@ ipcMain.handle(
         return { ok: true, value: { date: '', items: [] } }
       }
       const data: unknown = JSON.parse(fs.readFileSync(remindersPath(), 'utf8'))
-      if (!data || typeof data !== 'object') return fail('STORAGE_FAILED')
-      const file = data as Partial<RemindersFile>
-      if (
-        typeof file.date !== 'string' ||
-        !Array.isArray(file.items) ||
-        !file.items.every(isReminder)
-      ) {
-        return fail('STORAGE_FAILED')
-      }
-      return { ok: true, value: { date: file.date, items: file.items } }
+      if (!isRemindersFile(data)) return fail('STORAGE_FAILED')
+      return { ok: true, value: { date: data.date, items: data.items } }
     } catch {
       return fail('STORAGE_FAILED')
     }
@@ -148,17 +175,8 @@ ipcMain.handle(
   'simpleos:reminders:save',
   async (_event, payload: unknown): Promise<Result> => {
     try {
-      if (!payload || typeof payload !== 'object') return fail('INVALID_INPUT')
-      const file = payload as Partial<RemindersFile>
-      if (
-        typeof file.date !== 'string' ||
-        !Array.isArray(file.items) ||
-        !file.items.every(isReminder)
-      ) {
-        return fail('INVALID_INPUT')
-      }
-      fs.mkdirSync(path.dirname(remindersPath()), { recursive: true })
-      fs.writeFileSync(remindersPath(), JSON.stringify(file, null, 2), 'utf8')
+      if (!isRemindersFile(payload)) return fail('INVALID_INPUT')
+      writeJsonAtomically(remindersPath(), JSON.stringify(payload, null, 2))
       return OK
     } catch {
       return fail('STORAGE_FAILED')
@@ -173,15 +191,28 @@ interface PinRecord {
   hash: string
 }
 
+const PIN_MIN_LENGTH = 4
+const PIN_MAX_LENGTH = 12
+const SALT_HEX_LENGTH = 32 // 16 random bytes
+const HASH_HEX_LENGTH = 128 // 64 bytes from scrypt
+
 function readPinRecord(): PinRecord | null {
   try {
     if (!fs.existsSync(pinPath())) return null
     const data: unknown = JSON.parse(fs.readFileSync(pinPath(), 'utf8'))
     if (!data || typeof data !== 'object') return null
     const record = data as Partial<PinRecord>
-    return typeof record.salt === 'string' && typeof record.hash === 'string'
-      ? { salt: record.salt, hash: record.hash }
-      : null
+    if (
+      typeof record.salt !== 'string' ||
+      typeof record.hash !== 'string' ||
+      record.salt.length !== SALT_HEX_LENGTH ||
+      record.hash.length !== HASH_HEX_LENGTH ||
+      !/^[0-9a-f]+$/i.test(record.salt) ||
+      !/^[0-9a-f]+$/i.test(record.hash)
+    ) {
+      return null
+    }
+    return { salt: record.salt, hash: record.hash }
   } catch {
     return null
   }
@@ -208,7 +239,9 @@ ipcMain.handle(
 )
 
 ipcMain.handle('simpleos:pin:unlock', async (_event, pin: unknown): Promise<Result> => {
-  if (typeof pin !== 'string') return fail('INVALID_INPUT')
+  if (typeof pin !== 'string' || pin.length === 0 || !/^\d+$/.test(pin)) {
+    return fail('PIN_INCORRECT')
+  }
   const record = readPinRecord()
   if (!record) return fail('PIN_NOT_SET')
   return pinMatches(pin, record) ? OK : fail('PIN_INCORRECT')
@@ -217,7 +250,10 @@ ipcMain.handle('simpleos:pin:unlock', async (_event, pin: unknown): Promise<Resu
 ipcMain.handle(
   'simpleos:pin:set',
   async (_event, currentPin: unknown, newPin: unknown): Promise<Result> => {
-    if (typeof newPin !== 'string' || newPin.length < 4) return fail('PIN_TOO_SHORT')
+    if (typeof newPin !== 'string' || newPin.length < PIN_MIN_LENGTH) {
+      return fail('PIN_TOO_SHORT')
+    }
+    if (newPin.length > PIN_MAX_LENGTH) return fail('PIN_TOO_LONG')
     if (!/^\d+$/.test(newPin)) return fail('PIN_NOT_NUMERIC')
 
     const record = readPinRecord()
@@ -227,11 +263,9 @@ ipcMain.handle(
 
     try {
       const salt = crypto.randomBytes(16).toString('hex')
-      fs.mkdirSync(path.dirname(pinPath()), { recursive: true })
-      fs.writeFileSync(
+      writeJsonAtomically(
         pinPath(),
         JSON.stringify({ salt, hash: hashPin(newPin, salt) }, null, 2),
-        { mode: 0o600 },
       )
       return OK
     } catch {

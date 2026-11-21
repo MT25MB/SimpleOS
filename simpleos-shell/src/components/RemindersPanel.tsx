@@ -6,11 +6,13 @@ interface RemindersPanelProps {
   store: RemindersFile
   loaded: boolean
   error: ErrorCode | null
+  notice: string | null
   onAdd: (text: string, time: string) => void
   onToggle: (id: string) => void
   onRemove: (id: string) => void
   onReset: () => void
   onDismissError: () => void
+  onDismissNotice: () => void
 }
 
 function formatTime(value: string): string {
@@ -27,11 +29,13 @@ export function RemindersPanel({
   store,
   loaded,
   error,
+  notice,
   onAdd,
   onToggle,
   onRemove,
   onReset,
   onDismissError,
+  onDismissNotice,
 }: RemindersPanelProps) {
   const [text, setText] = useState('')
   const [time, setTime] = useState('')
@@ -60,6 +64,15 @@ export function RemindersPanel({
         </p>
       )}
 
+      {notice && (
+        <p className="status status--info" role="status">
+          {notice}{' '}
+          <button type="button" className="status__dismiss" onClick={onDismissNotice}>
+            Got it
+          </button>
+        </p>
+      )}
+
       {!loaded ? (
         <p className="panel__empty" role="status">Opening your reminders…</p>
       ) : (
@@ -72,6 +85,7 @@ export function RemindersPanel({
                 value={text}
                 onChange={(event) => setText(event.target.value)}
                 placeholder="Call Anna"
+                maxLength={200}
               />
               <label className="reminders__time" htmlFor="reminder-time">
                 Time <span>(optional)</span>

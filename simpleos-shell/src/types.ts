@@ -50,6 +50,7 @@ export type ErrorCode =
   | 'PIN_INCORRECT'
   | 'PIN_NOT_SET'
   | 'PIN_TOO_SHORT'
+  | 'PIN_TOO_LONG'
   | 'PIN_NOT_NUMERIC'
   | 'PINS_DONT_MATCH'
   | 'BRIDGE_UNAVAILABLE'

@@ -26,13 +26,26 @@ swaybg -c '#0b1120' >/dev/null 2>&1 &
 SHELL_BIN="${SIMPLEOS_SHELL_BIN:-/usr/libexec/simpleos/simpleos-shell}"
 (
   warned=0
+  quick_failures=0
   while true; do
     if [ -x "$SHELL_BIN" ]; then
+      started="$(date +%s)"
       "$SHELL_BIN" || true
-      warned=0
-      # Immediate restart. The tiny pause only prevents a broken binary from
-      # hammering the CPU in a tight crash loop.
-      sleep 0.2
+      elapsed=$(( $(date +%s) - started ))
+      # A shell that stays up for at least five seconds counts as a normal
+      # session. Reset the counter so a later crash still restarts quickly.
+      if [ "$elapsed" -lt 5 ]; then
+        quick_failures=$(( quick_failures + 1 ))
+      else
+        quick_failures=0
+      fi
+      # Back off after repeated instant crashes so one broken build cannot spin
+      # the CPU, but never stop trying to bring the interface back.
+      if [ "$quick_failures" -ge 5 ]; then
+        sleep 5
+      else
+        sleep 1
+      fi
     else
       if [ "$warned" -eq 0 ]; then
         logger -t simpleos "Shell not installed yet at $SHELL_BIN; waiting"

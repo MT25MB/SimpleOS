@@ -13,6 +13,7 @@ export const MESSAGES: Record<ErrorCode, string> = {
   PIN_INCORRECT: "That PIN isn't right. Try again.",
   PIN_NOT_SET: "No caregiver PIN is set on this computer yet.",
   PIN_TOO_SHORT: 'Your PIN needs at least 4 numbers.',
+  PIN_TOO_LONG: 'Use 12 numbers or fewer for your PIN.',
   PIN_NOT_NUMERIC: 'Use numbers only for your PIN.',
   PINS_DONT_MATCH: "Those two PINs don't match. Try again.",
   BRIDGE_UNAVAILABLE: 'This part works in the SimpleOS desktop app.',

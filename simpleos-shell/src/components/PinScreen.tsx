@@ -107,7 +107,7 @@ export function PinScreen({ mode, onCancel, onSubmit }: PinScreenProps) {
                 type="password"
                 inputMode="numeric"
                 autoComplete="off"
-                maxLength={8}
+                maxLength={12}
                 value={currentPin}
                 onChange={(event) => setCurrentPin(event.target.value)}
                 aria-invalid={error ? true : undefined}
@@ -125,7 +125,7 @@ export function PinScreen({ mode, onCancel, onSubmit }: PinScreenProps) {
                 type="password"
                 inputMode="numeric"
                 autoComplete="off"
-                maxLength={8}
+                maxLength={12}
                 value={newPin}
                 onChange={(event) => setNewPin(event.target.value)}
                 aria-invalid={error ? true : undefined}
@@ -138,7 +138,7 @@ export function PinScreen({ mode, onCancel, onSubmit }: PinScreenProps) {
                 type="password"
                 inputMode="numeric"
                 autoComplete="off"
-                maxLength={8}
+                maxLength={12}
                 value={confirmPin}
                 onChange={(event) => setConfirmPin(event.target.value)}
                 aria-invalid={error ? true : undefined}
