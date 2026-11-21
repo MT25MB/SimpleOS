@@ -136,6 +136,7 @@ export function RemindersPanel({
                       type="button"
                       className={`button${item.done ? ' button--secondary' : ''}`}
                       aria-pressed={item.done}
+                      aria-label={`${item.done ? 'Mark not done' : 'Mark done'}: ${item.text}`}
                       onClick={() => onToggle(item.id)}
                     >
                       {item.done ? 'Done ✓' : 'Mark Done'}
@@ -143,6 +144,7 @@ export function RemindersPanel({
                     <button
                       type="button"
                       className="button button--secondary"
+                      aria-label={`Remove: ${item.text}`}
                       onClick={() => onRemove(item.id)}
                     >
                       Remove

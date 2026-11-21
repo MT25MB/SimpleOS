@@ -64,6 +64,28 @@ input {
   margin: 0 auto;
 }
 
+/* Off-screen until focused, then the first stop in the tab order. */
+.skip-link {
+  position: absolute;
+  top: 0;
+  left: -9999px;
+  z-index: 10;
+  display: inline-flex;
+  align-items: center;
+  min-height: 3rem;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  background: var(--accent);
+  color: #04121f;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.skip-link:focus {
+  left: 1rem;
+  top: 1rem;
+}
+
 .app__header {
   display: flex;
   flex-wrap: wrap;
@@ -327,6 +349,52 @@ input {
 
 .font-scale + .panel__note {
   margin-top: 1.5rem;
+}
+
+/* ----------------------------------------------------------- quick check */
+
+.quick-check {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  border: 2px solid var(--border);
+  border-radius: 0.75rem;
+  background: var(--surface);
+}
+
+.quick-check .panel__subheading {
+  margin-top: 0;
+}
+
+.quick-check__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.quick-check__row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.quick-check__row:last-child {
+  border-bottom: 0;
+}
+
+.quick-check__status {
+  margin: 0;
+  flex: 1 1 18rem;
+  overflow-wrap: break-word;
+}
+
+.quick-check__label {
+  font-weight: 700;
 }
 
 /* --------------------------------------------------------------- reminders */

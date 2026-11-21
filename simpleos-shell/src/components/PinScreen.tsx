@@ -130,6 +130,7 @@ export function PinScreen({ mode, onCancel, onSubmit }: PinScreenProps) {
                 inputMode="numeric"
                 autoComplete="off"
                 maxLength={12}
+                aria-describedby="pin-error"
                 value={currentPin}
                 onChange={(event) => setCurrentPin(event.target.value)}
                 aria-invalid={error ? true : undefined}
@@ -148,6 +149,7 @@ export function PinScreen({ mode, onCancel, onSubmit }: PinScreenProps) {
                 inputMode="numeric"
                 autoComplete="off"
                 maxLength={12}
+                aria-describedby="pin-error"
                 value={newPin}
                 onChange={(event) => setNewPin(event.target.value)}
                 aria-invalid={error ? true : undefined}
@@ -161,6 +163,7 @@ export function PinScreen({ mode, onCancel, onSubmit }: PinScreenProps) {
                 inputMode="numeric"
                 autoComplete="off"
                 maxLength={12}
+                aria-describedby="pin-error"
                 value={confirmPin}
                 onChange={(event) => setConfirmPin(event.target.value)}
                 aria-invalid={error ? true : undefined}
@@ -168,7 +171,7 @@ export function PinScreen({ mode, onCancel, onSubmit }: PinScreenProps) {
             </>
           )}
 
-          <p className="pin-screen__error" role="alert">
+          <p className="pin-screen__error" id="pin-error" role="alert">
             {error ? friendlyMessage(error) : ''}
           </p>
 
@@ -176,7 +179,12 @@ export function PinScreen({ mode, onCancel, onSubmit }: PinScreenProps) {
             <button type="button" className="button button--secondary" onClick={onCancel}>
               Cancel
             </button>
-            <button type="submit" className="button" disabled={busy || paused}>
+            <button
+              type="submit"
+              className="button"
+              aria-label={mode === 'unlock' ? 'Unlock Caregiver Settings' : copy.action}
+              disabled={busy || paused}
+            >
               {copy.action}
             </button>
           </div>

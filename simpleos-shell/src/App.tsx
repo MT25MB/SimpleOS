@@ -28,7 +28,7 @@ type Notice = { tone: 'info' | 'sharing' | 'caregiver'; message: string }
 /** Full-screen, calm home launcher for SimpleOS. */
 export default function App() {
   const { scale, setFontScale } = useFontScale()
-  const { status: hardware } = useHardwareStatus()
+  const { status: hardware, refresh: refreshHardware } = useHardwareStatus()
   const reminders = useReminders()
   const [view, setView] = useState<View>('home')
   const [pinMode, setPinMode] = useState<PinMode | null>(null)
@@ -36,6 +36,15 @@ export default function App() {
   const [caregiverError, setCaregiverError] = useState<ErrorCode | null>(null)
   const [updateSummary, setUpdateSummary] = useState<string | null>(null)
   const mainRef = useRef<HTMLElement>(null)
+  const updateCheckedRef = useRef(false)
+
+  // Fill the quick-check system row the first time Caregiver Settings opens.
+  useEffect(() => {
+    if (view === 'caregiver' && !updateCheckedRef.current) {
+      updateCheckedRef.current = true
+      void handleCheckUpdates()
+    }
+  }, [view])
 
   // Move focus into a newly opened panel so keyboard users are not stranded.
   useEffect(() => {
@@ -199,6 +208,9 @@ export default function App() {
 
   return (
     <div className="app">
+      <a className="skip-link" href="#main-content">
+        Skip to main menu
+      </a>
       <header className="app__header">
         <div>
           <h1 className="app__brand">
@@ -225,7 +237,7 @@ export default function App() {
         <NoticeBanner tone={notice.tone} message={notice.message} onDismiss={() => setNotice(null)} />
       )}
 
-      <main className="app__main" ref={mainRef} tabIndex={-1}>
+      <main className="app__main" id="main-content" ref={mainRef} tabIndex={-1}>
         {view === 'home' ? (
           <ul className="tiles" aria-label="Main menu">
             {TILES.map((tile) => (
@@ -260,6 +272,8 @@ export default function App() {
               <CaregiverPanel
                 scale={scale}
                 onScaleChange={setFontScale}
+                hardware={hardware}
+                onRefreshHardware={() => void refreshHardware()}
                 updateSummary={updateSummary}
                 onOpenSettings={handleOpenSettings}
                 onOpenRemoteHelp={() => void launchApp('rustdesk', 'RustDesk')}

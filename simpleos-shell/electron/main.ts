@@ -496,9 +496,17 @@ function hasBacklight(): boolean {
 ipcMain.handle('simpleos:hardware:status', async (event): Promise<ValueResult<HardwareStatus>> => {
   if (!isTrustedSender(event)) return fail('UNKNOWN_TARGET')
   const wifi = parseWifiStatus(await runApproved(HARDWARE_STATUS.wifi))
+  const audio = await runApproved(HARDWARE_STATUS.audio)
+  const rustdesk = await runApproved(HARDWARE_STATUS.rustdesk)
   return {
     ok: true,
-    value: { wifi, battery: readBatteryStatus(), brightnessAvailable: hasBacklight() },
+    value: {
+      wifi,
+      battery: readBatteryStatus(),
+      brightnessAvailable: hasBacklight(),
+      audioAvailable: audio !== null && audio.trim().length > 0,
+      rustdeskAvailable: rustdesk !== null,
+    },
   }
 })
 

@@ -23,6 +23,8 @@ function mockBridge(overrides: Partial<SimpleOSBridge> = {}): SimpleOSBridge {
         wifi: { connected: true, ssid: 'Home Network' },
         battery: { present: true, percent: 80, charging: true },
         brightnessAvailable: true,
+        audioAvailable: true,
+        rustdeskAvailable: true,
       },
     }),
     adjustVolume: vi.fn().mockResolvedValue(ok),
@@ -118,6 +120,8 @@ describe('App integration', () => {
           wifi: { connected: false, ssid: null },
           battery: { present: false, percent: null, charging: null },
           brightnessAvailable: false,
+          audioAvailable: false,
+          rustdeskAvailable: false,
         },
       }),
     })

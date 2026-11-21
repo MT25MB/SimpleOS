@@ -1,11 +1,14 @@
 import { friendlyMessage } from '../messages'
 import type { FontScale } from '../hooks/useFontScale'
-import type { ErrorCode, SettingsTarget } from '../types'
+import type { ErrorCode, HardwareStatus, SettingsTarget } from '../types'
 import { FontScaleControl } from './FontScaleControl'
+import { QuickCheckPanel } from './QuickCheckPanel'
 
 interface CaregiverPanelProps {
   scale: FontScale
   onScaleChange: (value: FontScale) => void
+  hardware: HardwareStatus
+  onRefreshHardware: () => void
   updateSummary: string | null
   onOpenSettings: (target: SettingsTarget) => void
   onOpenRemoteHelp: () => void
@@ -19,6 +22,8 @@ interface CaregiverPanelProps {
 export function CaregiverPanel({
   scale,
   onScaleChange,
+  hardware,
+  onRefreshHardware,
   updateSummary,
   onOpenSettings,
   onOpenRemoteHelp,
@@ -43,6 +48,14 @@ export function CaregiverPanel({
         </p>
       )}
 
+      <QuickCheckPanel
+        hardware={hardware}
+        updateSummary={updateSummary}
+        onRefresh={onRefreshHardware}
+        onOpenWifiSettings={() => onOpenSettings('network')}
+        onCheckUpdates={onCheckUpdates}
+      />
+
       <FontScaleControl value={scale} onChange={onScaleChange} />
 
       <h3 className="panel__subheading">Computer settings</h3>
@@ -50,6 +63,7 @@ export function CaregiverPanel({
         <button
           type="button"
           className="button button--secondary"
+          aria-label="Open Wi-Fi and network settings"
           onClick={() => onOpenSettings('network')}
         >
           Wi-Fi &amp; Network
@@ -57,11 +71,17 @@ export function CaregiverPanel({
         <button
           type="button"
           className="button button--secondary"
+          aria-label="Open printer settings"
           onClick={() => onOpenSettings('printer')}
         >
           Printers
         </button>
-        <button type="button" className="button button--secondary" onClick={onCheckUpdates}>
+        <button
+          type="button"
+          className="button button--secondary"
+          aria-label="Check for system updates"
+          onClick={onCheckUpdates}
+        >
           Check for updates
         </button>
       </div>
@@ -76,7 +96,12 @@ export function CaregiverPanel({
       <p className="panel__note">
         Let someone you trust see your screen and help.
       </p>
-      <button type="button" className="button button--secondary" onClick={onOpenRemoteHelp}>
+      <button
+        type="button"
+        className="button button--secondary"
+        aria-label="Open RustDesk for remote help"
+        onClick={onOpenRemoteHelp}
+      >
         Open RustDesk
       </button>
 
@@ -84,7 +109,12 @@ export function CaregiverPanel({
       <p className="panel__note">
         Change the PIN that opens Settings. Use at least 4 numbers.
       </p>
-      <button type="button" className="button button--secondary" onClick={onChangePin}>
+      <button
+        type="button"
+        className="button button--secondary"
+        aria-label="Change your caregiver PIN"
+        onClick={onChangePin}
+      >
         Change PIN
       </button>
     </section>

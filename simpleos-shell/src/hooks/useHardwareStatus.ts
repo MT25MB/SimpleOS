@@ -8,6 +8,8 @@ const DEFAULT_STATUS: HardwareStatus = {
   wifi: { connected: false, ssid: null },
   battery: { present: false, percent: null, charging: null },
   brightnessAvailable: false,
+  audioAvailable: false,
+  rustdeskAvailable: false,
 }
 
 /**

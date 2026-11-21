@@ -12,7 +12,7 @@ describe('PinScreen', () => {
     render(<PinScreen mode="unlock" onCancel={vi.fn()} onSubmit={vi.fn().mockResolvedValue(null)} />)
     const input = screen.getByLabelText('PIN')
     await user.type(input, '1234')
-    await user.click(screen.getByRole('button', { name: 'Unlock' }))
+    await user.click(screen.getByRole('button', { name: 'Unlock Caregiver Settings' }))
     expect(window.localStorage.getItem('1234')).toBeNull()
     expect(window.localStorage.length).toBe(0)
     expect(JSON.stringify({ ...window.localStorage })).not.toContain('1234')
@@ -28,7 +28,7 @@ describe('PinScreen', () => {
       />,
     )
     await user.type(screen.getByLabelText('PIN'), '9999')
-    await user.click(screen.getByRole('button', { name: 'Unlock' }))
+    await user.click(screen.getByRole('button', { name: 'Unlock Caregiver Settings' }))
     await waitForRtl(() => {
       expect(screen.getByRole('alert')).toHaveTextContent("That PIN isn't right")
     })
@@ -52,7 +52,7 @@ describe('PinScreen', () => {
     render(<PinScreen mode="unlock" onCancel={vi.fn()} onSubmit={vi.fn().mockResolvedValue(null)} />)
     const input = screen.getByLabelText('PIN') as HTMLInputElement
     await user.type(input, '1234')
-    await user.click(screen.getByRole('button', { name: 'Unlock' }))
+    await user.click(screen.getByRole('button', { name: 'Unlock Caregiver Settings' }))
     await waitForRtl(() => expect(input.value).toBe(''))
   })
 })

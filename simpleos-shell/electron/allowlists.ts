@@ -60,6 +60,11 @@ export const HARDWARE_STATUS: Readonly<Record<string, ApprovedCommand>> = Object
     command: 'nmcli',
     args: Object.freeze(['--terse', '--fields', 'TYPE,STATE,CONNECTION', 'device', 'status']),
   }),
+  audio: Object.freeze({ command: 'pactl', args: Object.freeze(['get-default-sink']) }),
+  rustdesk: Object.freeze({
+    command: 'flatpak',
+    args: Object.freeze(['info', 'com.rustdesk.RustDesk']),
+  }),
 })
 
 export function isAllowedKey(map: Readonly<Record<string, unknown>>, key: unknown): boolean {

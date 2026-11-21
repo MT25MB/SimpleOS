@@ -39,6 +39,10 @@ export interface HardwareStatus {
   battery: BatteryStatus
   /** False on desktops and machines without a controllable backlight. */
   brightnessAvailable: boolean
+  /** True when PipeWire exposes a default audio sink. */
+  audioAvailable: boolean
+  /** True when the RustDesk flatpak is installed. */
+  rustdeskAvailable: boolean
 }
 
 export type IconName = 'video' | 'web' | 'photos' | 'reminders' | 'help' | 'settings'

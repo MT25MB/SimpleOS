@@ -46,11 +46,24 @@ to. All of it is covered by the full local test loop and the shared CI gate.
 - Added `LAUNCH.md` with launch copy drafts for caregiver communities and for
   technical/open-source audiences, plus an accuracy and tone checklist.
 
+### Accessibility
+
+- Audited the keyboard and screen-reader flow across the launcher and site. Home
+  tiles, reminder actions, PIN fields and caregiver buttons now have explicit,
+  specific accessible names; an in-app skip link and PIN error descriptions were
+  added.
+- Added a Quick Check panel inside Caregiver Settings. It explains Wi-Fi, sound,
+  screen brightness, RustDesk and system version in plain English and offers
+  only safe, reversible recovery actions.
+- Verified all three text sizes in a browser: 18px, 20.7px and 24.3px, with no
+  clipped labels, off-screen buttons or horizontal overflow.
+
 ### Changed
 
-- Grew the test suite from 127 to 167 passing tests across 20 files. The new
+- Grew the test suite from 127 to 178 passing tests across 21 files. The new
   tests cover hardware packages and power config, Electron and Firefox
-  guardrails, PIN cooldown behaviour, and the community docs.
+  guardrails, PIN cooldown behaviour, community docs, and the accessibility and
+  caregiver status flows.
 - `bash scripts/test-all.sh` remains the single local gate: tests, type-check,
   production build, shell syntax checks and the staged-artifact check all pass.
 
