@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import logoUrl from '../../docs/assets/simpleos-logo.png'
 import { CaregiverPanel } from './components/CaregiverPanel'
 import { FontScaleControl } from './components/FontScaleControl'
 import { NoticeBanner } from './components/NoticeBanner'
@@ -154,7 +155,15 @@ export default function App() {
     <div className="app">
       <header className="app__header">
         <div>
-          <h1>SimpleOS</h1>
+          <h1 className="app__brand">
+            <img
+              className="app__logo"
+              src={logoUrl}
+              alt="SimpleOS"
+              width="512"
+              height="512"
+            />
+          </h1>
           <p className="app__tagline">What can I help you with today?</p>
         </div>
         <FontScaleControl value={scale} onChange={setFontScale} />

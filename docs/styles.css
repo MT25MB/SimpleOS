@@ -112,14 +112,12 @@ a {
 }
 
 .brand__mark {
-  width: 2rem;
-  height: 2rem;
+  width: 2.75rem; /* 44px at 16px base, 49px at the 18px root */
+  height: 2.75rem;
   flex: none;
-  fill: none;
-  stroke: var(--accent);
-  stroke-width: 2.5;
-  stroke-linecap: round;
-  stroke-linejoin: round;
+  aspect-ratio: 1 / 1;
+  object-fit: contain;
+  border-radius: 0.45rem;
 }
 
 .site-nav {
@@ -282,6 +280,20 @@ a {
   margin-top: 1.25rem;
   color: var(--text-soft);
   font-size: 0.95rem;
+}
+
+.hero__banner {
+  margin: clamp(2.5rem, 5vw, 4rem) auto 0;
+}
+
+.hero__banner img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1240 / 600;
+  object-fit: contain;
+  border: 1px solid var(--border-soft);
+  border-radius: 0.6rem;
 }
 
 /* ------------------------------------------------------------ home preview */

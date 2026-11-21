@@ -36,6 +36,17 @@ vm-images/
 tmp/
 *.log
 
+# Large editable brand sources and temporary exports (never commit)
+*.psd
+*.ai
+*.xcf
+*.sketch
+*.fig
+*.afdesign
+*.eps
+assets-src/
+artwork/
+
 # Editor and OS temp files
 *.swp
 *.swo
