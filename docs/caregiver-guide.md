@@ -111,6 +111,8 @@ Reminders are saved on the computer. They survive a restart, and they come back 
 
 **An update is available.** Open **Caregiver Settings** and choose **Check for updates**. You will see a short sentence saying what is happening. Updates are installed when the computer restarts, and the previous version is kept if something goes wrong.
 
+For the full walkthrough, including how to start the computer from the previous version if an update causes trouble, see [Updates and recovery](updates-and-recovery.md).
+
 ## Passing the computer over
 
 Before you hand it back:

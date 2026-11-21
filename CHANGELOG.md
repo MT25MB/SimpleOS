@@ -4,6 +4,10 @@ All notable changes to SimpleOS are recorded here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and versions follow
 [Semantic Versioning](https://semver.org/).
 
+> Release status: `v0.1.0` and `v0.2.0` are published. `v0.3.0` is written up
+> below but not tagged yet, so links that point at `v0.3.0` will resolve once
+> that tag is pushed. Until then, `Unreleased` covers everything after `v0.2.0`.
+
 ## [Unreleased]
 
 This entry brings three things together: **hardware readiness** for real laptops
@@ -45,6 +49,9 @@ to. All of it is covered by the full local test loop and the shared CI gate.
   so a broken link or malformed YAML is caught before merge.
 - Added `LAUNCH.md` with launch copy drafts for caregiver communities and for
   technical/open-source audiences, plus an accuracy and tone checklist.
+- Added `docs/updates-and-recovery.md`: how immutable updates work, how to boot
+  from the previous deployment, a monthly caregiver checklist, and a maintainer
+  release checklist. Linked from the README, caregiver guide and website.
 
 ### Accessibility
 
@@ -66,6 +73,8 @@ to. All of it is covered by the full local test loop and the shared CI gate.
   caregiver status flows.
 - `bash scripts/test-all.sh` remains the single local gate: tests, type-check,
   production build, shell syntax checks and the staged-artifact check all pass.
+- Corrected the `Unreleased` compare link to start from the last published tag
+  (`v0.2.0`) and documented the prepared-but-untagged `v0.3.0` state.
 
 ## [v0.3.0]
 
@@ -141,7 +150,7 @@ fixes found by the new test suite.
 - First prototype: initial image definition, system configs, Electron launcher,
   build script and documentation.
 
-[Unreleased]: https://github.com/MT25MB/SimpleOS/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/MT25MB/SimpleOS/compare/v0.2.0...HEAD
 [v0.3.0]: https://github.com/MT25MB/SimpleOS/compare/v0.2.0...v0.3.0
 [v0.2.0]: https://github.com/MT25MB/SimpleOS/compare/v0.1.0...v0.2.0
 [v0.1.0]: https://github.com/MT25MB/SimpleOS/releases/tag/v0.1.0

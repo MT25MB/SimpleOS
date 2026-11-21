@@ -132,6 +132,39 @@ describe('community and governance docs', () => {
   })
 })
 
+describe('updates and release alignment', () => {
+  it('ships the plain-English recovery guide and links it from key docs', () => {
+    const guide = read('docs/updates-and-recovery.md')
+    expect(guide).toContain('rpm-ostree rollback')
+    expect(guide).toContain('previous deployment')
+    expect(guide).toContain('Caregiver Settings')
+    expect(read('README.md')).toContain('docs/updates-and-recovery.md')
+    expect(read('docs/caregiver-guide.md')).toContain('updates-and-recovery.md')
+    expect(read('docs/index.html')).toContain('updates-and-recovery.md')
+  })
+
+  it('keeps the packaged version aligned with a prepared changelog heading', () => {
+    const pkg = JSON.parse(read('simpleos-shell/package.json')) as { version: string }
+    const changelog = read('CHANGELOG.md')
+    expect(changelog).toContain(`## [v${pkg.version}]`)
+    expect(changelog).toContain('## [Unreleased]')
+    // The last published tag is v0.2.0, so the Unreleased link must not 404.
+    expect(changelog).toContain('compare/v0.2.0...HEAD')
+  })
+
+  it('keeps releases tag-driven and behind the shared test gate', () => {
+    const release = yaml.load(read('.github/workflows/release.yml')) as {
+      on?: { push?: { tags?: string[] } }
+      true?: { push?: { tags?: string[] } }
+      jobs: Record<string, { needs?: string; uses?: string }>
+    }
+    const triggers = release.on ?? release.true
+    expect(triggers?.push?.tags).toContain('v*.*.*')
+    expect(release.jobs.test?.uses).toBe('./.github/workflows/test.yml')
+    expect(release.jobs.release?.needs).toBe('test')
+  })
+})
+
 describe('GitHub Actions workflows', () => {
   it('parses as valid YAML with the required triggers and permissions', () => {
     const build = yaml.load(read('.github/workflows/build-image.yml')) as Record<string, unknown>
