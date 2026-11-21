@@ -96,6 +96,16 @@ A warning first. Flashing erases everything on that drive. Check the device name
 
 ### Run the tests and build the launcher
 
+From the repository root, one command checks everything:
+
+```sh
+bash scripts/test-all.sh
+```
+
+It runs the full test suite, type-checks and builds the launcher, checks shell script syntax, and verifies that no build artifacts or disk images are staged. CI runs the suite and build on every push.
+
+To work on just the launcher:
+
 ```sh
 cd simpleos-shell
 npm ci

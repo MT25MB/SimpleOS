@@ -4,6 +4,8 @@ import { resolve } from 'node:path'
 
 const root = resolve(__dirname, '../..')
 const main = readFileSync(resolve(root, 'simpleos-shell/electron/main.ts'), 'utf8')
+const pinCrypto = readFileSync(resolve(root, 'simpleos-shell/electron/pin-crypto.ts'), 'utf8')
+const allowlists = readFileSync(resolve(root, 'simpleos-shell/electron/allowlists.ts'), 'utf8')
 const autostart = readFileSync(resolve(root, 'system-configs/labwc/autostart'), 'utf8')
 const rc = readFileSync(resolve(root, 'system-configs/labwc/rc.xml'), 'utf8')
 const environment = readFileSync(resolve(root, 'system-configs/labwc/environment'), 'utf8')
@@ -29,11 +31,11 @@ describe('main process data validation', () => {
   })
 
   it('bounds PIN length and uses scrypt with a constant-time comparison', () => {
-    expect(main).toContain('const PIN_MIN_LENGTH = 4')
-    expect(main).toContain('const PIN_MAX_LENGTH = 12')
+    expect(pinCrypto).toContain('const PIN_MIN_LENGTH = 4')
+    expect(pinCrypto).toContain('const PIN_MAX_LENGTH = 12')
     expect(main).toContain("return fail('PIN_TOO_LONG')")
-    expect(main).toContain('crypto.scryptSync')
-    expect(main).toContain('crypto.timingSafeEqual')
+    expect(pinCrypto).toContain('crypto.scryptSync')
+    expect(pinCrypto).toContain('crypto.timingSafeEqual')
   })
 
   it('rejects a corrupted PIN record before hashing', () => {
@@ -45,8 +47,9 @@ describe('main process data validation', () => {
     expect(main).toContain('Object.hasOwn(SAFE_ACTIONS, action)')
     expect(main).toContain('spawnApproved(SAFE_ACTIONS[name])')
     for (const action of ['screenShare', 'networkSettings', 'printerSettings', 'checkUpdates']) {
-      expect(main).toContain(`${action}:`)
+      expect(allowlists).toContain(`${action}:`)
     }
+    expect(main).toContain('spawnApproved(')
   })
 })
 

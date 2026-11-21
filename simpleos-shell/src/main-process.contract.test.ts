@@ -5,6 +5,8 @@ import { ALLOWED_LAUNCH_TARGETS } from './data/launchTargets'
 
 const electronMain = readFileSync(resolve(__dirname, '../electron/main.ts'), 'utf8')
 const preload = readFileSync(resolve(__dirname, '../electron/preload.ts'), 'utf8')
+const pinCrypto = readFileSync(resolve(__dirname, '../electron/pin-crypto.ts'), 'utf8')
+const allowlists = readFileSync(resolve(__dirname, '../electron/allowlists.ts'), 'utf8')
 
 describe('electron main security contract', () => {
   it('enables context isolation and disables Node integration and sandbox escape', () => {
@@ -20,8 +22,9 @@ describe('electron main security contract', () => {
   })
 
   it('hashes the PIN with scryptSync and verifies with timingSafeEqual', () => {
-    expect(electronMain).toContain('scryptSync')
-    expect(electronMain).toContain('timingSafeEqual')
+    expect(pinCrypto).toContain('crypto.scryptSync')
+    expect(pinCrypto).toContain('crypto.timingSafeEqual')
+    expect(electronMain).toContain('pinsMatch(')
     expect(electronMain).not.toMatch(/const\s+CAREGIVER_PIN\s*=\s*['"]\d+/)
   })
 
@@ -34,7 +37,7 @@ describe('electron main security contract', () => {
   it('validates every launch target against a fixed allowlist before spawning', () => {
     expect(electronMain).toContain('Object.hasOwn(ALLOWED_APPS, target)')
     for (const target of ALLOWED_LAUNCH_TARGETS) {
-      expect(electronMain).toContain(`${target}: {`)
+      expect(allowlists).toContain(`${target}:`)
     }
   })
 })
@@ -67,11 +70,11 @@ describe('caregiver runAction allowlist', () => {
       'checkUpdates',
       'triggerUpdate',
     ]) {
-      expect(electronMain).toContain(`${action}:`)
+      expect(allowlists).toContain(`${action}:`)
     }
-    expect(electronMain).toContain('com.rustdesk.RustDesk')
-    expect(electronMain).toContain('nm-connection-editor')
-    expect(electronMain).toContain('system-config-printer')
+    expect(allowlists).toContain('com.rustdesk.RustDesk')
+    expect(allowlists).toContain('nm-connection-editor')
+    expect(allowlists).toContain('system-config-printer')
   })
 
   it('never forwards renderer strings into spawned commands or arguments', () => {

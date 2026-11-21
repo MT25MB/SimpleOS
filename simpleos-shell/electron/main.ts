@@ -21,6 +21,15 @@ import os from 'node:os'
 import fs from 'node:fs'
 import crypto from 'node:crypto'
 import { spawn, execFile } from 'node:child_process'
+import { ALLOWED_APPS, ALLOWED_SETTINGS, SAFE_ACTIONS, type ApprovedCommand } from './allowlists'
+import {
+  HASH_HEX_LENGTH,
+  PIN_MAX_LENGTH,
+  PIN_MIN_LENGTH,
+  SALT_HEX_LENGTH,
+  hashPin,
+  pinsMatch,
+} from './pin-crypto'
 import type {
   CaregiverAction,
   ErrorCode,
@@ -120,31 +129,6 @@ function spawnDetached(command: string, args: readonly string[]): Promise<Result
 
 // ------------------------------------------------------------------ app launching
 
-interface ApprovedCommand {
-  readonly command: string
-  readonly args: readonly string[]
-}
-
-const ALLOWED_APPS: Readonly<Record<string, ApprovedCommand>> = Object.freeze({
-  firefox: {
-    command: 'flatpak',
-    args: Object.freeze(['run', 'org.mozilla.firefox']),
-  },
-  jitsi: {
-    // Jitsi Meet runs in Firefox; no extra flatpak is required.
-    command: 'flatpak',
-    args: Object.freeze(['run', 'org.mozilla.firefox', '--new-window', 'https://meet.jit.si']),
-  },
-  photos: {
-    command: 'flatpak',
-    args: Object.freeze(['run', 'org.gnome.Loupe']),
-  },
-  rustdesk: {
-    command: 'flatpak',
-    args: Object.freeze(['run', 'com.rustdesk.RustDesk']),
-  },
-})
-
 ipcMain.handle('simpleos:launch-app', async (_event, target: unknown): Promise<Result> => {
   if (typeof target !== 'string' || !Object.hasOwn(ALLOWED_APPS, target)) {
     return fail('UNKNOWN_TARGET')
@@ -191,11 +175,6 @@ interface PinRecord {
   hash: string
 }
 
-const PIN_MIN_LENGTH = 4
-const PIN_MAX_LENGTH = 12
-const SALT_HEX_LENGTH = 32 // 16 random bytes
-const HASH_HEX_LENGTH = 128 // 64 bytes from scrypt
-
 function readPinRecord(): PinRecord | null {
   try {
     if (!fs.existsSync(pinPath())) return null
@@ -218,18 +197,6 @@ function readPinRecord(): PinRecord | null {
   }
 }
 
-function hashPin(pin: string, saltHex: string): string {
-  return crypto.scryptSync(pin, Buffer.from(saltHex, 'hex'), 64).toString('hex')
-}
-
-function pinMatches(pin: string, record: PinRecord): boolean {
-  const candidate = Buffer.from(hashPin(pin, record.salt), 'hex')
-  const expected = Buffer.from(record.hash, 'hex')
-  return (
-    candidate.length === expected.length && crypto.timingSafeEqual(candidate, expected)
-  )
-}
-
 ipcMain.handle(
   'simpleos:pin:has',
   async (): Promise<ValueResult<{ hasPin: boolean }>> => ({
@@ -244,7 +211,7 @@ ipcMain.handle('simpleos:pin:unlock', async (_event, pin: unknown): Promise<Resu
   }
   const record = readPinRecord()
   if (!record) return fail('PIN_NOT_SET')
-  return pinMatches(pin, record) ? OK : fail('PIN_INCORRECT')
+  return pinsMatch(pin, record) ? OK : fail('PIN_INCORRECT')
 })
 
 ipcMain.handle(
@@ -257,7 +224,7 @@ ipcMain.handle(
     if (!/^\d+$/.test(newPin)) return fail('PIN_NOT_NUMERIC')
 
     const record = readPinRecord()
-    if (record && (typeof currentPin !== 'string' || !pinMatches(currentPin, record))) {
+    if (record && (typeof currentPin !== 'string' || !pinsMatch(currentPin, record))) {
       return fail('PIN_INCORRECT')
     }
 
@@ -277,24 +244,9 @@ ipcMain.handle(
 // ------------------------------------------------------------ caregiver shortcuts
 
 /**
- * Fixed, audited commands for caregiver/help actions. The renderer only ever
- * supplies an action NAME; it can never supply a command, argument or URL.
+ * The allowlists live in ./allowlists so they can be unit tested. The renderer
+ * only ever supplies an action NAME; it cannot supply a command or arguments.
  */
-const ALLOWED_SETTINGS: Readonly<Record<string, ApprovedCommand>> = Object.freeze({
-  network: { command: 'nm-connection-editor', args: Object.freeze([]) },
-  printer: { command: 'system-config-printer', args: Object.freeze([]) },
-})
-
-const SAFE_ACTIONS: Readonly<Record<CaregiverAction, ApprovedCommand>> = Object.freeze({
-  screenShare: ALLOWED_APPS.rustdesk,
-  networkSettings: ALLOWED_SETTINGS.network,
-  printerSettings: ALLOWED_SETTINGS.printer,
-  // 'checkUpdates' and 'triggerUpdate' are handled separately below: they
-  // return a plain-English summary rather than just launching a process.
-  checkUpdates: Object.freeze({ command: 'rpm-ostree', args: Object.freeze(['status', '--json']) }),
-  triggerUpdate: Object.freeze({ command: 'rpm-ostree', args: Object.freeze(['upgrade']) }),
-})
-
 function spawnApproved(approved: ApprovedCommand): Promise<Result> {
   return spawnDetached(approved.command, approved.args)
 }
