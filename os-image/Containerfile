@@ -21,6 +21,12 @@ ENV TZ=UTC
 # fonts. Fedora package names are used (rsms-inter-fonts = Inter;
 # google-noto-sans-fonts = Noto Sans).
 #
+# The hardware group makes this a usable image on ordinary Intel/AMD laptops
+# and desktops: firmware and Mesa drivers for Wi-Fi/Graphics, NetworkManager
+# and Bluez for connections, power-profiles-daemon and upower for laptops,
+# brightnessctl for the brightness buttons, and pulseaudio-utils for the
+# `pactl` volume commands used by the allowlisted shell bridge.
+#
 # foot is installed for caregiver/recovery use but is hidden from the user's
 # application menus further down this file.
 RUN rpm-ostree install --assumeyes \
@@ -37,6 +43,14 @@ RUN rpm-ostree install --assumeyes \
         orca \
         rsms-inter-fonts \
         google-noto-sans-fonts \
+        linux-firmware \
+        mesa-dri-drivers \
+        NetworkManager \
+        bluez \
+        power-profiles-daemon \
+        upower \
+        brightnessctl \
+        pulseaudio-utils \
     && ostree container commit
 
 # Audited desktop and browser configuration.
@@ -55,6 +69,11 @@ COPY system-configs/greetd/config.toml /etc/greetd/config.toml
 # install the applications shown on the launcher.
 COPY system-configs/systemd/simpleos-firstboot.service /etc/systemd/system/simpleos-firstboot.service
 COPY system-configs/systemd/simpleos-firstboot.sh /etc/simpleos/firstboot.sh
+
+# Power defaults for laptops and desktops. These are systemd drop-ins, so the
+# distribution defaults stay in place and only the keys we care about change.
+COPY system-configs/systemd/logind.conf.d/10-simpleos-power.conf /etc/systemd/logind.conf.d/10-simpleos-power.conf
+COPY system-configs/systemd/sleep.conf.d/10-simpleos-sleep.conf /etc/systemd/sleep.conf.d/10-simpleos-sleep.conf
 
 # The final layer sets the hostname and UTC timezone, hides foot's desktop
 # entry so it stays invisible to the user, and enables the boot services.
@@ -79,7 +98,11 @@ RUN chmod 0755 /etc/simpleos/firstboot.sh /etc/xdg/labwc/autostart \
        fi \
     && systemctl enable \
         greetd.service \
+        NetworkManager.service \
+        bluetooth.service \
         cups.service \
+        power-profiles-daemon.service \
+        upower.service \
         rpm-ostreed-automatic.timer \
         simpleos-firstboot.service \
     && ostree container commit

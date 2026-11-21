@@ -28,6 +28,11 @@ const bridge: SimpleOSBridge = {
   // Single allowlisted dispatcher for caregiver/help actions. The main process
   // validates the action name; no shell strings ever cross this boundary.
   runAction: (action) => ipcRenderer.invoke('simpleos:run-action', action),
+  // Hardware controls are fixed keys; the main process never accepts a
+  // command, percentage, device path or network name from this side.
+  getHardwareStatus: () => ipcRenderer.invoke('simpleos:hardware:status'),
+  adjustVolume: (action) => ipcRenderer.invoke('simpleos:hardware:volume', action),
+  adjustBrightness: (action) => ipcRenderer.invoke('simpleos:hardware:brightness', action),
 }
 
 contextBridge.exposeInMainWorld('simpleOS', bridge)

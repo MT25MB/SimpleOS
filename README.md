@@ -4,11 +4,11 @@ A free, open-source Linux computer for people who want things to be simple.
 
 It is built for older adults and for the family members who help them. The idea is straightforward. A computer should be easy to read, hard to break, and calm enough to use without worrying about clicking the wrong thing.
 
-> Released as v0.2.0. The image, desktop, launcher, reminders, and caregiver tools all work. There is a 76-test suite and an automated build.
+> The image, desktop, launcher, reminders, and caregiver tools all work. There is a full automated test suite, an image build, and a website. See the [changelog](CHANGELOG.md) for release history.
 
 <img src="docs/assets/simpleos-banner.png" alt="SimpleOS banner. A calm and unbreakable operating system with an immutable base, a simplified launcher, and built-in scam protection." width="1240" height="600" style="max-width:100%;height:auto;aspect-ratio:1240 / 600;display:block;border-radius:8px" />
 
-[Brand assets and how to save new versions](docs/assets/README.md) · [Plain-English caregiver guide](docs/caregiver-guide.md) · [Changelog](CHANGELOG.md)
+[Brand assets and how to save new versions](docs/assets/README.md) · [Plain-English caregiver guide](docs/caregiver-guide.md) · [Hardware support and power behaviour](docs/hardware-support.md) · [Changelog](CHANGELOG.md)
 
 ---
 

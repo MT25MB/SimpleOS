@@ -112,4 +112,51 @@ describe('system guardrails contract', () => {
     expect(buildIso).toContain('SIMPLEOS_CONFIRM_FLASH=YES')
     expect(buildIso).toContain('Type the device path exactly')
   })
+
+  it('installs firmware, drivers and real-hardware services', () => {
+    for (const pkg of [
+      'linux-firmware',
+      'mesa-dri-drivers',
+      'NetworkManager',
+      'bluez',
+      'power-profiles-daemon',
+      'upower',
+      'brightnessctl',
+      'pulseaudio-utils',
+    ]) {
+      expect(containerfile, pkg).toMatch(new RegExp(`\\b${pkg}\\b`))
+    }
+    for (const unit of [
+      'NetworkManager.service',
+      'bluetooth.service',
+      'power-profiles-daemon.service',
+      'upower.service',
+    ]) {
+      expect(containerfile, unit).toContain(unit)
+    }
+  })
+
+  it('copies the power drop-ins into the image', () => {
+    expect(containerfile).toContain('logind.conf.d/10-simpleos-power.conf')
+    expect(containerfile).toContain('sleep.conf.d/10-simpleos-sleep.conf')
+  })
+
+  it('ships safe power defaults with no idle, lid or hibernation surprises', () => {
+    const logind = read('system-configs/systemd/logind.conf.d/10-simpleos-power.conf')
+    const sleep = read('system-configs/systemd/sleep.conf.d/10-simpleos-sleep.conf')
+    expect(logind).toContain('[Login]')
+    expect(logind).toContain('HandleLidSwitch=ignore')
+    expect(logind).toContain('HandleLidSwitchDocked=ignore')
+    expect(logind).toContain('IdleAction=ignore')
+    expect(logind).toContain('HandlePowerKey=ignore')
+    expect(sleep).toContain('[Sleep]')
+    expect(sleep).toContain('AllowSuspend=yes')
+    expect(sleep).toContain('AllowHibernation=no')
+  })
+
+  it('gives senior hardware groups without ever granting admin rights', () => {
+    expect(firstboot).toContain('for group in video audio lp')
+    expect(firstboot).toContain('usermod --append --groups')
+    expect(firstboot).toMatch(/for group in wheel sudo admin/)
+  })
 })

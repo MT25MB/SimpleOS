@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import App from './App'
 import type { SimpleOSBridge } from './types'
@@ -16,6 +16,17 @@ function mockBridge(overrides: Partial<SimpleOSBridge> = {}): SimpleOSBridge {
     setPin: vi.fn().mockResolvedValue(ok),
     openSettings: vi.fn().mockResolvedValue(ok),
     getUpdateStatus: vi.fn().mockResolvedValue({ ok: true, value: { summary: 'Your system is up to date.' } }),
+    runAction: vi.fn().mockResolvedValue({ ok: true, value: {} }),
+    getHardwareStatus: vi.fn().mockResolvedValue({
+      ok: true,
+      value: {
+        wifi: { connected: true, ssid: 'Home Network' },
+        battery: { present: true, percent: 80, charging: true },
+        brightnessAvailable: true,
+      },
+    }),
+    adjustVolume: vi.fn().mockResolvedValue(ok),
+    adjustBrightness: vi.fn().mockResolvedValue(ok),
     ...overrides,
   } as SimpleOSBridge
 }
@@ -90,5 +101,57 @@ describe('App integration', () => {
     await user.click(screen.getByRole('button', { name: /Caregiver Settings/ }))
     expect(await screen.findByRole('heading', { name: 'Caregiver Settings' })).toBeInTheDocument()
     expect(screen.getByLabelText('PIN')).toBeInTheDocument()
+  })
+
+  it('shows the connected network name in the header', async () => {
+    window.simpleOS = mockBridge()
+    render(<App />)
+    expect(await screen.findByText(/Connected to Home Network/)).toBeInTheDocument()
+  })
+
+  it('offers one-click Wi-Fi settings when there is no connection', async () => {
+    const user = userEvent.setup()
+    const bridge = mockBridge({
+      getHardwareStatus: vi.fn().mockResolvedValue({
+        ok: true,
+        value: {
+          wifi: { connected: false, ssid: null },
+          battery: { present: false, percent: null, charging: null },
+          brightnessAvailable: false,
+        },
+      }),
+    })
+    window.simpleOS = bridge
+    render(<App />)
+    expect(await screen.findByText('Not connected to Wi-Fi.')).toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: 'Open Wi-Fi Settings' }))
+    expect(bridge.runAction).toHaveBeenCalledWith('networkSettings')
+    expect(screen.queryByText(/^Battery/)).toBeNull()
+    expect(screen.queryByRole('group', { name: 'Screen brightness' })).toBeNull()
+  })
+
+  it('shows laptop battery state and charging in plain English', async () => {
+    window.simpleOS = mockBridge()
+    render(<App />)
+    expect(await screen.findByText('Battery 80% · Charging')).toBeInTheDocument()
+  })
+
+  it('sends only fixed keys for volume and brightness controls', async () => {
+    const user = userEvent.setup()
+    const bridge = mockBridge()
+    window.simpleOS = bridge
+    render(<App />)
+    const screenGroup = await screen.findByRole('group', { name: 'Screen brightness' })
+    const sound = screen.getByRole('group', { name: 'Sound' })
+    await user.click(within(sound).getByRole('button', { name: 'Softer' }))
+    await user.click(within(sound).getByRole('button', { name: 'Louder' }))
+    await user.click(within(sound).getByRole('button', { name: 'Mute' }))
+    await user.click(within(screenGroup).getByRole('button', { name: 'Darker' }))
+    await user.click(within(screenGroup).getByRole('button', { name: 'Lighter' }))
+    expect(bridge.adjustVolume).toHaveBeenNthCalledWith(1, 'volumeDown')
+    expect(bridge.adjustVolume).toHaveBeenNthCalledWith(2, 'volumeUp')
+    expect(bridge.adjustVolume).toHaveBeenNthCalledWith(3, 'volumeMute')
+    expect(bridge.adjustBrightness).toHaveBeenNthCalledWith(1, 'brightnessDown')
+    expect(bridge.adjustBrightness).toHaveBeenNthCalledWith(2, 'brightnessUp')
   })
 })

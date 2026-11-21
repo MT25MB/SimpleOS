@@ -92,6 +92,55 @@ input {
   font-size: 1.125rem;
 }
 
+/* --------------------------------------------------------- hardware strip */
+
+/* Sits on a second row of the header so the brand still has room to breathe. */
+.hardware {
+  flex: 1 0 100%;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1.25rem;
+  padding: 0.75rem 1rem;
+  border: 2px solid var(--border);
+  border-radius: 0.75rem;
+  background: var(--surface);
+}
+
+.hardware__chip,
+.hardware__wifi {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  font-size: 1rem;
+}
+
+.hardware__chip--good {
+  color: var(--success);
+  font-weight: 700;
+}
+
+.hardware__wifi {
+  padding: 0.35rem 0.75rem;
+  border: 2px solid var(--border-strong);
+  border-radius: 0.5rem;
+  background: var(--surface-raised);
+}
+
+.hardware__group {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.hardware__label {
+  font-size: 1rem;
+  font-weight: 700;
+}
+
 .app__main {
   flex: 1;
 }
@@ -197,6 +246,14 @@ input {
 
 .button--back {
   margin-bottom: 1.5rem;
+}
+
+/* Still a comfortable tap target: 3rem = 54px at the 18px root. */
+/* Defined after .button so its smaller padding actually takes effect. */
+.button--small {
+  min-height: 3rem;
+  padding: 0.5rem 0.75rem;
+  font-size: 1rem;
 }
 
 .font-scale {

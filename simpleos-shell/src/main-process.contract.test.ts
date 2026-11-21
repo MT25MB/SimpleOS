@@ -84,12 +84,64 @@ describe('caregiver runAction allowlist', () => {
     expect(electronMain).not.toContain('spawn(action')
     expect(electronMain).not.toContain('spawn(target')
     expect(electronMain).not.toContain('execFile(action')
-    expect(electronMain).not.toContain('[action]')
+    // The only `[action]` uses are frozen-map lookups, never command arguments.
+    expect(electronMain).not.toContain('spawn([action]')
+    expect(electronMain).not.toContain('execFile([action]')
   })
 
   it('returns calm plain-English summaries for caregiver actions', () => {
     expect(electronMain).toContain('Screen sharing is starting')
     expect(electronMain).toContain('Opening settings.')
     expect(electronMain).toContain('The update is starting')
+  })
+})
+
+describe('hardware control contract', () => {
+  const messages = readFileSync(resolve(__dirname, 'messages.ts'), 'utf8')
+
+  it('exposes only fixed status and adjust methods in the preload bridge', () => {
+    expect(preload).toContain(
+      "getHardwareStatus: () => ipcRenderer.invoke('simpleos:hardware:status')",
+    )
+    expect(preload).toContain(
+      "adjustVolume: (action) => ipcRenderer.invoke('simpleos:hardware:volume', action)",
+    )
+    expect(preload).toContain(
+      "adjustBrightness: (action) => ipcRenderer.invoke('simpleos:hardware:brightness', action)",
+    )
+  })
+
+  it('maps every hardware key to a fixed allowlisted command', () => {
+    for (const key of ['volumeUp', 'volumeDown', 'volumeMute', 'brightnessUp', 'brightnessDown']) {
+      expect(allowlists).toContain(`${key}:`)
+    }
+    expect(allowlists).toContain("'pactl'")
+    expect(allowlists).toContain("'brightnessctl'")
+    expect(allowlists).toContain("'nmcli'")
+    expect(allowlists).toContain("'@DEFAULT_SINK@'")
+  })
+
+  it('validates keys and never spawns a renderer-supplied string', () => {
+    expect(electronMain).toContain("'simpleos:hardware:status'")
+    expect(electronMain).toContain("'simpleos:hardware:volume'")
+    expect(electronMain).toContain("'simpleos:hardware:brightness'")
+    expect(electronMain).toContain('VOLUME_KEYS.includes')
+    expect(electronMain).toContain('BRIGHTNESS_KEYS.includes')
+    expect(electronMain).toContain('runApproved(HARDWARE_ACTIONS[action])')
+    expect(electronMain).not.toContain('execFile(action')
+    expect(electronMain).not.toContain('spawn(action')
+  })
+
+  it('reads battery and backlight state directly without spawning a process', () => {
+    expect(electronMain).toContain("'/sys/class/power_supply'")
+    expect(electronMain).toContain("'/sys/class/backlight'")
+    expect(electronMain).toContain('readBatteryStatus()')
+    expect(electronMain).toContain('hasBacklight()')
+    expect(electronMain).toContain('parseWifiStatus(')
+  })
+
+  it('turns a failed control into one plain-English code', () => {
+    expect(electronMain).toContain("fail('HARDWARE_UNAVAILABLE')")
+    expect(messages).toContain('HARDWARE_UNAVAILABLE:')
   })
 })

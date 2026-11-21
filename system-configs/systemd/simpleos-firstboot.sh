@@ -42,6 +42,19 @@ for group in wheel sudo admin; do
   fi
 done
 
+# Hardware access without administrative rights. "video" allows the
+# brightness buttons to write to /sys/class/backlight, "audio" allows volume
+# control through PipeWire, and "lp" allows printing.
+for group in video audio lp; do
+  if getent group "$group" >/dev/null 2>&1; then
+    if usermod --append --groups "$group" "$SENIOR_USER" >/dev/null 2>&1; then
+      log_info "Added '$SENIOR_USER' to the $group group for hardware access."
+    else
+      log_warn "Could not add '$SENIOR_USER' to $group; some hardware controls may not work."
+    fi
+  fi
+done
+
 # -----------------------------------------------------------------------------
 # 2. Make sure the home and SimpleOS config directories belong to 'senior'.
 # -----------------------------------------------------------------------------

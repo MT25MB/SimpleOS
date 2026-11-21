@@ -46,6 +46,12 @@ The first start takes a few minutes. The computer signs in as `senior`, creates 
 2. Choose **Wi-Fi & Network**.
 3. Pick your network and enter the password.
 
+The top of the home screen always tells you whether Wi-Fi is connected and to
+which network. If it says **Not connected to Wi-Fi**, press **Open Wi-Fi
+Settings** — that button takes you straight there. On a laptop you will also see
+the battery level and whether it is charging. The computer will not drop into
+sleep in the middle of a call, even if the lid is closed.
+
 ### Printers
 
 1. Open **Caregiver Settings**.
@@ -69,6 +75,8 @@ The PIN is not stored as plain text. The computer keeps a scrambled version, so 
 Still in Caregiver Settings, look for **Text size**. Try **Large** or **Extra Large** and ask the person which feels best. The choice is saved, so it stays after a restart.
 
 The mouse pointer is already large, and windows open full screen so there is less to line up or line out.
+
+For quick fixes, the top of the home screen has big **Softer**, **Louder** and **Mute** buttons for sound, and **Darker** and **Lighter** buttons for the screen. The screen buttons only appear on a laptop, where there is a backlight to adjust.
 
 ## 6. Ask for Help with RustDesk
 

@@ -21,7 +21,14 @@ import os from 'node:os'
 import fs from 'node:fs'
 import crypto from 'node:crypto'
 import { spawn, execFile } from 'node:child_process'
-import { ALLOWED_APPS, ALLOWED_SETTINGS, SAFE_ACTIONS, type ApprovedCommand } from './allowlists'
+import {
+  ALLOWED_APPS,
+  ALLOWED_SETTINGS,
+  HARDWARE_ACTIONS,
+  HARDWARE_STATUS,
+  SAFE_ACTIONS,
+  type ApprovedCommand,
+} from './allowlists'
 import {
   HASH_HEX_LENGTH,
   PIN_MAX_LENGTH,
@@ -31,12 +38,17 @@ import {
   pinsMatch,
 } from './pin-crypto'
 import type {
+  BatteryStatus,
+  BrightnessAction,
   CaregiverAction,
   ErrorCode,
+  HardwareStatus,
   Reminder,
   RemindersFile,
   Result,
   ValueResult,
+  VolumeAction,
+  WifiStatus,
 } from '../src/types'
 
 const devUrl = process.env.VITE_DEV_SERVER_URL
@@ -352,6 +364,105 @@ ipcMain.handle(
 
 ipcMain.handle('simpleos:update-status', async (): Promise<ValueResult<{ summary: string }>> =>
   checkUpdateStatus(),
+)
+
+// ------------------------------------------------------------ hardware status
+
+/**
+ * Run a fixed, read-only command. Only commands from the frozen allowlists are
+ * ever passed here; renderer input is a key, never a command or an argument.
+ */
+function runApproved(approved: ApprovedCommand, timeout = 5000): Promise<string | null> {
+  return new Promise((resolve) => {
+    execFile(
+      approved.command,
+      [...approved.args],
+      { timeout, maxBuffer: 1024 * 1024 },
+      (error, stdout) => resolve(error ? null : stdout),
+    )
+  })
+}
+
+const MAX_SSID_LENGTH = 32
+const VOLUME_KEYS: readonly VolumeAction[] = ['volumeUp', 'volumeDown', 'volumeMute']
+const BRIGHTNESS_KEYS: readonly BrightnessAction[] = ['brightnessUp', 'brightnessDown']
+const POWER_SUPPLY_DIR = '/sys/class/power_supply'
+const BACKLIGHT_DIR = '/sys/class/backlight'
+
+/** Turn `nmcli --terse` output into one calm value for the header. */
+function parseWifiStatus(stdout: string | null): WifiStatus {
+  if (!stdout) return { connected: false, ssid: null }
+  for (const line of stdout.split('\n')) {
+    const fields = line.trim().split(':')
+    // TYPE,STATE,CONNECTION — an SSID may itself contain a colon, so join the rest.
+    if (fields[0] !== 'wifi' || fields[1] !== 'connected') continue
+    const raw = fields
+      .slice(2)
+      .join(':')
+      .replace(/[\u0000-\u001f\u007f]/g, '')
+      .trim()
+    return { connected: true, ssid: raw ? raw.slice(0, MAX_SSID_LENGTH) : null }
+  }
+  return { connected: false, ssid: null }
+}
+
+/**
+ * Read battery state straight from sysfs. No external process and no root are
+ * needed; desktops simply report that no battery is present.
+ */
+function readBatteryStatus(): BatteryStatus {
+  try {
+    const names = fs.readdirSync(POWER_SUPPLY_DIR).filter((name) => name.startsWith('BAT'))
+    if (names.length === 0) return { present: false, percent: null, charging: null }
+    const battery = path.join(POWER_SUPPLY_DIR, names[0])
+    const parsed = Number.parseInt(fs.readFileSync(path.join(battery, 'capacity'), 'utf8'), 10)
+    const state = fs.readFileSync(path.join(battery, 'status'), 'utf8').trim().toLowerCase()
+    return {
+      present: true,
+      percent: Number.isFinite(parsed) ? Math.max(0, Math.min(100, parsed)) : null,
+      charging: state === 'charging' || state === 'full' ? true : state ? false : null,
+    }
+  } catch {
+    return { present: false, percent: null, charging: null }
+  }
+}
+
+/** A desktop has no backlight directory, so those buttons should be hidden. */
+function hasBacklight(): boolean {
+  try {
+    return fs.readdirSync(BACKLIGHT_DIR).length > 0
+  } catch {
+    return false
+  }
+}
+
+ipcMain.handle('simpleos:hardware:status', async (): Promise<ValueResult<HardwareStatus>> => {
+  const wifi = parseWifiStatus(await runApproved(HARDWARE_STATUS.wifi))
+  return {
+    ok: true,
+    value: { wifi, battery: readBatteryStatus(), brightnessAvailable: hasBacklight() },
+  }
+})
+
+ipcMain.handle('simpleos:hardware:volume', async (_event, action: unknown): Promise<Result> => {
+  if (typeof action !== 'string' || !VOLUME_KEYS.includes(action as VolumeAction)) {
+    return fail('UNKNOWN_TARGET')
+  }
+  return (await runApproved(HARDWARE_ACTIONS[action])) !== null
+    ? OK
+    : fail('HARDWARE_UNAVAILABLE')
+})
+
+ipcMain.handle(
+  'simpleos:hardware:brightness',
+  async (_event, action: unknown): Promise<Result> => {
+    if (typeof action !== 'string' || !BRIGHTNESS_KEYS.includes(action as BrightnessAction)) {
+      return fail('UNKNOWN_TARGET')
+    }
+    return (await runApproved(HARDWARE_ACTIONS[action])) !== null
+      ? OK
+      : fail('HARDWARE_UNAVAILABLE')
+  },
 )
 
 // -------------------------------------------------------------------- window setup

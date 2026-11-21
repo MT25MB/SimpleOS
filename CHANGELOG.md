@@ -6,7 +6,16 @@ All notable changes to SimpleOS are recorded here. The format follows
 
 ## [Unreleased]
 
-Nothing yet.
+### Added
+
+- Firmware and driver essentials for common Intel/AMD laptops and desktops,
+  plus enabled NetworkManager, Bluetooth, power-profiles-daemon and upower.
+- Safe power defaults that never suspend on lid close, idle or a stray power
+  key, and that avoid hibernation surprises.
+- A header status strip with Wi-Fi state and one-click Wi-Fi settings, a
+  laptop-only battery/charging indicator, and allowlisted volume and screen
+  brightness buttons.
+- [Hardware support and power behaviour](docs/hardware-support.md) notes.
 
 ## [v0.3.0]
 

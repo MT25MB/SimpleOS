@@ -17,6 +17,7 @@ export const MESSAGES: Record<ErrorCode, string> = {
   PIN_NOT_NUMERIC: 'Use numbers only for your PIN.',
   PINS_DONT_MATCH: "Those two PINs don't match. Try again.",
   BRIDGE_UNAVAILABLE: 'This part works in the SimpleOS desktop app.',
+  HARDWARE_UNAVAILABLE: "That control isn't available on this computer.",
   UNEXPECTED: 'Something went wrong. Try that again.',
 }
 

@@ -2,15 +2,24 @@ import { useEffect, useRef, useState } from 'react'
 import logoUrl from '../../docs/assets/simpleos-logo.png'
 import { CaregiverPanel } from './components/CaregiverPanel'
 import { FontScaleControl } from './components/FontScaleControl'
+import { HardwareControls } from './components/HardwareControls'
 import { NoticeBanner } from './components/NoticeBanner'
 import { PinScreen } from './components/PinScreen'
 import { RemindersPanel } from './components/RemindersPanel'
 import { Tile } from './components/Tile'
 import { TILES } from './data/tiles'
 import { useFontScale } from './hooks/useFontScale'
+import { useHardwareStatus } from './hooks/useHardwareStatus'
 import { useReminders } from './hooks/useReminders'
 import { friendlyMessage } from './messages'
-import type { ErrorCode, LaunchTarget, LauncherTile, SettingsTarget } from './types'
+import type {
+  BrightnessAction,
+  ErrorCode,
+  LaunchTarget,
+  LauncherTile,
+  SettingsTarget,
+  VolumeAction,
+} from './types'
 
 type View = 'home' | 'reminders' | 'caregiver'
 type PinMode = 'unlock' | 'create' | 'change'
@@ -19,6 +28,7 @@ type Notice = { tone: 'info' | 'sharing' | 'caregiver'; message: string }
 /** Full-screen, calm home launcher for SimpleOS. */
 export default function App() {
   const { scale, setFontScale } = useFontScale()
+  const { status: hardware } = useHardwareStatus()
   const reminders = useReminders()
   const [view, setView] = useState<View>('home')
   const [pinMode, setPinMode] = useState<PinMode | null>(null)
@@ -151,6 +161,42 @@ export default function App() {
     setUpdateSummary(result.value.summary)
   }
 
+  async function handleAdjustVolume(action: VolumeAction) {
+    setNotice(null)
+    const bridge = window.simpleOS
+    if (!bridge) {
+      setNotice({ tone: 'info', message: friendlyMessage('BRIDGE_UNAVAILABLE') })
+      return
+    }
+    const result = await bridge.adjustVolume(action)
+    if (!result.ok) setNotice({ tone: 'info', message: friendlyMessage(result.code) })
+  }
+
+  async function handleAdjustBrightness(action: BrightnessAction) {
+    setNotice(null)
+    const bridge = window.simpleOS
+    if (!bridge) {
+      setNotice({ tone: 'info', message: friendlyMessage('BRIDGE_UNAVAILABLE') })
+      return
+    }
+    const result = await bridge.adjustBrightness(action)
+    if (!result.ok) setNotice({ tone: 'info', message: friendlyMessage(result.code) })
+  }
+
+  async function handleOpenWifiSettings() {
+    setNotice(null)
+    const bridge = window.simpleOS
+    if (!bridge) {
+      setNotice({ tone: 'info', message: friendlyMessage('BRIDGE_UNAVAILABLE') })
+      return
+    }
+    const result = await bridge.runAction('networkSettings')
+    setNotice({
+      tone: 'info',
+      message: result.ok ? 'Opening Wi-Fi settings.' : friendlyMessage(result.code),
+    })
+  }
+
   return (
     <div className="app">
       <header className="app__header">
@@ -167,6 +213,12 @@ export default function App() {
           <p className="app__tagline">What can I help you with today?</p>
         </div>
         <FontScaleControl value={scale} onChange={setFontScale} />
+        <HardwareControls
+          status={hardware}
+          onOpenWifiSettings={() => void handleOpenWifiSettings()}
+          onAdjustVolume={(action) => void handleAdjustVolume(action)}
+          onAdjustBrightness={(action) => void handleAdjustBrightness(action)}
+        />
       </header>
 
       {notice && (
