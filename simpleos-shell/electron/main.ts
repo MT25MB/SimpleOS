@@ -15,11 +15,12 @@
  *
  * This file is compiled to dist-electron/main.js by `npm run compile:electron`.
  */
-import { app, BrowserWindow, ipcMain } from 'electron'
+import { app, BrowserWindow, ipcMain, type IpcMainInvokeEvent } from 'electron'
 import path from 'node:path'
 import os from 'node:os'
 import fs from 'node:fs'
 import crypto from 'node:crypto'
+import { pathToFileURL } from 'node:url'
 import { spawn, execFile } from 'node:child_process'
 import {
   ALLOWED_APPS,
@@ -29,6 +30,7 @@ import {
   SAFE_ACTIONS,
   type ApprovedCommand,
 } from './allowlists'
+import { createPinThrottle } from './pin-throttle'
 import {
   HASH_HEX_LENGTH,
   PIN_MAX_LENGTH,
@@ -72,6 +74,35 @@ if (forcedOzonePlatform) {
 const OK: { ok: true } = { ok: true }
 // The failure shape is shared by Result and ValueResult<T>.
 const fail = (code: ErrorCode): { ok: false; code: ErrorCode } => ({ ok: false, code })
+
+// The one window we ever create. IPC calls from any other sender (an injected
+// frame, a pop-up, a preload in another webContents) are rejected.
+let launcherWindow: BrowserWindow | null = null
+
+/** The single local file we are allowed to display. Never any other file. */
+const appFileUrl = pathToFileURL(path.join(__dirname, '..', 'dist', 'index.html')).href
+
+/** Only our own bundled file or, in development, the Vite dev server. */
+function isAllowedAppUrl(raw: string): boolean {
+  if (raw === 'about:blank') return true
+  if (raw === appFileUrl) return true
+  if (!devUrl) return false
+  try {
+    return new URL(raw).href === new URL(devUrl).href
+  } catch {
+    // Malformed URLs are never trusted.
+  }
+  return false
+}
+
+/** Defence in depth: every handler checks that the call came from our window. */
+function isTrustedSender(event: IpcMainInvokeEvent): boolean {
+  const window = launcherWindow
+  if (!window || window.isDestroyed()) return false
+  if (event.sender !== window.webContents) return false
+  if (event.senderFrame !== window.webContents.mainFrame) return false
+  return isAllowedAppUrl(event.senderFrame?.url ?? '')
+}
 
 // SimpleOS keeps its small state files in ~/.config/simpleos on Linux, while
 // honouring XDG_CONFIG_HOME when a distribution sets it.
@@ -141,7 +172,8 @@ function spawnDetached(command: string, args: readonly string[]): Promise<Result
 
 // ------------------------------------------------------------------ app launching
 
-ipcMain.handle('simpleos:launch-app', async (_event, target: unknown): Promise<Result> => {
+ipcMain.handle('simpleos:launch-app', async (event, target: unknown): Promise<Result> => {
+  if (!isTrustedSender(event)) return fail('UNKNOWN_TARGET')
   if (typeof target !== 'string' || !Object.hasOwn(ALLOWED_APPS, target)) {
     return fail('UNKNOWN_TARGET')
   }
@@ -153,7 +185,8 @@ ipcMain.handle('simpleos:launch-app', async (_event, target: unknown): Promise<R
 
 ipcMain.handle(
   'simpleos:reminders:load',
-  async (): Promise<ValueResult<RemindersFile>> => {
+  async (event): Promise<ValueResult<RemindersFile>> => {
+    if (!isTrustedSender(event)) return fail('UNKNOWN_TARGET')
     try {
       if (!fs.existsSync(remindersPath())) {
         return { ok: true, value: { date: '', items: [] } }
@@ -169,7 +202,8 @@ ipcMain.handle(
 
 ipcMain.handle(
   'simpleos:reminders:save',
-  async (_event, payload: unknown): Promise<Result> => {
+  async (event, payload: unknown): Promise<Result> => {
+    if (!isTrustedSender(event)) return fail('UNKNOWN_TARGET')
     try {
       if (!isRemindersFile(payload)) return fail('INVALID_INPUT')
       writeJsonAtomically(remindersPath(), JSON.stringify(payload, null, 2))
@@ -186,6 +220,10 @@ interface PinRecord {
   salt: string
   hash: string
 }
+
+// In-memory only: a fresh launch starts clean. The limiter is enforced here,
+// not in the UI, so a modified renderer cannot skip it.
+const pinThrottle = createPinThrottle()
 
 function readPinRecord(): PinRecord | null {
   try {
@@ -211,32 +249,44 @@ function readPinRecord(): PinRecord | null {
 
 ipcMain.handle(
   'simpleos:pin:has',
-  async (): Promise<ValueResult<{ hasPin: boolean }>> => ({
-    ok: true,
-    value: { hasPin: readPinRecord() !== null },
-  }),
+  async (event): Promise<ValueResult<{ hasPin: boolean }>> => {
+    if (!isTrustedSender(event)) return fail('UNKNOWN_TARGET')
+    return { ok: true, value: { hasPin: readPinRecord() !== null } }
+  },
 )
 
-ipcMain.handle('simpleos:pin:unlock', async (_event, pin: unknown): Promise<Result> => {
+ipcMain.handle('simpleos:pin:unlock', async (event, pin: unknown): Promise<Result> => {
+  if (!isTrustedSender(event)) return fail('UNKNOWN_TARGET')
+  if (!pinThrottle.allowed()) return fail('TOO_MANY_TRIES')
   if (typeof pin !== 'string' || pin.length === 0 || !/^\d+$/.test(pin)) {
+    pinThrottle.recordFailure()
     return fail('PIN_INCORRECT')
   }
   const record = readPinRecord()
   if (!record) return fail('PIN_NOT_SET')
-  return pinsMatch(pin, record) ? OK : fail('PIN_INCORRECT')
+  if (!pinsMatch(pin, record)) {
+    pinThrottle.recordFailure()
+    return fail('PIN_INCORRECT')
+  }
+  pinThrottle.reset()
+  return OK
 })
 
 ipcMain.handle(
   'simpleos:pin:set',
-  async (_event, currentPin: unknown, newPin: unknown): Promise<Result> => {
+  async (event, currentPin: unknown, newPin: unknown): Promise<Result> => {
+    if (!isTrustedSender(event)) return fail('UNKNOWN_TARGET')
+    const record = readPinRecord()
+    // Changing an existing PIN checks the old one, so it gets the same gate.
+    if (record && !pinThrottle.allowed()) return fail('TOO_MANY_TRIES')
     if (typeof newPin !== 'string' || newPin.length < PIN_MIN_LENGTH) {
       return fail('PIN_TOO_SHORT')
     }
     if (newPin.length > PIN_MAX_LENGTH) return fail('PIN_TOO_LONG')
     if (!/^\d+$/.test(newPin)) return fail('PIN_NOT_NUMERIC')
 
-    const record = readPinRecord()
     if (record && (typeof currentPin !== 'string' || !pinsMatch(currentPin, record))) {
+      pinThrottle.recordFailure()
       return fail('PIN_INCORRECT')
     }
 
@@ -246,6 +296,7 @@ ipcMain.handle(
         pinPath(),
         JSON.stringify({ salt, hash: hashPin(newPin, salt) }, null, 2),
       )
+      pinThrottle.reset()
       return OK
     } catch {
       return fail('STORAGE_FAILED')
@@ -322,7 +373,8 @@ function checkUpdateStatus(): Promise<ValueResult<{ summary: string }>> {
  */
 ipcMain.handle(
   'simpleos:run-action',
-  async (_event, action: unknown): Promise<ValueResult<{ summary?: string }>> => {
+  async (event, action: unknown): Promise<ValueResult<{ summary?: string }>> => {
+    if (!isTrustedSender(event)) return fail('UNKNOWN_TARGET')
     if (typeof action !== 'string' || !Object.hasOwn(SAFE_ACTIONS, action)) {
       return fail('UNKNOWN_TARGET')
     }
@@ -354,7 +406,8 @@ ipcMain.handle(
 // both delegate to the same allowlists and helpers used by `runAction`.
 ipcMain.handle(
   'simpleos:open-settings',
-  async (_event, target: unknown): Promise<Result> => {
+  async (event, target: unknown): Promise<Result> => {
+    if (!isTrustedSender(event)) return fail('UNKNOWN_TARGET')
     if (typeof target !== 'string' || !Object.hasOwn(ALLOWED_SETTINGS, target)) {
       return fail('UNKNOWN_TARGET')
     }
@@ -362,8 +415,12 @@ ipcMain.handle(
   },
 )
 
-ipcMain.handle('simpleos:update-status', async (): Promise<ValueResult<{ summary: string }>> =>
-  checkUpdateStatus(),
+ipcMain.handle(
+  'simpleos:update-status',
+  async (event): Promise<ValueResult<{ summary: string }>> => {
+    if (!isTrustedSender(event)) return fail('UNKNOWN_TARGET')
+    return checkUpdateStatus()
+  },
 )
 
 // ------------------------------------------------------------ hardware status
@@ -436,7 +493,8 @@ function hasBacklight(): boolean {
   }
 }
 
-ipcMain.handle('simpleos:hardware:status', async (): Promise<ValueResult<HardwareStatus>> => {
+ipcMain.handle('simpleos:hardware:status', async (event): Promise<ValueResult<HardwareStatus>> => {
+  if (!isTrustedSender(event)) return fail('UNKNOWN_TARGET')
   const wifi = parseWifiStatus(await runApproved(HARDWARE_STATUS.wifi))
   return {
     ok: true,
@@ -444,7 +502,8 @@ ipcMain.handle('simpleos:hardware:status', async (): Promise<ValueResult<Hardwar
   }
 })
 
-ipcMain.handle('simpleos:hardware:volume', async (_event, action: unknown): Promise<Result> => {
+ipcMain.handle('simpleos:hardware:volume', async (event, action: unknown): Promise<Result> => {
+  if (!isTrustedSender(event)) return fail('UNKNOWN_TARGET')
   if (typeof action !== 'string' || !VOLUME_KEYS.includes(action as VolumeAction)) {
     return fail('UNKNOWN_TARGET')
   }
@@ -455,7 +514,8 @@ ipcMain.handle('simpleos:hardware:volume', async (_event, action: unknown): Prom
 
 ipcMain.handle(
   'simpleos:hardware:brightness',
-  async (_event, action: unknown): Promise<Result> => {
+  async (event, action: unknown): Promise<Result> => {
+    if (!isTrustedSender(event)) return fail('UNKNOWN_TARGET')
     if (typeof action !== 'string' || !BRIGHTNESS_KEYS.includes(action as BrightnessAction)) {
       return fail('UNKNOWN_TARGET')
     }
@@ -480,8 +540,22 @@ function createWindow(): void {
       nodeIntegration: false,
       sandbox: true,
       webSecurity: true,
+      allowRunningInsecureContent: false,
+      experimentalFeatures: false,
+      webviewTag: false,
     },
   })
+  launcherWindow = window
+
+  // Nothing in the launcher ever needs to navigate away or open another
+  // window. Deny both rather than trying to maintain an allowlist of URLs.
+  window.webContents.on('will-navigate', (event, url) => {
+    if (!isAllowedAppUrl(url)) event.preventDefault()
+  })
+  window.webContents.on('will-frame-navigate', (details) => {
+    if (!isAllowedAppUrl(details.url)) details.preventDefault()
+  })
+  window.webContents.setWindowOpenHandler(() => ({ action: 'deny' }))
 
   if (devUrl) {
     // Development only: the concurrently-run Vite dev server.
@@ -491,6 +565,12 @@ function createWindow(): void {
     void window.loadFile(path.join(__dirname, '..', 'dist', 'index.html'))
   }
 }
+
+// No embedded webviews anywhere in the app: they would create extra renderer
+// frames that bypass the single-window IPC trust check above.
+app.on('web-contents-created', (_event, contents) => {
+  contents.on('will-attach-webview', (event) => event.preventDefault())
+})
 
 app.whenReady().then(() => {
   createWindow()

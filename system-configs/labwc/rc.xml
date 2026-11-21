@@ -26,6 +26,20 @@
       <keybind key="A-F4">
         <action name="Close"/>
       </keybind>
+      <!-- Neutralise the terminal shortcuts inherited from labwc's defaults.
+           Pressing them only moves focus, so no shell can be opened by key. -->
+      <keybind key="A-Return">
+        <action name="NextWindow"/>
+      </keybind>
+      <keybind key="A-t">
+        <action name="NextWindow"/>
+      </keybind>
+      <keybind key="C-A-t">
+        <action name="NextWindow"/>
+      </keybind>
+      <keybind key="W-Return">
+        <action name="NextWindow"/>
+      </keybind>
     </keyboard>
   </core>
 

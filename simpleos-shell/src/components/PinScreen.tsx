@@ -43,12 +43,31 @@ export function PinScreen({ mode, onCancel, onSubmit }: PinScreenProps) {
   const [confirmPin, setConfirmPin] = useState('')
   const [error, setError] = useState<ErrorCode | null>(null)
   const [busy, setBusy] = useState(false)
+  const [paused, setPaused] = useState(false)
+  const cooldownTimer = useRef<number | null>(null)
 
   // showModal() gives us focus trapping, Escape handling and an inert backdrop.
   useEffect(() => {
     dialogRef.current?.showModal()
     firstInputRef.current?.focus()
   }, [])
+
+  useEffect(
+    () => () => {
+      if (cooldownTimer.current !== null) window.clearTimeout(cooldownTimer.current)
+    },
+    [],
+  )
+
+  /** A short UI pause; the main process owns the real attempt counter. */
+  function pauseFor(ms: number) {
+    setPaused(true)
+    if (cooldownTimer.current !== null) window.clearTimeout(cooldownTimer.current)
+    cooldownTimer.current = window.setTimeout(() => {
+      setPaused(false)
+      cooldownTimer.current = null
+    }, ms)
+  }
 
   function clearPins() {
     setCurrentPin('')
@@ -71,6 +90,9 @@ export function PinScreen({ mode, onCancel, onSubmit }: PinScreenProps) {
       const code = await onSubmit(currentPin, newPin)
       if (code) {
         setError(code)
+        // Stops a stuck button from firing many times. The main process keeps
+        // the authoritative 5-attempt / 30-second cooldown.
+        pauseFor(code === 'TOO_MANY_TRIES' ? 30_000 : 1_000)
         return
       }
       dialogRef.current?.close()
@@ -154,7 +176,7 @@ export function PinScreen({ mode, onCancel, onSubmit }: PinScreenProps) {
             <button type="button" className="button button--secondary" onClick={onCancel}>
               Cancel
             </button>
-            <button type="submit" className="button" disabled={busy}>
+            <button type="submit" className="button" disabled={busy || paused}>
               {copy.action}
             </button>
           </div>

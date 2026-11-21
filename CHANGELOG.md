@@ -17,6 +17,20 @@ All notable changes to SimpleOS are recorded here. The format follows
   brightness buttons.
 - [Hardware support and power behaviour](docs/hardware-support.md) notes.
 
+### Security
+
+- Electron now blocks navigation away from the app, denies all new windows and
+  embedded webviews, ships a strict content security policy, and checks the
+  sender on every IPC handler.
+- Firefox policies now block `file:`/`ftp:` navigation, `about:config`, the
+  add-ons manager and developer tools, deny new extension installs and lock
+  uBlock Origin so it cannot be removed.
+- Labwc overrides the inherited terminal shortcuts so no shell can be opened
+  from the keyboard.
+- Caregiver PIN attempts are rate limited in the main process (five tries, then
+  a 30-second cooldown), with a matching pause in the PIN screen.
+- Automated security regression tests cover every one of these guardrails.
+
 ## [v0.3.0]
 
 The first release candidate for general testing. It adds the public website, a

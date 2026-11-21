@@ -8,6 +8,19 @@
     },
 
     "DisableTelemetry": true,
+
+    "BlockAboutConfig": true,
+    "BlockAboutAddons": true,
+    "BlockAboutProfiles": true,
+    "BlockAboutSupport": true,
+    "DisableDeveloperTools": true,
+    "DisableSecurityBypass": true,
+
+    "WebsiteFilter": {
+      "Block": ["file://*/*", "ftp://*/*"],
+      "Exceptions": []
+    },
+
     "DisableFirefoxStudies": true,
     "DisableFirefoxAccounts": true,
     "DisablePocket": true,
@@ -41,6 +54,13 @@
       }
     },
 
+    "InstallAddonsPermission": {
+      "Default": false,
+      "Allow": []
+    },
+    "Extensions": {
+      "Locked": ["uBlock0@raymondhill.net"]
+    },
     "ExtensionSettings": {
       "*": {
         "installation_mode": "blocked",

@@ -84,6 +84,7 @@ export type ErrorCode =
   | 'PINS_DONT_MATCH'
   | 'BRIDGE_UNAVAILABLE'
   | 'HARDWARE_UNAVAILABLE'
+  | 'TOO_MANY_TRIES'
   | 'UNEXPECTED'
 
 /** Every IPC call returns a result object; main never sends stack traces. */
