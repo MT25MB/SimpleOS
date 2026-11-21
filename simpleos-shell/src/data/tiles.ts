@@ -7,14 +7,14 @@ export const TILES: readonly LauncherTile[] = [
     title: 'Video Call Family',
     subtitle: 'Talk to family and friends',
     icon: 'video',
-    action: { kind: 'launch', target: 'videoCalls' },
+    action: { kind: 'launch', target: 'jitsi' },
   },
   {
     id: 'web-email',
     title: 'Web & Email',
     subtitle: 'Websites, email and messages',
     icon: 'web',
-    action: { kind: 'launch', target: 'webEmail' },
+    action: { kind: 'launch', target: 'firefox' },
   },
   {
     id: 'photo-album',
@@ -35,7 +35,7 @@ export const TILES: readonly LauncherTile[] = [
     title: 'Ask for Help',
     subtitle: 'Share your screen with RustDesk',
     icon: 'help',
-    action: { kind: 'launch', target: 'remoteHelp' },
+    action: { kind: 'launch', target: 'rustdesk' },
   },
   {
     id: 'caregiver-settings',

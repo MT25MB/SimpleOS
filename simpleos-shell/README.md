@@ -15,9 +15,10 @@ React + TypeScript + Vite renderer inside a locked-down Electron window.
 
 ## Daily reminders
 
-Reminders are stored as a JSON file in Electron's `userData` directory through a
-narrow IPC API. When running the Vite web preview (no Electron bridge), they
-fall back to `localStorage` so UI work still works.
+Reminders are stored as `~/.config/simpleos/reminders.json` (or
+`$XDG_CONFIG_HOME/simpleos/reminders.json`) through a narrow IPC API. Only the
+main process touches the filesystem. When running the Vite web preview (no
+Electron bridge), reminders fall back to `localStorage` so UI work still works.
 
 - Add a reminder with an optional time, shown in plain English ("at 5:00 PM").
 - **Mark Done** toggles a reminder; a new day clears done marks automatically
@@ -29,14 +30,31 @@ fall back to `localStorage` so UI work still works.
 
 - On first use the caregiver is prompted to **set a PIN**. There is no default
   or hardcoded PIN.
-- The PIN is hashed with scrypt and a random salt in the main process and saved
-  with owner-only permissions. Only the hash lives on disk; the renderer never
-  sees it. `timingSafeEqual` is used for verification.
+- PIN entry is a dedicated full-screen component (`PinScreen`). The PIN exists
+  only in the transient input fields, is sent straight to IPC for verification,
+  and is cleared from component state immediately afterwards. It is never
+  stored in `localStorage` or any other renderer-side storage.
+- The PIN is hashed with `scryptSync` and a random salt in the main process and
+  saved with owner-only permissions. Only the hash lives on disk; the renderer
+  never sees it. `timingSafeEqual` is used for verification.
 - Caregiver Settings offers large, plain-language buttons for **Wi-Fi & Network**,
   **Printers**, **Open RustDesk**, and **Check for updates**. Update status is
   translated into a short sentence such as "Your system is up to date. Version
   41." — raw `rpm-ostree` output is never displayed.
 - The `senior` account created at first boot is never added to `wheel`/`sudo`.
+
+## App launcher
+
+Tiles call `window.simpleOS.launchApp(target)` with one of a small set of fixed
+target names. The main process maps each name to a fixed flatpak command; a
+renderer-supplied string is only ever used as a lookup key.
+
+| Target | Tile | Command |
+| --- | --- | --- |
+| `jitsi` | Video Call Family | Firefox → `https://meet.jit.si` |
+| `firefox` | Web & Email | `org.mozilla.firefox` |
+| `photos` | Photo Album | `org.gnome.Loupe` |
+| `rustdesk` | Ask for Help | `com.rustdesk.RustDesk` |
 
 ## Safety and status messages
 

@@ -5,14 +5,16 @@
 */
 :root {
   --font-scale: 1;
-  font-size: calc(1.125rem * var(--font-scale));
+  /* Enforce a hard 18px floor (1.125rem = 18px at the browser's 16px base).
+     max() guarantees it even if --font-scale is ever set below 1. */
+  font-size: max(1.125rem, calc(1.125rem * var(--font-scale)));
 
-  --bg: #0b1120;
+  --bg: #0b1120; /* calm dark slate */
   --surface: #1e293b;
   --surface-raised: #27354b;
   --border: #64748b;
   --border-strong: #94a3b8;
-  --text: #f8fafc;
+  --text: #f8fafc; /* off-white: >7:1 on --bg, meets WCAG 1.4.6 AAA */
   --text-soft: #e2e8f0;
   --accent: #38bdf8;
   --accent-strong: #0ea5e9;
@@ -532,6 +534,75 @@ input {
 .pin-dialog input {
   width: 100%;
   flex: none;
+}
+
+/* -------------------------------------------------------- full-screen PIN gate */
+
+.pin-screen {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  max-width: none;
+  height: 100vh;
+  max-height: none;
+  margin: 0;
+  padding: 1.25rem;
+  overflow: auto;
+  color: var(--text);
+  background: var(--bg);
+  border: 0;
+}
+
+.pin-screen::backdrop {
+  background: var(--bg);
+}
+
+.pin-screen__card {
+  width: min(34rem, 100%);
+  margin: max(2rem, 8vh) auto;
+  padding: 2rem;
+  background: var(--surface);
+  border: 2px solid var(--border-strong);
+  border-radius: 0.75rem;
+}
+
+.pin-screen h1 {
+  margin: 0 0 0.5rem;
+  font-size: 2rem;
+}
+
+.pin-screen__intro {
+  color: var(--text-soft);
+}
+
+.pin-screen label {
+  display: block;
+  margin: 1.25rem 0 0.5rem;
+  font-weight: 700;
+}
+
+.pin-screen input {
+  width: 100%;
+  min-height: 3.5rem;
+  padding: 0.75rem 1rem;
+  color: var(--text);
+  background: var(--bg);
+  border: 2px solid var(--border-strong);
+  border-radius: 0.5rem;
+}
+
+.pin-screen__error {
+  min-height: 2rem;
+  margin: 1rem 0 0;
+  color: var(--error);
+  font-weight: 700;
+}
+
+.pin-screen__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1rem;
 }
 
 @media (prefers-reduced-motion: reduce) {

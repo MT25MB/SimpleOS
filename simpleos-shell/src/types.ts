@@ -1,4 +1,4 @@
-export type LaunchTarget = 'videoCalls' | 'webEmail' | 'photos' | 'remoteHelp'
+export type LaunchTarget = 'firefox' | 'jitsi' | 'photos' | 'rustdesk'
 export type SettingsTarget = 'network' | 'printer'
 
 export type IconName = 'video' | 'web' | 'photos' | 'reminders' | 'help' | 'settings'

@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { CaregiverPanel } from './components/CaregiverPanel'
 import { FontScaleControl } from './components/FontScaleControl'
 import { NoticeBanner } from './components/NoticeBanner'
-import { PinDialog } from './components/PinDialog'
+import { PinScreen } from './components/PinScreen'
 import { RemindersPanel } from './components/RemindersPanel'
 import { Tile } from './components/Tile'
 import { TILES } from './data/tiles'
@@ -46,9 +46,9 @@ export default function App() {
     }
 
     setNotice({
-      tone: target === 'remoteHelp' ? 'sharing' : 'info',
+      tone: target === 'rustdesk' ? 'sharing' : 'info',
       message:
-        target === 'remoteHelp'
+        target === 'rustdesk'
           ? 'Screen sharing is starting. RustDesk will open — you can stop sharing there at any time.'
           : `${label} is starting.`,
     })
@@ -199,7 +199,7 @@ export default function App() {
                 onScaleChange={setFontScale}
                 updateSummary={updateSummary}
                 onOpenSettings={handleOpenSettings}
-                onOpenRemoteHelp={() => void launchApp('remoteHelp', 'RustDesk')}
+                onOpenRemoteHelp={() => void launchApp('rustdesk', 'RustDesk')}
                 onCheckUpdates={handleCheckUpdates}
                 onChangePin={() => setPinMode('change')}
                 error={caregiverError}
@@ -215,7 +215,7 @@ export default function App() {
       </footer>
 
       {pinMode && (
-        <PinDialog mode={pinMode} onCancel={() => setPinMode(null)} onSubmit={handlePinSubmit} />
+        <PinScreen mode={pinMode} onCancel={() => setPinMode(null)} onSubmit={handlePinSubmit} />
       )}
     </div>
   )

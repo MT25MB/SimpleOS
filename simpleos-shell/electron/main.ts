@@ -17,6 +17,7 @@
  */
 import { app, BrowserWindow, ipcMain } from 'electron'
 import path from 'node:path'
+import os from 'node:os'
 import fs from 'node:fs'
 import crypto from 'node:crypto'
 import { spawn, execFile } from 'node:child_process'
@@ -50,10 +51,13 @@ const OK: { ok: true } = { ok: true }
 // The failure shape is shared by Result and ValueResult<T>.
 const fail = (code: ErrorCode): { ok: false; code: ErrorCode } => ({ ok: false, code })
 
-const remindersPath = (): string =>
-  path.join(app.getPath('userData'), 'reminders.json')
-const pinPath = (): string =>
-  path.join(app.getPath('userData'), 'caregiver-pin.json')
+// SimpleOS keeps its small state files in ~/.config/simpleos on Linux, while
+// honouring XDG_CONFIG_HOME when a distribution sets it.
+const simpleosConfigDir = (): string =>
+  path.join(process.env.XDG_CONFIG_HOME || path.join(os.homedir(), '.config'), 'simpleos')
+
+const remindersPath = (): string => path.join(simpleosConfigDir(), 'reminders.json')
+const pinPath = (): string => path.join(simpleosConfigDir(), 'caregiver-pin.json')
 
 function isReminder(value: unknown): value is Reminder {
   if (!value || typeof value !== 'object') return false
@@ -86,19 +90,20 @@ interface ApprovedCommand {
 }
 
 const ALLOWED_APPS: Readonly<Record<string, ApprovedCommand>> = Object.freeze({
-  videoCalls: {
-    command: 'flatpak',
-    args: Object.freeze(['run', 'org.mozilla.firefox', '--new-window', 'https://meet.google.com/']),
-  },
-  webEmail: {
+  firefox: {
     command: 'flatpak',
     args: Object.freeze(['run', 'org.mozilla.firefox']),
+  },
+  jitsi: {
+    // Jitsi Meet runs in Firefox; no extra flatpak is required.
+    command: 'flatpak',
+    args: Object.freeze(['run', 'org.mozilla.firefox', '--new-window', 'https://meet.jit.si']),
   },
   photos: {
     command: 'flatpak',
     args: Object.freeze(['run', 'org.gnome.Loupe']),
   },
-  remoteHelp: {
+  rustdesk: {
     command: 'flatpak',
     args: Object.freeze(['run', 'com.rustdesk.RustDesk']),
   },
