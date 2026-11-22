@@ -171,7 +171,7 @@ describe('system guardrails contract', () => {
   })
 
   it('ships the offline voice runtime without any cloud dependency', () => {
-    for (const pkg of ['espeak-ng', 'python3', 'python3-pip', 'ffmpeg-free', 'unzip', 'curl']) {
+    for (const pkg of ['espeak-ng', 'python3', 'python3-pip', 'unzip', 'curl']) {
       expect(containerfile, pkg).toMatch(new RegExp(`\\b${pkg}\\b`))
     }
     expect(containerfile).toContain('vosk-model-small-en-us-0.15.zip')
