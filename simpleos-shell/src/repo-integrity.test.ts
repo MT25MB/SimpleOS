@@ -103,7 +103,7 @@ describe('community and governance docs', () => {
       expect(draft, 'site link missing from a draft').toContain(siteLink)
     }
     expect(launch).toContain('v0.2.0')
-    expect(launch).toContain('211')
+    expect(launch).toContain('217')
   })
 
   it('parses every issue form and the template config as valid YAML', () => {

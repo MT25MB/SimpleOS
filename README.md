@@ -33,6 +33,11 @@ SimpleOS takes those problems seriously. The system cannot be damaged by a stray
 - **Nothing to break.** The system files are read-only. Updates arrive in one piece, and the last working version is always kept.
 - **No admin account.** The everyday user is called `senior` and has no sudo or wheel access.
 - **Free.** No subscription, no account, no tracking, no telemetry. MIT licensed.
+- **Easy to listen to.** Read Aloud speaks the screen and reminders using a local voice, and stops with one press or Escape.
+- **Easy to talk to.** Hold to Speak understands five simple commands locally with Vosk. No audio ever leaves the computer.
+- **Family one tap.** Up to four family contact cards open a private video room in the locked-down Firefox.
+- **Calm when idle.** An optional photo frame shows local family photos and a big clock, and closes instantly when touched.
+- **Safe recovery.** Caregiver Settings shows a privacy-safe health summary and can restart the launcher, check for updates, or roll back the last OS update with one confirmed press.
 
 ### What is in the repository
 

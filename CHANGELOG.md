@@ -8,6 +8,29 @@ All notable changes to SimpleOS are recorded here. The format follows
 
 Nothing yet.
 
+## [v1.1.0]
+
+A documentation and reliability update that makes the v1.0.0 accessibility and
+family features easier to find and safer to use.
+
+### Added
+
+- Dedicated "What's New" sections in the README and website covering offline
+  Read Aloud and Hold to Speak, Family Contact Cards, the calm Idle Photo Frame,
+  and Caregiver System Health with one-click rollback. The new website section
+  reuses the existing high-contrast tokens, 18px+ rem type scale and 48px
+  interactive targets.
+- A pure, testable health summary builder so the copied report can be checked
+  for private paths and PIN material.
+- Regression tests for voice action limits, contact limits, Read Aloud Escape,
+  photo-frame dismissal and the health/recovery IPC boundary.
+
+### Fixed
+
+- Family cards are now loaded when the launcher starts. Previously they were
+  only loaded after opening Caregiver Settings, so the everyday user briefly saw
+  an empty family screen.
+
 ## [v1.0.0]
 
 The first stable release. It adds family connection tools, offline accessibility,
@@ -179,7 +202,8 @@ contribute to, and a full automated quality gate.
 - First prototype: initial image definition, system configs, Electron launcher,
   build script and documentation.
 
-[Unreleased]: https://github.com/MT25MB/SimpleOS/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/MT25MB/SimpleOS/compare/v1.1.0...HEAD
+[v1.1.0]: https://github.com/MT25MB/SimpleOS/compare/v1.0.0...v1.1.0
 [v1.0.0]: https://github.com/MT25MB/SimpleOS/compare/v0.3.0...v1.0.0
 [v0.3.0]: https://github.com/MT25MB/SimpleOS/compare/v0.2.0...v0.3.0
 [v0.2.0]: https://github.com/MT25MB/SimpleOS/compare/v0.1.0...v0.2.0

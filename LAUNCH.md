@@ -13,7 +13,7 @@ its own, and every draft includes both links.
 | --- | --- |
 | Published releases: `v0.1.0`, `v0.2.0`, `v0.3.0` and `v1.0.0` | Do not call `v0.1.0` the current release. |
 | `v1.0.0` is the current release; `main` is clean after it | Say "latest release is v1.0.0". |
-| 211 automated tests pass on `main` | A real, verifiable number — safe to state with the date. |
+| 217 automated tests pass on `main` | A real, verifiable number — safe to state with the date. |
 | Free, MIT licensed, no account or tracking | True for the whole project. |
 | Caregiver PIN has no recovery path yet | A real limitation. State it rather than hiding it. |
 | Remote help uses RustDesk and needs setup | Never imply anyone can connect without the person's knowledge. |
@@ -180,7 +180,7 @@ made of, and is it real?* Answer that in the first paragraph.
 > - **State:** reminders and a salted scrypt PIN hash are written atomically with
 >   `0600` permissions. The PIN has a five-attempt, 30-second cooldown enforced
 >   in the main process.
-> - **Verification:** one `bash scripts/test-all.sh` runs 211 tests, type-check,
+> - **Verification:** one `bash scripts/test-all.sh` runs 217 tests, type-check,
 >   production build, shell syntax checks and a staged-artifact gate. The same
 >   job gates image builds, Pages deploys and releases in CI. `scripts/test-vm.sh`
 >   boots the image in QEMU/KVM with qcow2, ISO and reset modes; `scripts/build-iso.sh`
@@ -235,7 +235,7 @@ made of, and is it real?* Answer that in the first paragraph.
 > - Does the IPC sender check plus allowlists cover the realistic escape paths,
 >   or am I missing one?
 >
-> Status: early. Latest release is v1.0.0. 211 tests pass locally and in CI.
+> Status: early. Latest release is v1.0.0. 217 tests pass locally and in CI.
 > No PIN recovery yet.
 >
 > <https://github.com/MT25MB/SimpleOS> · <https://mt25mb.github.io/SimpleOS/>
@@ -271,7 +271,7 @@ Before posting any draft:
 - [ ] "Unbreakable" is never used as a literal guarantee — prefer "hard to break by accident" and "restarts into the version that worked"
 - [ ] Remote help is described as opt-in and caregiver-set-up, never as always-on access
 - [ ] The two known limitations are mentioned where a reader would rely on them: no PIN recovery, RustDesk setup needed
-- [ ] The test count (211) is restated with its date if the post will live for a while
+- [ ] The test count (217) is restated with its date if the post will live for a while
 - [ ] Caregiver copy contains no Linux jargon: no bootc, rpm-ostree, IPC, CSP, compositor, scrypt, or QEMU
 - [ ] Technical copy does not drift into marketing adjectives
 - [ ] Community-specific rules are checked before posting (self-promotion limits, title formats, flair)
@@ -283,5 +283,5 @@ Before posting any draft:
 - No permissions to publish were given; these are drafts only.
 - The website at `mt25mb.github.io/SimpleOS/` was reachable when these drafts
   were written, and the repository is public.
-- The 211-test figure is accurate as of this document; re-run
+- The 217-test figure is accurate as of this document; re-run
   `bash scripts/test-all.sh` before restating it later.

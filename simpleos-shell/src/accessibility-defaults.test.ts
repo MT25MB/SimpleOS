@@ -38,6 +38,17 @@ describe('accessibility defaults', () => {
     expect(appCss).toMatch(/\.font-scale__option[\s\S]{0,200}min-height:\s*3rem/)
   })
 
+  it('keeps the new feature section on the same accessible tokens', () => {
+    expect(docsHtml).toContain('id="new"')
+    expect(docsHtml).toContain('aria-labelledby="new-title"')
+    for (const heading of ['Read Aloud', 'Hold to Speak', 'Family Contact Cards']) {
+      expect(docsHtml).toContain(`<h3>${heading}</h3>`)
+    }
+    const newSection = docsHtml.slice(docsHtml.indexOf('id="new"'), docsHtml.indexOf('id="caregiver"'))
+    expect(newSection).toContain('class="pillar"')
+    expect(newSection).toContain('aria-hidden="true"')
+  })
+
   it('never blocks pinch zoom', () => {
     for (const html of [docsHtml, appHtml]) {
       expect(html).not.toMatch(/maximum-scale\s*=\s*1/)
