@@ -165,6 +165,10 @@ ready for the next tag.
    notes generated from the commit history.
 8. Confirm the GitHub Release and the GHCR image were published, then update
    this page if the supported-version table changes.
+9. Keep the audited guardrails intact: the image must pass `bootc container lint`,
+   first boot must keep its bounded retries and run-once marker, every Firefox
+   policy key must match the official schema, and labwc must keep its `None`
+   keybinds and `<initial>` workspace tag. The test suite checks each of these.
 
 `README.md` intentionally does not hard-code a version, so it needs no edit for
 a routine patch or minor release.

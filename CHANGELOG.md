@@ -24,12 +24,25 @@ family features easier to find and safer to use.
   for private paths and PIN material.
 - Regression tests for voice action limits, contact limits, Read Aloud Escape,
   photo-frame dismissal and the health/recovery IPC boundary.
+- Reference-stack hardening from the latest architecture audit: BuildKit cache
+  mounts and `bootc container lint` in the image, Wayland portal packages for
+  RustDesk, a bounded Flatpak retry in first boot, and documentation of the
+  verified kiosk and policy schemas.
+- Regression tests that check every Firefox policy key against the official
+  schema shape, labwc's `<initial>` tag and `None` keybinds, and first-boot
+  idempotency.
 
 ### Fixed
 
 - Family cards are now loaded when the launcher starts. Previously they were
   only loaded after opening Caregiver Settings, so the everyday user briefly saw
   an empty family screen.
+- `DisableSecurityBypass` was a boolean and silently ignored by Firefox. It is
+  now the schema-valid object with `InvalidCertificate` and `SafeBrowsing`.
+- `rc.xml` used the Openbox-only `<firstdesk>` tag. labwc expects `<initial>`.
+- The uBlock Origin install URL now uses the canonical `ublock-origin` slug.
+- Camera and microphone permissions now allow approved Jitsi hosts and block
+  new requests elsewhere, so family calls do not loop on permission prompts.
 
 ## [v1.0.0]
 

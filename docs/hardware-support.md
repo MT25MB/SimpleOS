@@ -17,6 +17,9 @@ machines on top of the uBlue base:
 - `brightnessctl` — screen brightness
 - `upower` — battery information
 - `pulseaudio-utils` — the `pactl` command used for volume
+- `xdg-desktop-portal`, `xdg-desktop-portal-wlr` and `xdg-desktop-portal-gtk` —
+  the Wayland screen-sharing portal RustDesk needs for caregiver help
+- `espeak-ng`, Vosk and a small offline English model — local voice features
 - plus the existing PipeWire/WirePlumber, CUPS and Orca stack
 
 `NetworkManager`, `bluetooth`, `power-profiles-daemon`, `upower` and `cups` are

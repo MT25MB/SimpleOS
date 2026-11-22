@@ -30,7 +30,10 @@ SimpleOS takes those problems seriously. The system cannot be damaged by a stray
 - **Readable.** Text starts at 18 pixels and goes bigger with one click. The cursor is large. Windows open full screen.
 - **Few choices.** Six tiles on one screen, each with one obvious job.
 - **Safe from scams.** Firefox only allows HTTPS, blocks notification and location pop-ups, and ships with uBlock Origin locked in. Other extensions cannot be added.
-- **Nothing to break.** The system files are read-only. Updates arrive in one piece, and the last working version is always kept.
+- **Nothing to break.** The system files are read-only. Updates arrive in one piece, and the last working version is always kept. The image is linted as a bootable container before it is published.
+- **Reliable first start.** Account setup retries a few times if Wi-Fi is patchy, then always lets the desktop start. It never waits forever.
+- **No keyboard escapes.** Every desktop shortcut that could open a terminal, close a window or move things around is disabled in the kiosk session.
+- **Calm permission prompts.** Firefox uses validated enterprise policies so video calls work without repeated camera or microphone questions.
 - **No admin account.** The everyday user is called `senior` and has no sudo or wheel access.
 - **Free.** No subscription, no account, no tracking, no telemetry. MIT licensed.
 - **Easy to listen to.** Read Aloud speaks the screen and reminders using a local voice, and stops with one press or Escape.
