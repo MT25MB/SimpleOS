@@ -6,7 +6,14 @@ All notable changes to SimpleOS are recorded here. The format follows
 
 ## [Unreleased]
 
-Nothing yet.
+### Fixed
+
+- The bootable image now builds and installs the React/Electron launcher at
+  `/usr/libexec/simpleos/simpleos-shell`, the path supervised by `labwc/autostart`.
+  Previously a fresh boot could only show the wallpaper.
+- The image build fails early if the Electron runtime is missing.
+- `scripts/test-vm.sh` accepts the documented `qcow2` and `iso` mode tokens.
+- README now lists the canonical repository and website URLs.
 
 ## [v0.3.0]
 
