@@ -57,7 +57,7 @@ describe('Electron renderer sandbox', () => {
   it('checks the sender on every single IPC handler', () => {
     const handlers = main.split('ipcMain.handle(').length - 1
     const checks = main.split('isTrustedSender(event)').length - 1
-    expect(handlers).toBe(15)
+    expect(handlers).toBe(21)
     expect(checks).toBe(handlers)
     expect(main).toContain('event.sender !== window.webContents')
     expect(main).toContain('event.senderFrame !== window.webContents.mainFrame')
@@ -124,6 +124,31 @@ describe('session and privilege boundary', () => {
       expect(attrs).toMatch(/action="(Press|Click)"/)
     }
     expect(rc).toContain('<cornerRange>0</cornerRange>')
+  })
+})
+
+describe('family contacts and photo frame boundary', () => {
+  it('keeps contacts and avatars inside the SimpleOS config directory', () => {
+    expect(main).toContain("path.join(simpleosConfigDir(), 'contacts.json')")
+    expect(main).toContain("path.join(simpleosConfigDir(), 'avatars')")
+    expect(main).toContain('writeJsonAtomically(contactsPath()')
+    expect(main).toContain('mode: 0o600')
+    expect(main).toContain("path.basename(fileName)")
+    expect(main).toContain("path.join(os.homedir(), 'Pictures', 'SimpleOS')")
+  })
+
+  it('validates every contact and video room before use', () => {
+    expect(main).toContain('function isContact')
+    expect(main).toContain('isAllowedVideoRoom(item.roomUrl)')
+    expect(main).toContain('const MAX_CONTACTS = 4')
+    expect(main).toContain('const MAX_FRAME_PHOTOS = 12')
+    expect(main).toContain("fail('INVALID_INPUT')")
+  })
+
+  it('opens a chosen room only after the host check passes', () => {
+    expect(main).toContain("'simpleos:contacts:call'")
+    expect(preload).toContain("callContact: (roomUrl) => ipcRenderer.invoke('simpleos:contacts:call', roomUrl)")
+    expect(main).toContain("spawnDetached('flatpak', ['run', 'org.mozilla.firefox', '--new-window', roomUrl])")
   })
 })
 

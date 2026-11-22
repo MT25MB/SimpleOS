@@ -1,9 +1,11 @@
 import { useEffect, useRef, useState } from 'react'
 import logoUrl from '../../docs/assets/simpleos-logo.png'
 import { CaregiverPanel } from './components/CaregiverPanel'
+import { FamilyPanel } from './components/FamilyPanel'
 import { FontScaleControl } from './components/FontScaleControl'
 import { HardwareControls } from './components/HardwareControls'
 import { NoticeBanner } from './components/NoticeBanner'
+import { PhotoFrame } from './components/PhotoFrame'
 import { PinScreen } from './components/PinScreen'
 import { RemindersPanel } from './components/RemindersPanel'
 import { Tile } from './components/Tile'
@@ -11,13 +13,17 @@ import { VoiceControls } from './components/VoiceControls'
 import { TILES } from './data/tiles'
 import { useFontScale } from './hooks/useFontScale'
 import { useHardwareStatus } from './hooks/useHardwareStatus'
+import { useIdleFrame } from './hooks/useIdleFrame'
 import { useReadAloud } from './hooks/useReadAloud'
 import { useReminders } from './hooks/useReminders'
 import { useVoiceNavigation } from './hooks/useVoiceNavigation'
 import { friendlyMessage } from './messages'
 import type {
   BrightnessAction,
+  Contact,
+  ContactsFile,
   ErrorCode,
+  FrameDelay,
   LaunchTarget,
   LauncherTile,
   SettingsTarget,
@@ -25,9 +31,20 @@ import type {
   VolumeAction,
 } from './types'
 
-type View = 'home' | 'reminders' | 'caregiver'
+type View = 'home' | 'reminders' | 'caregiver' | 'family'
 type PinMode = 'unlock' | 'create' | 'change'
 type Notice = { tone: 'info' | 'sharing' | 'caregiver'; message: string }
+const FRAME_KEY = 'simpleos.frameDelay'
+
+function initialFrameDelay(): FrameDelay {
+  try {
+    const value = Number(window.localStorage.getItem(FRAME_KEY))
+    if ([0, 2, 5, 10, 15].includes(value)) return value as FrameDelay
+  } catch {
+    // localStorage may be unavailable; keep the calm default.
+  }
+  return 0
+}
 
 /** Full-screen, calm home launcher for SimpleOS. */
 export default function App() {
@@ -41,6 +58,10 @@ export default function App() {
   const [notice, setNotice] = useState<Notice | null>(null)
   const [caregiverError, setCaregiverError] = useState<ErrorCode | null>(null)
   const [updateSummary, setUpdateSummary] = useState<string | null>(null)
+  const [contacts, setContacts] = useState<Contact[]>([])
+  const [frameDelay, setFrameDelayState] = useState<FrameDelay>(initialFrameDelay)
+  const [framePhotos, setFramePhotos] = useState<string[]>([])
+  const frame = useIdleFrame(frameDelay)
   const mainRef = useRef<HTMLElement>(null)
   const updateCheckedRef = useRef(false)
 
@@ -56,6 +77,16 @@ export default function App() {
   useEffect(() => {
     if (view !== 'home') mainRef.current?.focus()
   }, [view])
+
+  // Load only local photos when the calm frame actually opens.
+  useEffect(() => {
+    if (!frame.active) return
+    const bridge = window.simpleOS
+    if (!bridge) return
+    void bridge.getFramePhotos().then((result) => {
+      if (result.ok) setFramePhotos(result.value.photos)
+    })
+  }, [frame.active])
 
   // Read the screen people have just moved to, using only local speech.
   useEffect(() => {
@@ -107,6 +138,8 @@ export default function App() {
     if (tile.action.kind === 'view') {
       if (tile.action.view === 'caregiver') {
         await openCaregiver()
+      } else if (tile.action.view === 'family') {
+        setView('family')
       } else {
         setView('reminders')
       }
@@ -129,6 +162,8 @@ export default function App() {
       setView('caregiver')
       return
     }
+    const loaded = await bridge.loadContacts()
+    if (loaded.ok) setContacts(loaded.value.contacts)
     setPinMode(result.value.hasPin ? 'unlock' : 'create')
   }
 
@@ -197,6 +232,41 @@ export default function App() {
       return
     }
     setUpdateSummary(result.value.summary)
+  }
+
+  async function handleSaveContacts(file: ContactsFile): Promise<string | null> {
+    const bridge = window.simpleOS
+    if (!bridge) return friendlyMessage('BRIDGE_UNAVAILABLE')
+    const result = await bridge.saveContacts(file)
+    if (!result.ok) return friendlyMessage(result.code)
+    setContacts(file.contacts)
+    setNotice({ tone: 'caregiver', message: 'Family cards are saved.' })
+    return null
+  }
+
+  async function handleCallContact(contact: Contact) {
+    setNotice(null)
+    const bridge = window.simpleOS
+    if (!bridge) {
+      setNotice({ tone: 'info', message: friendlyMessage('BRIDGE_UNAVAILABLE') })
+      return
+    }
+    const result = await bridge.callContact(contact.roomUrl)
+    setNotice({
+      tone: 'info',
+      message: result.ok
+        ? `Opening the video room for ${contact.name}.`
+        : friendlyMessage(result.code),
+    })
+  }
+
+  function setFrameDelay(value: FrameDelay) {
+    setFrameDelayState(value)
+    try {
+      window.localStorage.setItem(FRAME_KEY, String(value))
+    } catch {
+      // Best effort only.
+    }
   }
 
   function handleVoiceAction(action: VoiceAction) {
@@ -334,12 +404,22 @@ export default function App() {
                 onDismissError={reminders.clearError}
                 onDismissNotice={reminders.clearNotice}
               />
+            ) : view === 'family' ? (
+              <FamilyPanel
+                contacts={contacts}
+                onCall={(contact) => void handleCallContact(contact)}
+                onFallback={() => void launchApp('jitsi', 'Video Call Family')}
+              />
             ) : (
               <CaregiverPanel
                 scale={scale}
                 onScaleChange={setFontScale}
                 hardware={hardware}
                 onRefreshHardware={() => void refreshHardware()}
+                contacts={contacts}
+                onSaveContacts={handleSaveContacts}
+                frameDelay={frameDelay}
+                onFrameDelayChange={setFrameDelay}
                 updateSummary={updateSummary}
                 onOpenSettings={handleOpenSettings}
                 onOpenRemoteHelp={() => void launchApp('rustdesk', 'RustDesk')}
@@ -360,6 +440,8 @@ export default function App() {
       {pinMode && (
         <PinScreen mode={pinMode} onCancel={() => setPinMode(null)} onSubmit={handlePinSubmit} />
       )}
+
+      {frame.active && <PhotoFrame photos={framePhotos} onDismiss={frame.dismiss} />}
     </div>
   )
 }

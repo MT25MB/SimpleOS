@@ -38,6 +38,14 @@ const bridge: SimpleOSBridge = {
   speakLocally: (text) => ipcRenderer.invoke('simpleos:voice:speak', text),
   stopLocalSpeech: () => ipcRenderer.invoke('simpleos:voice:stop'),
   transcribeAudio: (audioBase64) => ipcRenderer.invoke('simpleos:voice:transcribe', audioBase64),
+  // Family cards and the photo frame only read/write fixed local paths.
+  loadContacts: () => ipcRenderer.invoke('simpleos:contacts:load'),
+  saveContacts: (payload) => ipcRenderer.invoke('simpleos:contacts:save', payload),
+  saveAvatar: (contactId, imageBase64) =>
+    ipcRenderer.invoke('simpleos:contacts:avatar', contactId, imageBase64),
+  getAvatar: (fileName) => ipcRenderer.invoke('simpleos:contacts:avatar:get', fileName),
+  callContact: (roomUrl) => ipcRenderer.invoke('simpleos:contacts:call', roomUrl),
+  getFramePhotos: () => ipcRenderer.invoke('simpleos:photos:frame'),
 }
 
 contextBridge.exposeInMainWorld('simpleOS', bridge)

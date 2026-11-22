@@ -1,6 +1,14 @@
 import { friendlyMessage } from '../messages'
 import type { FontScale } from '../hooks/useFontScale'
-import type { ErrorCode, HardwareStatus, SettingsTarget } from '../types'
+import type {
+  Contact,
+  ContactsFile,
+  ErrorCode,
+  FrameDelay,
+  HardwareStatus,
+  SettingsTarget,
+} from '../types'
+import { ContactEditor } from './ContactEditor'
 import { FontScaleControl } from './FontScaleControl'
 import { QuickCheckPanel } from './QuickCheckPanel'
 
@@ -9,6 +17,10 @@ interface CaregiverPanelProps {
   onScaleChange: (value: FontScale) => void
   hardware: HardwareStatus
   onRefreshHardware: () => void
+  contacts: Contact[]
+  onSaveContacts: (file: ContactsFile) => Promise<string | null>
+  frameDelay: FrameDelay
+  onFrameDelayChange: (value: FrameDelay) => void
   updateSummary: string | null
   onOpenSettings: (target: SettingsTarget) => void
   onOpenRemoteHelp: () => void
@@ -24,6 +36,10 @@ export function CaregiverPanel({
   onScaleChange,
   hardware,
   onRefreshHardware,
+  contacts,
+  onSaveContacts,
+  frameDelay,
+  onFrameDelayChange,
   updateSummary,
   onOpenSettings,
   onOpenRemoteHelp,
@@ -57,6 +73,30 @@ export function CaregiverPanel({
       />
 
       <FontScaleControl value={scale} onChange={onScaleChange} />
+
+      <fieldset className="frame-setting">
+        <legend>Photo frame</legend>
+        <p className="panel__note">
+          After a quiet period, show family photos and a big clock. Any touch or key press brings the
+          launcher straight back.
+        </p>
+        <div className="frame-setting__options">
+          {([0, 2, 5, 10, 15] as const).map((minutes) => (
+            <label className="frame-setting__option" key={minutes}>
+              <input
+                type="radio"
+                name="frame-delay"
+                value={minutes}
+                checked={frameDelay === minutes}
+                onChange={() => onFrameDelayChange(minutes)}
+              />
+              <span>{minutes === 0 ? 'Off' : `${minutes} minutes`}</span>
+            </label>
+          ))}
+        </div>
+      </fieldset>
+
+      <ContactEditor contacts={contacts} onSave={onSaveContacts} />
 
       <h3 className="panel__subheading">Computer settings</h3>
       <div className="panel__button-row">

@@ -99,6 +99,31 @@ export const HARDWARE_STATUS: Readonly<Record<string, ApprovedCommand>> = Object
   }),
 })
 
+/**
+ * Family video rooms are restricted to known HTTPS hosts. A caregiver cannot
+ * accidentally store a look-alike or scam site as a "Call Now" destination.
+ */
+export const VIDEO_ROOM_HOSTS: readonly string[] = Object.freeze([
+  'meet.jit.si',
+  'jitsi.org',
+  '8x8.vc',
+])
+
+export function isAllowedVideoRoom(raw: unknown): raw is string {
+  if (typeof raw !== 'string' || raw.length === 0 || raw.length > 500) return false
+  try {
+    const url = new URL(raw)
+    if (url.protocol !== 'https:' || url.username || url.password) return false
+    const host = url.hostname.toLowerCase()
+    const allowed = VIDEO_ROOM_HOSTS.some(
+      (candidate) => host === candidate || host.endsWith(`.${candidate}`),
+    )
+    return allowed
+  } catch {
+    return false
+  }
+}
+
 export function isAllowedKey(map: Readonly<Record<string, unknown>>, key: unknown): boolean {
   // hasOwnProperty.call works under every TS lib target, including ES2020.
   return typeof key === 'string' && Object.prototype.hasOwnProperty.call(map, key)

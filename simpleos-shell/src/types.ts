@@ -57,7 +57,24 @@ export type IconName = 'video' | 'web' | 'photos' | 'reminders' | 'help' | 'sett
 
 export type TileAction =
   | { kind: 'launch'; target: LaunchTarget }
-  | { kind: 'view'; view: 'reminders' | 'caregiver' }
+  | { kind: 'view'; view: 'reminders' | 'caregiver' | 'family' }
+
+/** A caregiver-managed family contact. Stored only in ~/.config/simpleos. */
+export interface Contact {
+  id: string
+  name: string
+  relationship: string
+  /** Filename of a locally stored, resized avatar, or null for initials. */
+  avatarFile: string | null
+  /** An https URL on an approved video host. */
+  roomUrl: string
+}
+
+export interface ContactsFile {
+  contacts: Contact[]
+}
+
+export type FrameDelay = 0 | 2 | 5 | 10 | 15
 
 export interface LauncherTile {
   id: string
@@ -131,4 +148,13 @@ export interface SimpleOSBridge {
    * machine: it is written to a temp file and read by the offline Vosk model.
    */
   transcribeAudio(audioBase64: string): Promise<ValueResult<{ text: string }>>
+  /** Caregiver-managed family contacts and their private video rooms. */
+  loadContacts(): Promise<ValueResult<ContactsFile>>
+  saveContacts(payload: ContactsFile): Promise<Result>
+  /** Save a resized local avatar; returns the filename to store in the contact. */
+  saveAvatar(fileName: string, imageBase64: string): Promise<ValueResult<{ fileName: string }>>
+  getAvatar(fileName: string): Promise<ValueResult<{ dataUrl: string }>>
+  callContact(roomUrl: string): Promise<Result>
+  /** Bounded list of local photos for the calm idle frame. */
+  getFramePhotos(): Promise<ValueResult<{ photos: string[] }>>
 }

@@ -7,7 +7,7 @@ export const TILES: readonly LauncherTile[] = [
     title: 'Video Call Family',
     subtitle: 'See and talk to family',
     icon: 'video',
-    action: { kind: 'launch', target: 'jitsi' },
+    action: { kind: 'view', view: 'family' },
   },
   {
     id: 'web-email',

@@ -41,6 +41,12 @@ function mockBridge(overrides: Partial<SimpleOSBridge> = {}): SimpleOSBridge {
     speakLocally: vi.fn().mockResolvedValue(ok),
     stopLocalSpeech: vi.fn().mockResolvedValue(ok),
     transcribeAudio: vi.fn().mockResolvedValue({ ok: true, value: { text: '' } }),
+    loadContacts: vi.fn().mockResolvedValue({ ok: true, value: { contacts: [] } }),
+    saveContacts: vi.fn().mockResolvedValue(ok),
+    saveAvatar: vi.fn().mockResolvedValue({ ok: true, value: { fileName: 'avatar-a.png' } }),
+    getAvatar: vi.fn().mockResolvedValue({ ok: true, value: { dataUrl: '' } }),
+    callContact: vi.fn().mockResolvedValue(ok),
+    getFramePhotos: vi.fn().mockResolvedValue({ ok: true, value: { photos: [] } }),
     ...overrides,
   } as SimpleOSBridge
 }

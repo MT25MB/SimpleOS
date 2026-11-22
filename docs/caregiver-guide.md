@@ -70,6 +70,23 @@ To change it later, open Caregiver Settings, enter your current PIN, then choose
 
 The PIN is not stored as plain text. The computer keeps a scrambled version, so reading the file would not reveal your numbers.
 
+## Family call cards and the photo frame
+
+Inside **Caregiver Settings** you can add up to four people in **Family call
+cards**. For each person, enter their name, relationship, a video room link, and
+optionally a photo. Only links from approved video sites are accepted, so a
+mistyped or unsafe link will not be saved. Save the cards, and the **Video Call
+Family** button on the home screen will show one big card per person with a
+single **Call Now** button.
+
+The video room opens in the locked-down Firefox. If no cards have been added
+yet, the button still opens a general video call.
+
+You can also turn on the **Photo frame**. Choose Off, 2, 5, 10 or 15 minutes.
+After that time with no activity, the screen shows local family photos from
+`~/Pictures/SimpleOS/` with a large clock and date. Any click or key press brings
+the launcher straight back. No photos are uploaded anywhere.
+
 ## 5. Make the screen comfortable
 
 Still in Caregiver Settings, look for **Text size**. Try **Large** or **Extra Large** and ask the person which feels best. The choice is saved, so it stays after a restart.

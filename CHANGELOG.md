@@ -8,6 +8,12 @@ All notable changes to SimpleOS are recorded here. The format follows
 
 ### Added
 
+- Up to four caregiver-managed family contact cards with names, relationships,
+  local resized avatars and approved HTTPS video rooms. "Video Call Family" now
+  opens large cards with one Call Now button per person.
+- An optional calm photo frame after 2, 5, 10 or 15 minutes of inactivity, using
+  local photos from `~/Pictures/SimpleOS/` with a large clock and date, dismissed
+  by any click or key press.
 - Optional **Read Aloud**: a high-visibility header toggle that speaks screen
   titles, button labels and reminders using a local browser voice, with an
   espeak-ng fallback through allowlisted IPC. One click or Escape stops speech.

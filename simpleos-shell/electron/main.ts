@@ -15,7 +15,7 @@
  *
  * This file is compiled to dist-electron/main.js by `npm run compile:electron`.
  */
-import { app, BrowserWindow, ipcMain, type IpcMainInvokeEvent } from 'electron'
+import { app, BrowserWindow, ipcMain, nativeImage, type IpcMainInvokeEvent } from 'electron'
 import path from 'node:path'
 import os from 'node:os'
 import fs from 'node:fs'
@@ -29,6 +29,7 @@ import {
   HARDWARE_STATUS,
   SAFE_ACTIONS,
   VOICE_COMMANDS,
+  isAllowedVideoRoom,
   type ApprovedCommand,
 } from './allowlists'
 import { createPinThrottle } from './pin-throttle'
@@ -44,6 +45,8 @@ import type {
   BatteryStatus,
   BrightnessAction,
   CaregiverAction,
+  Contact,
+  ContactsFile,
   ErrorCode,
   HardwareStatus,
   Reminder,
@@ -211,6 +214,155 @@ ipcMain.handle(
       return OK
     } catch {
       return fail('STORAGE_FAILED')
+    }
+  },
+)
+
+// ------------------------------------------------------- family contact cards
+
+const MAX_CONTACTS = 4
+const MAX_CONTACT_NAME = 60
+const MAX_RELATIONSHIP = 40
+const MAX_AVATAR_BYTES = 2 * 1024 * 1024
+const MAX_FRAME_PHOTOS = 12
+const FRAME_DIR = path.join(os.homedir(), 'Pictures', 'SimpleOS')
+const AVATAR_NAME = /^[A-Za-z0-9_-]{1,48}$/
+const IMAGE_EXT = /\.(png|jpe?g|webp)$/i
+
+const contactsPath = (): string => path.join(simpleosConfigDir(), 'contacts.json')
+const avatarDir = (): string => path.join(simpleosConfigDir(), 'avatars')
+
+function isContact(value: unknown): value is Contact {
+  if (!value || typeof value !== 'object') return false
+  const item = value as Partial<Contact>
+  return (
+    typeof item.id === 'string' &&
+    AVATAR_NAME.test(item.id) &&
+    typeof item.name === 'string' &&
+    item.name.trim().length > 0 &&
+    item.name.length <= MAX_CONTACT_NAME &&
+    typeof item.relationship === 'string' &&
+    item.relationship.length <= MAX_RELATIONSHIP &&
+    (item.avatarFile === null ||
+      (typeof item.avatarFile === 'string' && AVATAR_NAME.test(item.avatarFile))) &&
+    isAllowedVideoRoom(item.roomUrl)
+  )
+}
+
+function isContactsFile(value: unknown): value is ContactsFile {
+  if (!value || typeof value !== 'object') return false
+  const file = value as Partial<ContactsFile>
+  return (
+    Array.isArray(file.contacts) &&
+    file.contacts.length <= MAX_CONTACTS &&
+    file.contacts.every(isContact)
+  )
+}
+
+ipcMain.handle('simpleos:contacts:load', async (event): Promise<ValueResult<ContactsFile>> => {
+  if (!isTrustedSender(event)) return fail('UNKNOWN_TARGET')
+  try {
+    if (!fs.existsSync(contactsPath())) return { ok: true, value: { contacts: [] } }
+    const data: unknown = JSON.parse(fs.readFileSync(contactsPath(), 'utf8'))
+    if (!isContactsFile(data)) return fail('STORAGE_FAILED')
+    return { ok: true, value: { contacts: data.contacts } }
+  } catch {
+    return fail('STORAGE_FAILED')
+  }
+})
+
+ipcMain.handle(
+  'simpleos:contacts:save',
+  async (event, payload: unknown): Promise<Result> => {
+    if (!isTrustedSender(event)) return fail('UNKNOWN_TARGET')
+    if (!isContactsFile(payload)) return fail('INVALID_INPUT')
+    try {
+      writeJsonAtomically(contactsPath(), JSON.stringify(payload, null, 2))
+      return OK
+    } catch {
+      return fail('STORAGE_FAILED')
+    }
+  },
+)
+
+ipcMain.handle(
+  'simpleos:contacts:avatar',
+  async (event, contactId: unknown, imageBase64: unknown): Promise<ValueResult<{ fileName: string }>> => {
+    if (!isTrustedSender(event)) return fail('UNKNOWN_TARGET')
+    if (
+      typeof contactId !== 'string' ||
+      !AVATAR_NAME.test(contactId) ||
+      typeof imageBase64 !== 'string' ||
+      imageBase64.length === 0 ||
+      imageBase64.length > MAX_AVATAR_BYTES * 2 ||
+      !/^[A-Za-z0-9+/=]+$/.test(imageBase64)
+    ) {
+      return fail('INVALID_INPUT')
+    }
+    try {
+      const image = nativeImage.createFromBuffer(Buffer.from(imageBase64, 'base64'))
+      if (image.isEmpty()) return fail('INVALID_INPUT')
+      const resized = image.resize({ width: 256, height: 256 }).toPNG()
+      if (resized.length === 0 || resized.length > MAX_AVATAR_BYTES) return fail('INVALID_INPUT')
+      const fileName = `avatar-${contactId}.png`
+      fs.mkdirSync(avatarDir(), { recursive: true })
+      fs.writeFileSync(path.join(avatarDir(), fileName), resized, { mode: 0o600 })
+      return { ok: true, value: { fileName } }
+    } catch {
+      return fail('STORAGE_FAILED')
+    }
+  },
+)
+
+ipcMain.handle(
+  'simpleos:contacts:call',
+  async (event, roomUrl: unknown): Promise<Result> => {
+    if (!isTrustedSender(event)) return fail('UNKNOWN_TARGET')
+    if (!isAllowedVideoRoom(roomUrl)) return fail('INVALID_INPUT')
+    return spawnDetached('flatpak', ['run', 'org.mozilla.firefox', '--new-window', roomUrl])
+  },
+)
+
+ipcMain.handle(
+  'simpleos:contacts:avatar:get',
+  async (event, fileName: unknown): Promise<ValueResult<{ dataUrl: string }>> => {
+    if (!isTrustedSender(event)) return fail('UNKNOWN_TARGET')
+    if (typeof fileName !== 'string') return fail('INVALID_INPUT')
+    const safe = path.basename(fileName)
+    if (!safe.startsWith('avatar-') || !safe.endsWith('.png') || !AVATAR_NAME.test(safe.slice(7, -4))) {
+      return fail('INVALID_INPUT')
+    }
+    try {
+      const bytes = fs.readFileSync(path.join(avatarDir(), safe))
+      return { ok: true, value: { dataUrl: `data:image/png;base64,${bytes.toString('base64')}` } }
+    } catch {
+      return fail('STORAGE_FAILED')
+    }
+  },
+)
+
+ipcMain.handle(
+  'simpleos:photos:frame',
+  async (event): Promise<ValueResult<{ photos: string[] }>> => {
+    if (!isTrustedSender(event)) return fail('UNKNOWN_TARGET')
+    try {
+      const files = fs
+        .readdirSync(FRAME_DIR)
+        .filter((name) => IMAGE_EXT.test(name))
+        .sort()
+        .slice(0, MAX_FRAME_PHOTOS)
+      const photos: string[] = []
+      for (const name of files) {
+        const full = path.join(FRAME_DIR, name)
+        const bytes = fs.readFileSync(full)
+        if (bytes.length > MAX_AVATAR_BYTES) continue
+        const ext = path.extname(name).slice(1).toLowerCase()
+        const mime = ext === 'jpg' ? 'jpeg' : ext
+        photos.push(`data:image/${mime};base64,${bytes.toString('base64')}`)
+      }
+      return { ok: true, value: { photos } }
+    } catch {
+      return { ok: true, value: { photos: [] } }
     }
   },
 )
