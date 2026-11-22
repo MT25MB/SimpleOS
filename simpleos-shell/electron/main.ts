@@ -59,6 +59,7 @@ import type {
   VolumeAction,
   WifiStatus,
 } from '../src/types'
+import { buildHealthSummary } from '../src/healthSummary'
 
 const devUrl = process.env.VITE_DEV_SERVER_URL
 
@@ -867,15 +868,14 @@ ipcMain.handle('simpleos:health', async (event): Promise<ValueResult<HealthStatu
   const disk = diskHealthText()
   const imageVersion = imageVersionText()
   const lastUpdateCheck = lastUpdateCheckText()
-  const summary = [
-    'SimpleOS health summary',
-    `Internet: ${internet}`,
-    `Sound: ${audio}`,
-    `Microphone: ${microphone}`,
-    `Disk: ${disk}`,
-    `Image: ${imageVersion}`,
-    `Updates: ${lastUpdateCheck}`,
-  ].join('\n')
+  const summary = buildHealthSummary({
+    internet,
+    audio,
+    microphone,
+    disk,
+    imageVersion,
+    lastUpdateCheck,
+  })
   return {
     ok: true,
     value: { internet, audio, microphone, disk, imageVersion, lastUpdateCheck, summary },

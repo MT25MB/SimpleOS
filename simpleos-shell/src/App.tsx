@@ -82,6 +82,15 @@ export default function App() {
     if (view !== 'home') mainRef.current?.focus()
   }, [view])
 
+  // Family cards must be ready for the everyday user, not only for caregivers.
+  useEffect(() => {
+    const bridge = window.simpleOS
+    if (!bridge) return
+    void bridge.loadContacts().then((result) => {
+      if (result.ok) setContacts(result.value.contacts)
+    })
+  }, [])
+
   // Load only local photos when the calm frame actually opens.
   useEffect(() => {
     if (!frame.active) return

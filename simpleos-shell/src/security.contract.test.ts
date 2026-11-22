@@ -145,8 +145,8 @@ describe('health and recovery boundary', () => {
   })
 
   it('builds a summary without personal paths or PIN material', () => {
-    expect(main).toContain('const summary = [')
-    expect(main).toContain('SimpleOS health summary')
+    expect(main).toContain("import { buildHealthSummary } from '../src/healthSummary'")
+    expect(main).toContain('buildHealthSummary({')
     expect(main).toContain('diskHealthText()')
     expect(main).toContain('imageVersionText()')
     expect(main).toContain('lastUpdateCheckText()')
