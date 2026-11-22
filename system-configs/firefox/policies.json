@@ -14,7 +14,10 @@
     "BlockAboutProfiles": true,
     "BlockAboutSupport": true,
     "DisableDeveloperTools": true,
-    "DisableSecurityBypass": true,
+    "DisableSecurityBypass": {
+      "InvalidCertificate": true,
+      "SafeBrowsing": true
+    },
 
     "WebsiteFilter": {
       "Block": ["file://*/*", "ftp://*/*"],

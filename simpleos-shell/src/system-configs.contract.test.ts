@@ -67,6 +67,10 @@ describe('system guardrails contract', () => {
     expect(firstboot).toContain('if ! retry_flatpak "Adding Flathub" flatpak remote-add')
     expect(firstboot).toContain('if ! retry_flatpak "Installing core applications" flatpak install')
     expect(firstbootService).toContain('TimeoutStartSec=900')
+    expect(firstboot).not.toContain('while true')
+    expect(firstboot).toContain('"$attempt" -le 3')
+    expect(firstbootService).toContain('ConditionPathExists=!/var/lib/simpleos/firstboot-complete')
+    expect(firstboot.trimEnd()).toMatch(/exit 0$/)
     expect(firstboot.trimEnd()).toMatch(/exit 0$/)
   })
 

@@ -106,7 +106,10 @@ describe('Firefox enterprise guardrails', () => {
     expect(policies.policies.BlockAboutProfiles).toBe(true)
     expect(policies.policies.BlockAboutSupport).toBe(true)
     expect(policies.policies.DisableDeveloperTools).toBe(true)
-    expect(policies.policies.DisableSecurityBypass).toBe(true)
+    expect(policies.policies.DisableSecurityBypass).toEqual({
+      InvalidCertificate: true,
+      SafeBrowsing: true,
+    })
   })
 })
 
@@ -135,6 +138,9 @@ describe('session and privilege boundary', () => {
     expect(rc).toContain('<keybind key="A-F4"><action name="None"/></keybind>')
     expect(rc).not.toContain('<action name="Close"/>')
     expect(rc).not.toContain('<action name="NextWindow"/>')
+    // labwc schema uses <initial>, not the Openbox-only <firstdesk>.
+    expect(rc).toContain('<initial>1</initial>')
+    expect(rc).not.toContain('<firstdesk>')
     // Right-click is bound only to empty Press/Click actions: no root menu.
     const rightClicks = [...rc.matchAll(/<mousebind button="Right"([^>]*)\/>/g)]
     expect(rightClicks.length).toBeGreaterThan(0)
