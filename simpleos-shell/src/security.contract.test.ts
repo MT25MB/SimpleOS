@@ -57,7 +57,7 @@ describe('Electron renderer sandbox', () => {
   it('checks the sender on every single IPC handler', () => {
     const handlers = main.split('ipcMain.handle(').length - 1
     const checks = main.split('isTrustedSender(event)').length - 1
-    expect(handlers).toBe(21)
+    expect(handlers).toBe(23)
     expect(checks).toBe(handlers)
     expect(main).toContain('event.sender !== window.webContents')
     expect(main).toContain('event.senderFrame !== window.webContents.mainFrame')
@@ -124,6 +124,33 @@ describe('session and privilege boundary', () => {
       expect(attrs).toMatch(/action="(Press|Click)"/)
     }
     expect(rc).toContain('<cornerRange>0</cornerRange>')
+  })
+})
+
+describe('health and recovery boundary', () => {
+  it('exposes only fixed health and recovery IPC channels', () => {
+    expect(preload).toContain("getHealthStatus: () => ipcRenderer.invoke('simpleos:health')")
+    expect(preload).toContain("runRecovery: (action) => ipcRenderer.invoke('simpleos:recovery', action)")
+    expect(main).toContain("ipcMain.handle('simpleos:health'")
+    expect(main).toContain("'simpleos:recovery'")
+  })
+
+  it('starts rollback only through the narrow systemd service', () => {
+    expect(allowlists).toContain("command: 'systemctl'")
+    expect(allowlists).toContain("'start', 'simpleos-rollback.service'")
+    expect(main).not.toContain('execFile(\'systemctl\', [action')
+    expect(main).not.toContain('spawn(action')
+    expect(main).toContain("fail('RECOVERY_FAILED')")
+    expect(messages).toContain('RECOVERY_FAILED:')
+  })
+
+  it('builds a summary without personal paths or PIN material', () => {
+    expect(main).toContain('const summary = [')
+    expect(main).toContain('SimpleOS health summary')
+    expect(main).toContain('diskHealthText()')
+    expect(main).toContain('imageVersionText()')
+    expect(main).toContain('lastUpdateCheckText()')
+    expect(main).not.toContain('summary.includes(remindersPath')
   })
 })
 

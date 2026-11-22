@@ -38,6 +38,19 @@ function mockBridge(overrides: Partial<SimpleOSBridge> = {}): SimpleOSBridge {
     getAvatar: vi.fn().mockResolvedValue({ ok: true, value: { dataUrl: '' } }),
     callContact: vi.fn().mockResolvedValue(ok),
     getFramePhotos: vi.fn().mockResolvedValue({ ok: true, value: { photos: [] } }),
+    getHealthStatus: vi.fn().mockResolvedValue({
+      ok: true,
+      value: {
+        internet: 'Connected to the internet.',
+        audio: 'Sound output is ready.',
+        microphone: 'Microphone is ready.',
+        disk: 'Disk space is healthy: 20 GB free',
+        imageVersion: 'SimpleOS 0.3.0',
+        lastUpdateCheck: 'Last checked today',
+        summary: 'SimpleOS health summary\nInternet: Connected to the internet.',
+      },
+    }),
+    runRecovery: vi.fn().mockResolvedValue({ ok: true, value: { summary: 'Done.' } }),
     ...overrides,
   } as SimpleOSBridge
 }

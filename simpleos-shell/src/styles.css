@@ -917,6 +917,46 @@ input {
   margin-top: 0.5rem;
 }
 
+/* --------------------------------------------- health and safe recovery */
+
+.recovery__list {
+  margin: 0 0 1rem;
+}
+
+.recovery__list > div {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.25rem 1rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.recovery__list dt {
+  font-weight: 800;
+}
+
+.recovery__list dd {
+  margin: 0;
+}
+
+.recovery__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.recovery__dialog {
+  width: min(36rem, 90%);
+  margin: auto;
+  padding: 1.25rem;
+  border: 2px solid var(--border-strong);
+  border-radius: 0.75rem;
+  background: var(--surface-raised);
+  color: var(--text);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .tile {
     transition: none;

@@ -1,0 +1,14 @@
+[Unit]
+Description=SimpleOS safe rollback to the previous system version
+Documentation=https://github.com/MT25MB/SimpleOS
+
+[Service]
+Type=oneshot
+ExecStart=/usr/libexec/simpleos/rollback.sh
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=simpleos-rollback
+TimeoutStartSec=300
+
+[Install]
+WantedBy=multi-user.target

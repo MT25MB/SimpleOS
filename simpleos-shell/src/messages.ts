@@ -19,6 +19,7 @@ export const MESSAGES: Record<ErrorCode, string> = {
   BRIDGE_UNAVAILABLE: 'This part works in the SimpleOS desktop app.',
   HARDWARE_UNAVAILABLE: "That control isn't available on this computer.",
   VOICE_UNAVAILABLE: "Voice features aren't available on this computer yet.",
+  RECOVERY_FAILED: 'That recovery step could not start. Please try again later.',
   TOO_MANY_TRIES: 'Too many tries. Wait a moment, then try again.',
   UNEXPECTED: 'Something went wrong. Try that again.',
 }

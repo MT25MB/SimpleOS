@@ -27,6 +27,7 @@ import {
   ALLOWED_SETTINGS,
   HARDWARE_ACTIONS,
   HARDWARE_STATUS,
+  HEALTH_COMMANDS,
   SAFE_ACTIONS,
   VOICE_COMMANDS,
   isAllowedVideoRoom,
@@ -48,7 +49,9 @@ import type {
   Contact,
   ContactsFile,
   ErrorCode,
+  HealthStatus,
   HardwareStatus,
+  RecoveryAction,
   Reminder,
   RemindersFile,
   Result,
@@ -467,6 +470,29 @@ function spawnApproved(approved: ApprovedCommand): Promise<Result> {
   return spawnDetached(approved.command, approved.args)
 }
 
+const lastUpdatePath = (): string => path.join(simpleosConfigDir(), 'last-update-check.json')
+
+function recordUpdateCheck(): void {
+  try {
+    writeJsonAtomically(lastUpdatePath(), JSON.stringify({ checkedAt: Date.now() }, null, 2))
+  } catch {
+    // A failed timestamp write must never break the update check itself.
+  }
+}
+
+function lastUpdateCheckText(): string {
+  try {
+    const data: unknown = JSON.parse(fs.readFileSync(lastUpdatePath(), 'utf8'))
+    const checkedAt = (data as { checkedAt?: unknown })?.checkedAt
+    if (typeof checkedAt === 'number' && Number.isFinite(checkedAt)) {
+      return `Last checked ${new Date(checkedAt).toLocaleString()}`
+    }
+  } catch {
+    // No check recorded yet.
+  }
+  return 'No update check has been recorded yet.'
+}
+
 /** Read rpm-ostree state and turn it into a short, calm sentence. */
 function checkUpdateStatus(): Promise<ValueResult<{ summary: string }>> {
   return new Promise((resolve) => {
@@ -485,6 +511,7 @@ function checkUpdateStatus(): Promise<ValueResult<{ summary: string }>> {
             resolve(fail('UPDATE_CHECK_FAILED'))
             return
           }
+          recordUpdateCheck()
           const deployments = (data as { deployments?: unknown }).deployments
           const list = Array.isArray(deployments) ? deployments : []
           const booted = list.find(
@@ -803,6 +830,85 @@ ipcMain.handle(
     } finally {
       cleanup()
     }
+  },
+)
+
+// ------------------------------------------------ health and safe recovery
+
+function diskHealthText(): string {
+  try {
+    const stats = fs.statfsSync(simpleosConfigDir())
+    const free = (stats.bavail * stats.bsize) / 1_000_000_000
+    return free < 2
+      ? `Low disk space: ${free.toFixed(1)} GB free`
+      : `Disk space is healthy: ${free.toFixed(0)} GB free`
+  } catch {
+    return 'Disk space could not be checked.'
+  }
+}
+
+function imageVersionText(): string {
+  try {
+    const raw = fs.readFileSync('/etc/simpleos-image-version', 'utf8').trim()
+    return raw ? `SimpleOS ${raw}` : 'SimpleOS version is not recorded on this computer.'
+  } catch {
+    return 'SimpleOS version is not recorded on this computer.'
+  }
+}
+
+ipcMain.handle('simpleos:health', async (event): Promise<ValueResult<HealthStatus>> => {
+  if (!isTrustedSender(event)) return fail('UNKNOWN_TARGET')
+  const wifi = parseWifiStatus(await runApproved(HARDWARE_STATUS.wifi))
+  const sink = await runApproved(HARDWARE_STATUS.audio)
+  const sources = await runApproved(HEALTH_COMMANDS.sources)
+  const internet = wifi.connected ? 'Connected to the internet.' : 'Not connected to Wi-Fi.'
+  const audio = sink && sink.trim() ? 'Sound output is ready.' : 'Sound output was not found.'
+  const microphone = sources && sources.trim() ? 'Microphone is ready.' : 'Microphone was not found.'
+  const disk = diskHealthText()
+  const imageVersion = imageVersionText()
+  const lastUpdateCheck = lastUpdateCheckText()
+  const summary = [
+    'SimpleOS health summary',
+    `Internet: ${internet}`,
+    `Sound: ${audio}`,
+    `Microphone: ${microphone}`,
+    `Disk: ${disk}`,
+    `Image: ${imageVersion}`,
+    `Updates: ${lastUpdateCheck}`,
+  ].join('\n')
+  return {
+    ok: true,
+    value: { internet, audio, microphone, disk, imageVersion, lastUpdateCheck, summary },
+  }
+})
+
+ipcMain.handle(
+  'simpleos:recovery',
+  async (event, action: unknown): Promise<ValueResult<{ summary: string }>> => {
+    if (!isTrustedSender(event)) return fail('UNKNOWN_TARGET')
+    if (action === 'restartLauncher') {
+      setTimeout(() => {
+        app.relaunch()
+        app.exit(0)
+      }, 200).unref()
+      return { ok: true, value: { summary: 'Restarting SimpleOS now.' } }
+    }
+    if (action === 'checkUpdates') {
+      const result = await checkUpdateStatus()
+      return result.ok ? { ok: true, value: { summary: result.value.summary } } : result
+    }
+    if (action === 'rollBack') {
+      const started = await runApproved(HEALTH_COMMANDS.rollback, 30_000)
+      return started !== null
+        ? {
+            ok: true,
+            value: {
+              summary: 'Going back to the previous system version. The computer will restart.',
+            },
+          }
+        : fail('RECOVERY_FAILED')
+    }
+    return fail('UNKNOWN_TARGET')
   },
 )
 

@@ -46,6 +46,8 @@ const bridge: SimpleOSBridge = {
   getAvatar: (fileName) => ipcRenderer.invoke('simpleos:contacts:avatar:get', fileName),
   callContact: (roomUrl) => ipcRenderer.invoke('simpleos:contacts:call', roomUrl),
   getFramePhotos: () => ipcRenderer.invoke('simpleos:photos:frame'),
+  getHealthStatus: () => ipcRenderer.invoke('simpleos:health'),
+  runRecovery: (action) => ipcRenderer.invoke('simpleos:recovery', action),
 }
 
 contextBridge.exposeInMainWorld('simpleOS', bridge)

@@ -70,6 +70,25 @@ To change it later, open Caregiver Settings, enter your current PIN, then choose
 
 The PIN is not stored as plain text. The computer keeps a scrambled version, so reading the file would not reveal your numbers.
 
+## System health and safe recovery
+
+Caregiver Settings also has a **System health and safe recovery** section. It
+shows six short lines: internet, sound, microphone, disk space, system version
+and when updates were last checked. Press **Copy Health Summary** to copy those
+six lines only. The summary never includes your files, reminders, Wi-Fi name or
+PIN, so it is safe to paste into a support message or GitHub issue.
+
+Three safe actions are available, and each asks you to confirm first:
+
+- **Restart Launcher** closes and reopens the home screen. Reminders are already
+  saved.
+- **Check for OS Updates** looks for a newer system version. It changes nothing
+  by itself.
+- **Roll Back Last OS Update** returns to the previous system version if an
+  update caused trouble. Your files, reminders and PIN stay, and the computer
+  restarts. This is allowed only for this one recovery step — the everyday
+  account still has no administrator rights.
+
 ## Family call cards and the photo frame
 
 Inside **Caregiver Settings** you can add up to four people in **Family call

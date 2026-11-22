@@ -76,6 +76,20 @@ export interface ContactsFile {
 
 export type FrameDelay = 0 | 2 | 5 | 10 | 15
 
+/** Plain-English system health values. No file paths, names or PINs. */
+export interface HealthStatus {
+  internet: string
+  audio: string
+  microphone: string
+  disk: string
+  imageVersion: string
+  lastUpdateCheck: string
+  /** A short, privacy-safe report suitable for a GitHub issue. */
+  summary: string
+}
+
+export type RecoveryAction = 'restartLauncher' | 'checkUpdates' | 'rollBack'
+
 export interface LauncherTile {
   id: string
   title: string
@@ -114,6 +128,7 @@ export type ErrorCode =
   | 'BRIDGE_UNAVAILABLE'
   | 'HARDWARE_UNAVAILABLE'
   | 'VOICE_UNAVAILABLE'
+  | 'RECOVERY_FAILED'
   | 'TOO_MANY_TRIES'
   | 'UNEXPECTED'
 
@@ -157,4 +172,6 @@ export interface SimpleOSBridge {
   callContact(roomUrl: string): Promise<Result>
   /** Bounded list of local photos for the calm idle frame. */
   getFramePhotos(): Promise<ValueResult<{ photos: string[] }>>
+  getHealthStatus(): Promise<ValueResult<HealthStatus>>
+  runRecovery(action: RecoveryAction): Promise<ValueResult<{ summary: string }>>
 }

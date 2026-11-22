@@ -170,6 +170,24 @@ describe('system guardrails contract', () => {
     expect(autostart).toContain('/usr/libexec/simpleos/simpleos-shell')
   })
 
+  it('narrows rollback to one polkit-authorized systemd service', () => {
+    const service = read('system-configs/systemd/simpleos-rollback.service')
+    const script = read('system-configs/systemd/simpleos-rollback.sh')
+    const rule = read('system-configs/polkit/50-simpleos-rollback.rules')
+    expect(service).toContain('Type=oneshot')
+    expect(service).toContain('ExecStart=/usr/libexec/simpleos/rollback.sh')
+    expect(script).toContain('rpm-ostree rollback')
+    expect(script).toContain('bootc rollback')
+    expect(script).not.toMatch(/rm -rf|mkfs|dd if=/)
+    expect(rule).toContain('org.freedesktop.systemd1.manage-units')
+    expect(rule).toContain("simpleos-rollback.service")
+    expect(rule).toContain("subject.user == 'senior'")
+    expect(rule).toContain('polkit.Result.YES')
+    expect(containerfile).toContain('50-simpleos-rollback.rules')
+    expect(containerfile).toContain('simpleos-rollback.service')
+    expect(containerfile).toContain('polkit')
+  })
+
   it('ships the offline voice runtime without any cloud dependency', () => {
     for (const pkg of ['espeak-ng', 'python3', 'python3-pip', 'unzip', 'curl']) {
       expect(containerfile, pkg).toMatch(new RegExp(`\\b${pkg}\\b`))

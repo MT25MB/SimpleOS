@@ -24,8 +24,10 @@ import type {
   ContactsFile,
   ErrorCode,
   FrameDelay,
+  HealthStatus,
   LaunchTarget,
   LauncherTile,
+  RecoveryAction,
   SettingsTarget,
   VoiceAction,
   VolumeAction,
@@ -61,6 +63,8 @@ export default function App() {
   const [contacts, setContacts] = useState<Contact[]>([])
   const [frameDelay, setFrameDelayState] = useState<FrameDelay>(initialFrameDelay)
   const [framePhotos, setFramePhotos] = useState<string[]>([])
+  const [health, setHealth] = useState<HealthStatus | null>(null)
+  const [recoveryMessage, setRecoveryMessage] = useState<string | null>(null)
   const frame = useIdleFrame(frameDelay)
   const mainRef = useRef<HTMLElement>(null)
   const updateCheckedRef = useRef(false)
@@ -164,6 +168,9 @@ export default function App() {
     }
     const loaded = await bridge.loadContacts()
     if (loaded.ok) setContacts(loaded.value.contacts)
+    const status = await bridge.getHealthStatus()
+    if (status.ok) setHealth(status.value)
+    setRecoveryMessage(null)
     setPinMode(result.value.hasPin ? 'unlock' : 'create')
   }
 
@@ -232,6 +239,33 @@ export default function App() {
       return
     }
     setUpdateSummary(result.value.summary)
+  }
+
+  async function handleCopyHealth(summary: string) {
+    try {
+      await navigator.clipboard.writeText(summary)
+      setRecoveryMessage('Health summary copied. You can paste it into a message.')
+    } catch {
+      setRecoveryMessage('Copying is not available here. Ask someone to help you share this.')
+    }
+  }
+
+  async function handleRecovery(action: RecoveryAction): Promise<string> {
+    setRecoveryMessage(null)
+    const bridge = window.simpleOS
+    if (!bridge) {
+      const message = friendlyMessage('BRIDGE_UNAVAILABLE')
+      setRecoveryMessage(message)
+      return message
+    }
+    const result = await bridge.runRecovery(action)
+    const message = result.ok ? result.value.summary : friendlyMessage(result.code)
+    setRecoveryMessage(message)
+    if (result.ok && action === 'checkUpdates') {
+      const refreshed = await bridge.getHealthStatus()
+      if (refreshed.ok) setHealth(refreshed.value)
+    }
+    return message
   }
 
   async function handleSaveContacts(file: ContactsFile): Promise<string | null> {
@@ -420,6 +454,10 @@ export default function App() {
                 onSaveContacts={handleSaveContacts}
                 frameDelay={frameDelay}
                 onFrameDelayChange={setFrameDelay}
+                health={health}
+                onCopyHealth={(summary) => void handleCopyHealth(summary)}
+                onRecovery={handleRecovery}
+                recoveryMessage={recoveryMessage}
                 updateSummary={updateSummary}
                 onOpenSettings={handleOpenSettings}
                 onOpenRemoteHelp={() => void launchApp('rustdesk', 'RustDesk')}

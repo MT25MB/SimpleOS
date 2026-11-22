@@ -1,0 +1,12 @@
+// Allow the unprivileged daily user to run ONLY the SimpleOS rollback unit.
+// This is a narrow exception: no general sudo, no other systemd units.
+polkit.addRule(function (action, subject) {
+  if (
+    action.id == 'org.freedesktop.systemd1.manage-units' &&
+    action.lookup('unit') == 'simpleos-rollback.service' &&
+    subject.user == 'senior' &&
+    subject.active
+  ) {
+    return polkit.Result.YES
+  }
+})

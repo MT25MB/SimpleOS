@@ -86,6 +86,15 @@ export const VOICE_COMMANDS: Readonly<Record<string, ApprovedCommand>> = Object.
   speak: Object.freeze({ command: 'espeak-ng', args: Object.freeze(['-f', '{path}']) }),
 })
 
+/** Fixed commands used by the caregiver health and recovery panel. */
+export const HEALTH_COMMANDS: Readonly<Record<string, ApprovedCommand>> = Object.freeze({
+  sources: Object.freeze({ command: 'pactl', args: Object.freeze(['list', 'short', 'sources']) }),
+  rollback: Object.freeze({
+    command: 'systemctl',
+    args: Object.freeze(['start', 'simpleos-rollback.service']),
+  }),
+})
+
 /** Fixed, read-only commands used to build the header status strip. */
 export const HARDWARE_STATUS: Readonly<Record<string, ApprovedCommand>> = Object.freeze({
   wifi: Object.freeze({

@@ -8,6 +8,12 @@ All notable changes to SimpleOS are recorded here. The format follows
 
 ### Added
 
+- A plain-English System Health & Safe Recovery panel in Caregiver Settings with
+  six status checks, a privacy-safe "Copy Health Summary" button and three
+  confirmation-guarded actions: restart launcher, check OS updates and roll back
+  the last OS update.
+- Rollback runs through one narrow polkit-authorized systemd service; the daily
+  user gains no general sudo rights.
 - Up to four caregiver-managed family contact cards with names, relationships,
   local resized avatars and approved HTTPS video rooms. "Video Call Family" now
   opens large cards with one Call Now button per person.

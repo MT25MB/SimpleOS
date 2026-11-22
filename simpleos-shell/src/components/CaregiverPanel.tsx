@@ -6,11 +6,14 @@ import type {
   ErrorCode,
   FrameDelay,
   HardwareStatus,
+  HealthStatus,
+  RecoveryAction,
   SettingsTarget,
 } from '../types'
 import { ContactEditor } from './ContactEditor'
 import { FontScaleControl } from './FontScaleControl'
 import { QuickCheckPanel } from './QuickCheckPanel'
+import { RecoveryPanel } from './RecoveryPanel'
 
 interface CaregiverPanelProps {
   scale: FontScale
@@ -21,6 +24,10 @@ interface CaregiverPanelProps {
   onSaveContacts: (file: ContactsFile) => Promise<string | null>
   frameDelay: FrameDelay
   onFrameDelayChange: (value: FrameDelay) => void
+  health: HealthStatus | null
+  onCopyHealth: (summary: string) => void
+  onRecovery: (action: RecoveryAction) => Promise<string>
+  recoveryMessage: string | null
   updateSummary: string | null
   onOpenSettings: (target: SettingsTarget) => void
   onOpenRemoteHelp: () => void
@@ -40,6 +47,10 @@ export function CaregiverPanel({
   onSaveContacts,
   frameDelay,
   onFrameDelayChange,
+  health,
+  onCopyHealth,
+  onRecovery,
+  recoveryMessage,
   updateSummary,
   onOpenSettings,
   onOpenRemoteHelp,
@@ -70,6 +81,13 @@ export function CaregiverPanel({
         onRefresh={onRefreshHardware}
         onOpenWifiSettings={() => onOpenSettings('network')}
         onCheckUpdates={onCheckUpdates}
+      />
+
+      <RecoveryPanel
+        health={health}
+        onCopySummary={onCopyHealth}
+        onAction={onRecovery}
+        message={recoveryMessage}
       />
 
       <FontScaleControl value={scale} onChange={onScaleChange} />
