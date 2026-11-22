@@ -22,6 +22,7 @@ def main() -> None:
             if wav.getnchannels() != 1 or wav.getframerate() != 16000:
                 print(json.dumps({"text": ""}))
                 return
+            sys.path.insert(0, "/usr/lib/simpleos/python")
             from vosk import KaldiRecognizer, Model
 
             recognizer = KaldiRecognizer(Model(MODEL_PATH), 16000)

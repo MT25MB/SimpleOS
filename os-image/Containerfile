@@ -94,8 +94,8 @@ RUN rpm-ostree install --assumeyes \
 # Optional offline voice features. ffmpeg comes from the base image already.
 # The small Vosk model is a fixed download;
 # if it is unavailable the UI reports that voice commands are not set up.
-RUN mkdir -p /usr/local/lib64 /usr/share/simpleos \
-    && python3 -m pip install --break-system-packages --no-cache-dir vosk \
+RUN mkdir -p /usr/share/simpleos \
+    && python3 -m pip install --no-cache-dir --target /usr/lib/simpleos/python vosk \
     && (curl -fsSL -o /tmp/simpleos-vosk.zip \
         https://alphacephei.com/vosk/models/vosk-model-small-en-us-0.15.zip \
         && unzip -q -o /tmp/simpleos-vosk.zip -d /usr/share/simpleos \

@@ -174,6 +174,7 @@ describe('system guardrails contract', () => {
     for (const pkg of ['espeak-ng', 'python3', 'python3-pip', 'unzip', 'curl']) {
       expect(containerfile, pkg).toMatch(new RegExp(`\\b${pkg}\\b`))
     }
+    expect(containerfile).toContain('--target /usr/lib/simpleos/python')
     expect(containerfile).toContain('vosk-model-small-en-us-0.15.zip')
     expect(containerfile).toContain('system-configs/simpleos/transcribe.py')
     const transcribe = read('system-configs/simpleos/transcribe.py')
