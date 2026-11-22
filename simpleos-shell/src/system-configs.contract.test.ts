@@ -63,8 +63,10 @@ describe('system guardrails contract', () => {
     expect(firstboot).toContain('logger -t simpleos-firstboot')
     expect(firstboot).toContain('network problem?')
     // The network steps are wrapped so a failure cannot trip strict mode.
-    expect(firstboot).toContain('if ! flatpak remote-add')
-    expect(firstboot).toContain('if ! flatpak install')
+    expect(firstboot).toContain('retry_flatpak')
+    expect(firstboot).toContain('if ! retry_flatpak "Adding Flathub" flatpak remote-add')
+    expect(firstboot).toContain('if ! retry_flatpak "Installing core applications" flatpak install')
+    expect(firstbootService).toContain('TimeoutStartSec=900')
     expect(firstboot.trimEnd()).toMatch(/exit 0$/)
   })
 
@@ -78,6 +80,8 @@ describe('system guardrails contract', () => {
     expect(autostart).toContain("swaybg -c '#0b1120'")
     expect(autostart).toContain('XCURSOR_SIZE="${XCURSOR_SIZE:-48}"')
     expect(autostart).toContain('while true; do')
+    expect(autostart).toContain('WAYLAND_DISPLAY')
+    expect(autostart).toContain('[ "$waited" -lt 20 ]')
   })
 
   it('maximizes windows, removes desktop clicks and disables snapping', () => {
@@ -152,6 +156,19 @@ describe('system guardrails contract', () => {
     expect(sleep).toContain('[Sleep]')
     expect(sleep).toContain('AllowSuspend=yes')
     expect(sleep).toContain('AllowHibernation=no')
+  })
+
+  it('uses cache mounts, lint and portal packages from the reference stacks', () => {
+    expect(containerfile).toContain('--mount=type=cache,target=/var/cache')
+    expect(containerfile).toContain('--mount=type=tmpfs,target=/tmp')
+    expect(containerfile).toContain('RUN ["bootc", "container", "lint"]')
+    for (const pkg of [
+      'xdg-desktop-portal',
+      'xdg-desktop-portal-wlr',
+      'xdg-desktop-portal-gtk',
+    ]) {
+      expect(containerfile, pkg).toMatch(new RegExp(`\\b${pkg}\\b`))
+    }
   })
 
   it('builds and installs the launcher that the desktop session supervises', () => {

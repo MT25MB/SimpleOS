@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { readFileSync } from 'node:fs'
+import { VOICE_COMMANDS } from '../electron/allowlists'
 import { resolve } from 'node:path'
 
 const root = resolve(__dirname, '../..')
@@ -86,6 +87,19 @@ describe('Firefox enterprise guardrails', () => {
     expect(policies.policies.Extensions.Locked).toContain('uBlock0@raymondhill.net')
   })
 
+  it('uses schema-valid uBlock and camera policies for calm Jitsi calls', () => {
+    expect(
+      policies.policies.ExtensionSettings['uBlock0@raymondhill.net'].install_url,
+    ).toContain('/latest/ublock-origin/latest.xpi')
+    expect(policies.policies.PopupBlocking.Default).toBe(false)
+    expect(policies.policies.PopupBlocking.Locked).toBe(true)
+    for (const kind of ['Camera', 'Microphone']) {
+      expect(policies.policies.Permissions[kind].Allow).toContain('https://meet.jit.si')
+      expect(policies.policies.Permissions[kind].BlockNewRequests).toBe(true)
+      expect(policies.policies.Permissions[kind].Locked).toBe(true)
+    }
+  })
+
   it('blocks about:config, the add-ons manager and developer tools', () => {
     expect(policies.policies.BlockAboutConfig).toBe(true)
     expect(policies.policies.BlockAboutAddons).toBe(true)
@@ -117,6 +131,10 @@ describe('session and privilege boundary', () => {
     expect(rc).not.toContain('command="foot"')
     expect(rc).toContain('<keybind key="A-Return">')
     expect(rc).toContain('<keybind key="C-A-t">')
+    expect(rc).toContain('<keybind key="A-S-Tab"><action name="None"/></keybind>')
+    expect(rc).toContain('<keybind key="A-F4"><action name="None"/></keybind>')
+    expect(rc).not.toContain('<action name="Close"/>')
+    expect(rc).not.toContain('<action name="NextWindow"/>')
     // Right-click is bound only to empty Press/Click actions: no root menu.
     const rightClicks = [...rc.matchAll(/<mousebind button="Right"([^>]*)\/>/g)]
     expect(rightClicks.length).toBeGreaterThan(0)
@@ -196,6 +214,9 @@ describe('local voice boundary', () => {
     expect(allowlists).toContain("command: 'ffmpeg'")
     expect(allowlists).toContain("command: 'python3'")
     expect(allowlists).toContain("command: 'espeak-ng'")
+    expect(VOICE_COMMANDS.toWav.args).toContain('16000')
+    expect(VOICE_COMMANDS.toWav.args).toContain('1')
+    expect(VOICE_COMMANDS.toWav.args).toContain('pcm_s16le')
     expect(main).not.toContain('fetch(')
     expect(main).not.toContain('https://')
     expect(main).not.toContain('webkitSpeechRecognition')

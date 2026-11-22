@@ -51,7 +51,22 @@
       "Location": {
         "BlockNewRequests": true,
         "Locked": true
+      },
+      "Camera": {
+        "Allow": ["https://meet.jit.si", "https://8x8.vc", "https://jitsi.org"],
+        "BlockNewRequests": true,
+        "Locked": true
+      },
+      "Microphone": {
+        "Allow": ["https://meet.jit.si", "https://8x8.vc", "https://jitsi.org"],
+        "BlockNewRequests": true,
+        "Locked": true
       }
+    },
+
+    "PopupBlocking": {
+      "Default": false,
+      "Locked": true
     },
 
     "InstallAddonsPermission": {
@@ -68,7 +83,7 @@
       },
       "uBlock0@raymondhill.net": {
         "installation_mode": "force_installed",
-        "install_url": "https://addons.mozilla.org/firefox/downloads/latest/uBlock0@raymondhill.net/latest.xpi"
+        "install_url": "https://addons.mozilla.org/firefox/downloads/latest/ublock-origin/latest.xpi"
       }
     },
 

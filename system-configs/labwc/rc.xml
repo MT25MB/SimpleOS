@@ -19,27 +19,25 @@
     <decoration>server</decoration>
     <keyboard>
       <numlock>on</numlock>
-      <!-- A deliberately tiny set of predictable keyboard actions. -->
-      <keybind key="A-Tab">
-        <action name="NextWindow"/>
-      </keybind>
-      <keybind key="A-F4">
-        <action name="Close"/>
-      </keybind>
-      <!-- Neutralise the terminal shortcuts inherited from labwc's defaults.
-           Pressing them only moves focus, so no shell can be opened by key. -->
-      <keybind key="A-Return">
-        <action name="NextWindow"/>
-      </keybind>
-      <keybind key="A-t">
-        <action name="NextWindow"/>
-      </keybind>
-      <keybind key="C-A-t">
-        <action name="NextWindow"/>
-      </keybind>
-      <keybind key="W-Return">
-        <action name="NextWindow"/>
-      </keybind>
+      <!-- labwc inherits a full desktop keybind set by default. Use the
+           documented "None" action to remove every shortcut that could open a
+           shell, close the kiosk, switch windows or move things around. There
+           are no keyboard escapes from SimpleOS. -->
+      <keybind key="A-Tab"><action name="None"/></keybind>
+      <keybind key="A-S-Tab"><action name="None"/></keybind>
+      <keybind key="A-F4"><action name="None"/></keybind>
+      <keybind key="A-Return"><action name="None"/></keybind>
+      <keybind key="A-t"><action name="None"/></keybind>
+      <keybind key="C-A-t"><action name="None"/></keybind>
+      <keybind key="W-Return"><action name="None"/></keybind>
+      <keybind key="A-Space"><action name="None"/></keybind>
+      <keybind key="W-Space"><action name="None"/></keybind>
+      <keybind key="W-a"><action name="None"/></keybind>
+      <keybind key="W-d"><action name="None"/></keybind>
+      <keybind key="W-Left"><action name="None"/></keybind>
+      <keybind key="W-Right"><action name="None"/></keybind>
+      <keybind key="W-Up"><action name="None"/></keybind>
+      <keybind key="W-Down"><action name="None"/></keybind>
     </keyboard>
   </core>
 

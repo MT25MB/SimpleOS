@@ -74,10 +74,27 @@ else
   log_warn "Home directory $SENIOR_HOME is missing; skipping ownership setup."
 fi
 
+# A short, bounded retry keeps intermittent Wi-Fi from leaving the desktop
+# without its apps. It never loops forever: the unit has TimeoutStartSec=900.
+retry_flatpak() {
+  local description="$1"
+  shift
+  local attempt=1
+  while [[ "$attempt" -le 3 ]]; do
+    if "$@"; then
+      return 0
+    fi
+    log_warn "$description failed (attempt $attempt of 3). Retrying in 5 seconds."
+    sleep 5
+    attempt=$((attempt + 1))
+  done
+  return 1
+}
+
 # -----------------------------------------------------------------------------
 # 3. Add Flathub (optional — log clearly and continue on failure).
 # -----------------------------------------------------------------------------
-if ! flatpak remote-add --if-not-exists --system flathub \
+if ! retry_flatpak "Adding Flathub" flatpak remote-add --if-not-exists --system flathub \
       https://dl.flathub.org/repo/flathub.flatpakrepo; then
   log_warn "Could not add the Flathub remote (network problem?). Continuing; applications may be missing."
 else
@@ -88,7 +105,7 @@ fi
 # 4. Install the core applications (optional — never fail the boot).
 # -----------------------------------------------------------------------------
 APPS=(org.mozilla.firefox org.gnome.Loupe com.rustdesk.RustDesk)
-if ! flatpak install --system --assumeyes flathub "${APPS[@]}"; then
+if ! retry_flatpak "Installing core applications" flatpak install --system --assumeyes flathub "${APPS[@]}"; then
   log_warn "One or more core applications could not be installed (network problem?)."
   log_warn "You can retry later with: flatpak install --system --assumeyes flathub ${APPS[*]}"
 else

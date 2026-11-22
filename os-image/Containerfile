@@ -55,7 +55,12 @@ ENV TZ=UTC
 #
 # foot is installed for caregiver/recovery use but is hidden from the user's
 # application menus further down this file.
-RUN rpm-ostree install --assumeyes \
+# BuildKit cache mounts keep repeated local builds fast (pattern from uBlue's
+# Containerfile). /tmp is a tmpfs so no package scratch files enter the image.
+RUN --mount=type=cache,target=/var/cache \
+    --mount=type=cache,target=/var/log \
+    --mount=type=tmpfs,target=/tmp \
+    rpm-ostree install --assumeyes \
         labwc \
         greetd \
         swaybg \
@@ -90,6 +95,9 @@ RUN rpm-ostree install --assumeyes \
         unzip \
         curl \
         polkit \
+        xdg-desktop-portal \
+        xdg-desktop-portal-wlr \
+        xdg-desktop-portal-gtk \
     && ostree container commit
 
 # Optional offline voice features. ffmpeg comes from the base image already.
@@ -176,6 +184,9 @@ RUN mkdir -p /usr/libexec/simpleos \
         rpm-ostreed-automatic.timer \
         simpleos-firstboot.service \
     && ostree container commit
+
+# Fail the build if the image is not a clean, bootable container (uBlue pattern).
+RUN ["bootc", "container", "lint"]
 
 # Future work (intentionally not implemented yet):
 #   - generate a full disk image / ISO from this bootable container
