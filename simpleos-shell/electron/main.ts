@@ -28,6 +28,7 @@ import {
   HARDWARE_ACTIONS,
   HARDWARE_STATUS,
   SAFE_ACTIONS,
+  VOICE_COMMANDS,
   type ApprovedCommand,
 } from './allowlists'
 import { createPinThrottle } from './pin-throttle'
@@ -530,6 +531,126 @@ ipcMain.handle(
     return (await runApproved(HARDWARE_ACTIONS[action])) !== null
       ? OK
       : fail('HARDWARE_UNAVAILABLE')
+  },
+)
+
+// ------------------------------------------------------------ local voice features
+
+let localSpeechProcess: ReturnType<typeof spawn> | null = null
+const MAX_SPEECH_CHARS = 400
+const MAX_AUDIO_BASE64 = 2 * 1024 * 1024
+
+/** Keep spoken text to plain characters so it can never become a command. */
+function sanitizeSpeechText(text: unknown): string | null {
+  if (typeof text !== 'string' || text.trim().length === 0) return null
+  const cleaned = text
+    .replace(/[\u0000-\u001f\u007f]/g, ' ')
+    .replace(/[^\p{L}\p{N}\s.,!?'"():;-]/gu, '')
+    .replace(/\s+/g, ' ')
+    .trim()
+  return cleaned && cleaned.length <= MAX_SPEECH_CHARS ? cleaned : null
+}
+
+/** Replace internal placeholders only; renderer values are never arguments. */
+function voiceArgs(command: ApprovedCommand, paths: readonly string[]): string[] {
+  let index = 0
+  return command.args.map((arg) => (arg === '{path}' ? paths[index++] : arg))
+}
+
+function runVoice(command: ApprovedCommand, paths: readonly string[], timeout = 20_000): Promise<string | null> {
+  return new Promise((resolve) => {
+    execFile(
+      command.command,
+      voiceArgs(command, paths),
+      { timeout, maxBuffer: 1024 * 1024 },
+      (error, stdout) => resolve(error ? null : stdout),
+    )
+  })
+}
+
+function tempVoiceFile(extension: string): string {
+  return path.join(os.tmpdir(), `simpleos-voice-${process.pid}-${crypto.randomBytes(6).toString('hex')}.${extension}`)
+}
+
+ipcMain.handle('simpleos:voice:speak', async (event, text: unknown): Promise<Result> => {
+  if (!isTrustedSender(event)) return fail('UNKNOWN_TARGET')
+  const clean = sanitizeSpeechText(text)
+  if (!clean) return fail('INVALID_INPUT')
+  const file = tempVoiceFile('txt')
+  try {
+    fs.writeFileSync(file, clean, { encoding: 'utf8', mode: 0o600 })
+    localSpeechProcess = spawn(VOICE_COMMANDS.speak.command, voiceArgs(VOICE_COMMANDS.speak, [file]), {
+      stdio: 'ignore',
+    })
+    const result = await new Promise<Result>((resolve) => {
+      localSpeechProcess?.once('error', () => resolve(fail('VOICE_UNAVAILABLE')))
+      localSpeechProcess?.once('spawn', () => resolve(OK))
+    })
+    return result
+  } catch {
+    return fail('VOICE_UNAVAILABLE')
+  } finally {
+    // Keep the file until the child has opened it; a short delay avoids a race.
+    setTimeout(() => {
+      try {
+        fs.unlinkSync(file)
+      } catch {
+        // Best effort only.
+      }
+    }, 2_000).unref()
+  }
+})
+
+ipcMain.handle('simpleos:voice:stop', async (event): Promise<Result> => {
+  if (!isTrustedSender(event)) return fail('UNKNOWN_TARGET')
+  if (localSpeechProcess && !localSpeechProcess.killed) {
+    localSpeechProcess.kill()
+  }
+  localSpeechProcess = null
+  return OK
+})
+
+ipcMain.handle(
+  'simpleos:voice:transcribe',
+  async (event, audioBase64: unknown): Promise<ValueResult<{ text: string }>> => {
+    if (!isTrustedSender(event)) return fail('UNKNOWN_TARGET')
+    if (
+      typeof audioBase64 !== 'string' ||
+      audioBase64.length === 0 ||
+      audioBase64.length > MAX_AUDIO_BASE64 ||
+      !/^[A-Za-z0-9+/=]+$/.test(audioBase64)
+    ) {
+      return fail('INVALID_INPUT')
+    }
+
+    const input = tempVoiceFile('audio')
+    const wav = tempVoiceFile('wav')
+    const cleanup = () => {
+      for (const file of [input, wav]) {
+        try {
+          fs.unlinkSync(file)
+        } catch {
+          // Best effort only.
+        }
+      }
+    }
+
+    try {
+      fs.writeFileSync(input, Buffer.from(audioBase64, 'base64'), { mode: 0o600 })
+      const converted = await runVoice(VOICE_COMMANDS.toWav, [input, wav])
+      if (converted === null) return fail('VOICE_UNAVAILABLE')
+      const recognized = await runVoice(VOICE_COMMANDS.recognize, [wav])
+      if (recognized === null) return fail('VOICE_UNAVAILABLE')
+      const parsed = JSON.parse(recognized) as { text?: unknown }
+      const text = typeof parsed.text === 'string' ? sanitizeSpeechText(parsed.text) : null
+      return text
+        ? { ok: true, value: { text } }
+        : { ok: true, value: { text: '' } }
+    } catch {
+      return fail('VOICE_UNAVAILABLE')
+    } finally {
+      cleanup()
+    }
   },
 )
 

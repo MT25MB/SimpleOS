@@ -6,6 +6,16 @@ All notable changes to SimpleOS are recorded here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- Optional **Read Aloud**: a high-visibility header toggle that speaks screen
+  titles, button labels and reminders using a local browser voice, with an
+  espeak-ng fallback through allowlisted IPC. One click or Escape stops speech.
+- Optional **Hold to Speak** push-to-talk: audio is recorded locally, transcribed
+  by an offline Vosk model and shown back as exact text before a big Confirm
+  button runs one of five allowlisted actions. Nothing is uploaded.
+- A plain-English note in the caregiver guide explaining both features.
+
 ### Fixed
 
 - The bootable image now builds and installs the React/Electron launcher at

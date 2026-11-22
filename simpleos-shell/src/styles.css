@@ -163,6 +163,45 @@ input {
   font-weight: 700;
 }
 
+/* ------------------------------------------------------- read aloud / voice */
+
+.voice {
+  flex: 1 0 100%;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1rem;
+  padding: 0.75rem 1rem;
+  border: 2px solid var(--accent);
+  border-radius: 0.75rem;
+  background: var(--surface);
+}
+
+.voice__button {
+  min-height: 3rem;
+  min-width: 3rem;
+}
+
+.voice__button[aria-pressed='true'] {
+  color: #04121f;
+  background: var(--success);
+  border-color: var(--success);
+}
+
+.voice__note,
+.voice__status {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.voice__heard {
+  display: flex;
+  flex: 1 0 100%;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1rem;
+}
+
 .app__main {
   flex: 1;
 }

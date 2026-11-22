@@ -33,6 +33,11 @@ const bridge: SimpleOSBridge = {
   getHardwareStatus: () => ipcRenderer.invoke('simpleos:hardware:status'),
   adjustVolume: (action) => ipcRenderer.invoke('simpleos:hardware:volume', action),
   adjustBrightness: (action) => ipcRenderer.invoke('simpleos:hardware:brightness', action),
+  // Local-only voice: text/audio go to fixed handlers on this machine, never
+  // to a network service. The renderer only sees a result object.
+  speakLocally: (text) => ipcRenderer.invoke('simpleos:voice:speak', text),
+  stopLocalSpeech: () => ipcRenderer.invoke('simpleos:voice:stop'),
+  transcribeAudio: (audioBase64) => ipcRenderer.invoke('simpleos:voice:transcribe', audioBase64),
 }
 
 contextBridge.exposeInMainWorld('simpleOS', bridge)

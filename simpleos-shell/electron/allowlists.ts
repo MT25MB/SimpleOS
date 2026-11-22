@@ -54,6 +54,38 @@ export const HARDWARE_ACTIONS: Readonly<Record<string, ApprovedCommand>> = Objec
   brightnessDown: Object.freeze({ command: 'brightnessctl', args: Object.freeze(['set', '10%-']) }),
 })
 
+/**
+ * Local voice commands. The `{path}` placeholders are replaced in the main
+ * process with paths it creates itself; renderer input only ever supplies a
+ * bounded audio buffer or a sanitized line of text. There is no network call
+ * and no cloud speech service anywhere in this list.
+ */
+export const VOICE_COMMANDS: Readonly<Record<string, ApprovedCommand>> = Object.freeze({
+  toWav: Object.freeze({
+    command: 'ffmpeg',
+    args: Object.freeze([
+      '-hide_banner',
+      '-loglevel',
+      'error',
+      '-y',
+      '-i',
+      '{path}',
+      '-ar',
+      '16000',
+      '-ac',
+      '1',
+      '-c:a',
+      'pcm_s16le',
+      '{path}',
+    ]),
+  }),
+  recognize: Object.freeze({
+    command: 'python3',
+    args: Object.freeze(['/usr/libexec/simpleos/transcribe.py', '{path}']),
+  }),
+  speak: Object.freeze({ command: 'espeak-ng', args: Object.freeze(['-f', '{path}']) }),
+})
+
 /** Fixed, read-only commands used to build the header status strip. */
 export const HARDWARE_STATUS: Readonly<Record<string, ApprovedCommand>> = Object.freeze({
   wifi: Object.freeze({

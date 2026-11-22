@@ -45,6 +45,14 @@ export interface HardwareStatus {
   rustdeskAvailable: boolean
 }
 
+/** The only actions local voice input is allowed to trigger. */
+export type VoiceAction =
+  | 'openVideoCall'
+  | 'openInternet'
+  | 'readReminders'
+  | 'askForHelp'
+  | 'goHome'
+
 export type IconName = 'video' | 'web' | 'photos' | 'reminders' | 'help' | 'settings'
 
 export type TileAction =
@@ -88,6 +96,7 @@ export type ErrorCode =
   | 'PINS_DONT_MATCH'
   | 'BRIDGE_UNAVAILABLE'
   | 'HARDWARE_UNAVAILABLE'
+  | 'VOICE_UNAVAILABLE'
   | 'TOO_MANY_TRIES'
   | 'UNEXPECTED'
 
@@ -113,4 +122,13 @@ export interface SimpleOSBridge {
   adjustVolume(action: VolumeAction): Promise<Result>
   /** Adjust the screen using one fixed, allowlisted command. */
   adjustBrightness(action: BrightnessAction): Promise<Result>
+  /** Local TTS fallback used only when no local Web Speech voice exists. */
+  speakLocally(text: string): Promise<Result>
+  /** Stop any in-flight local speech process. */
+  stopLocalSpeech(): Promise<Result>
+  /**
+   * Transcribe a short local audio recording. The buffer never leaves this
+   * machine: it is written to a temp file and read by the offline Vosk model.
+   */
+  transcribeAudio(audioBase64: string): Promise<ValueResult<{ text: string }>>
 }

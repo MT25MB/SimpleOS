@@ -78,6 +78,10 @@ The mouse pointer is already large, and windows open full screen so there is les
 
 For quick fixes, the top of the home screen has big **Softer**, **Louder** and **Mute** buttons for sound, and **Darker** and **Lighter** buttons for the screen. The screen buttons only appear on a laptop, where there is a backlight to adjust.
 
+**Read Aloud** is a big button in the header. Press **Read Aloud: Off** once and the computer will say the name of the screen and its buttons in plain speech. While it is reading, the button says **Stop Reading**; press it once, or press Escape, to stop straight away. Press the button again later to turn reading off.
+
+**Hold to Speak** lets the person use their voice instead of a button. Hold it, say one of five short commands, then let go. The computer shows exactly what it heard and asks you to press **Confirm** before anything happens. The commands are: "Open Video Call", "Open Internet", "Read Reminders", "Ask for Help", and "Go Home". If the microphone or the offline voice files are not set up, the button is replaced with a plain message. No recording is ever sent to the internet — it is turned into text on the computer itself.
+
 ## 6. Ask for Help with RustDesk
 
 The **Ask for Help** tile opens RustDesk. This lets someone you trust see the screen and guide the person through a problem.

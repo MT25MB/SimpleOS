@@ -170,6 +170,18 @@ describe('system guardrails contract', () => {
     expect(autostart).toContain('/usr/libexec/simpleos/simpleos-shell')
   })
 
+  it('ships the offline voice runtime without any cloud dependency', () => {
+    for (const pkg of ['espeak-ng', 'python3', 'python3-pip', 'ffmpeg-free', 'unzip', 'curl']) {
+      expect(containerfile, pkg).toMatch(new RegExp(`\\b${pkg}\\b`))
+    }
+    expect(containerfile).toContain('vosk-model-small-en-us-0.15.zip')
+    expect(containerfile).toContain('system-configs/simpleos/transcribe.py')
+    const transcribe = read('system-configs/simpleos/transcribe.py')
+    expect(transcribe).toContain('from vosk import KaldiRecognizer, Model')
+    expect(transcribe).not.toMatch(/^\s*(import|from)\s+(requests|urllib)/m)
+    expect(transcribe).not.toMatch(/https?:\/\//)
+  })
+
   it('gives senior hardware groups without ever granting admin rights', () => {
     expect(firstboot).toContain('for group in video audio lp')
     expect(firstboot).toContain('usermod --append --groups')

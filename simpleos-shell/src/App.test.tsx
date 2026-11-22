@@ -29,6 +29,9 @@ function mockBridge(overrides: Partial<SimpleOSBridge> = {}): SimpleOSBridge {
     }),
     adjustVolume: vi.fn().mockResolvedValue(ok),
     adjustBrightness: vi.fn().mockResolvedValue(ok),
+    speakLocally: vi.fn().mockResolvedValue(ok),
+    stopLocalSpeech: vi.fn().mockResolvedValue(ok),
+    transcribeAudio: vi.fn().mockResolvedValue({ ok: true, value: { text: '' } }),
     ...overrides,
   } as SimpleOSBridge
 }

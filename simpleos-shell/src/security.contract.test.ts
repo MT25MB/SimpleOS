@@ -13,6 +13,7 @@ const rc = read('system-configs/labwc/rc.xml')
 const firstboot = read('system-configs/systemd/simpleos-firstboot.sh')
 const pinScreen = read('simpleos-shell/src/components/PinScreen.tsx')
 const messages = read('simpleos-shell/src/messages.ts')
+const allowlists = read('simpleos-shell/electron/allowlists.ts')
 
 describe('Electron renderer sandbox', () => {
   it('keeps every non-negotiable security flag enabled', () => {
@@ -56,7 +57,7 @@ describe('Electron renderer sandbox', () => {
   it('checks the sender on every single IPC handler', () => {
     const handlers = main.split('ipcMain.handle(').length - 1
     const checks = main.split('isTrustedSender(event)').length - 1
-    expect(handlers).toBe(12)
+    expect(handlers).toBe(15)
     expect(checks).toBe(handlers)
     expect(main).toContain('event.sender !== window.webContents')
     expect(main).toContain('event.senderFrame !== window.webContents.mainFrame')
@@ -123,6 +124,38 @@ describe('session and privilege boundary', () => {
       expect(attrs).toMatch(/action="(Press|Click)"/)
     }
     expect(rc).toContain('<cornerRange>0</cornerRange>')
+  })
+})
+
+describe('local voice boundary', () => {
+  it('exposes only fixed local voice IPC channels', () => {
+    expect(preload).toContain("speakLocally: (text) => ipcRenderer.invoke('simpleos:voice:speak', text)")
+    expect(preload).toContain("stopLocalSpeech: () => ipcRenderer.invoke('simpleos:voice:stop')")
+    expect(preload).toContain(
+      "transcribeAudio: (audioBase64) => ipcRenderer.invoke('simpleos:voice:transcribe', audioBase64)",
+    )
+    for (const channel of ['simpleos:voice:speak', 'simpleos:voice:stop', 'simpleos:voice:transcribe']) {
+      expect(main).toContain(channel)
+    }
+  })
+
+  it('sends audio and text only to offline local commands', () => {
+    expect(allowlists).toContain('VOICE_COMMANDS')
+    expect(allowlists).toContain("command: 'ffmpeg'")
+    expect(allowlists).toContain("command: 'python3'")
+    expect(allowlists).toContain("command: 'espeak-ng'")
+    expect(main).not.toContain('fetch(')
+    expect(main).not.toContain('https://')
+    expect(main).not.toContain('webkitSpeechRecognition')
+  })
+
+  it('bounds and sanitizes renderer-supplied voice data', () => {
+    expect(main).toContain('const MAX_SPEECH_CHARS = 400')
+    expect(main).toContain('const MAX_AUDIO_BASE64 = 2 * 1024 * 1024')
+    expect(main).toContain('function sanitizeSpeechText')
+    expect(main).toContain('function voiceArgs')
+    expect(main).toContain("mode: 0o600")
+    expect(main).toContain("fail('VOICE_UNAVAILABLE')")
   })
 })
 

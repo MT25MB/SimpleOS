@@ -7,10 +7,13 @@ import { NoticeBanner } from './components/NoticeBanner'
 import { PinScreen } from './components/PinScreen'
 import { RemindersPanel } from './components/RemindersPanel'
 import { Tile } from './components/Tile'
+import { VoiceControls } from './components/VoiceControls'
 import { TILES } from './data/tiles'
 import { useFontScale } from './hooks/useFontScale'
 import { useHardwareStatus } from './hooks/useHardwareStatus'
+import { useReadAloud } from './hooks/useReadAloud'
 import { useReminders } from './hooks/useReminders'
+import { useVoiceNavigation } from './hooks/useVoiceNavigation'
 import { friendlyMessage } from './messages'
 import type {
   BrightnessAction,
@@ -18,6 +21,7 @@ import type {
   LaunchTarget,
   LauncherTile,
   SettingsTarget,
+  VoiceAction,
   VolumeAction,
 } from './types'
 
@@ -29,7 +33,9 @@ type Notice = { tone: 'info' | 'sharing' | 'caregiver'; message: string }
 export default function App() {
   const { scale, setFontScale } = useFontScale()
   const { status: hardware, refresh: refreshHardware } = useHardwareStatus()
+  const readAloud = useReadAloud()
   const reminders = useReminders()
+  const voice = useVoiceNavigation(handleVoiceAction)
   const [view, setView] = useState<View>('home')
   const [pinMode, setPinMode] = useState<PinMode | null>(null)
   const [notice, setNotice] = useState<Notice | null>(null)
@@ -50,6 +56,29 @@ export default function App() {
   useEffect(() => {
     if (view !== 'home') mainRef.current?.focus()
   }, [view])
+
+  // Read the screen people have just moved to, using only local speech.
+  useEffect(() => {
+    if (view === 'home') {
+      readAloud.speak(
+        'Home screen. Six buttons: Video Call Family, Web and Email, Photo Album, Daily Reminders, Ask for Help, Caregiver Settings.',
+      )
+    } else if (view === 'caregiver') {
+      readAloud.speak('Caregiver Settings. Quick check, Text size, Computer settings, Remote help, Caregiver PIN.')
+    }
+  }, [view, readAloud.enabled, readAloud.speak])
+
+  useEffect(() => {
+    if (view !== 'reminders' || !reminders.loaded) return
+    const items = reminders.store.items
+    readAloud.speak(
+      items.length === 0
+        ? 'Daily Reminders. Nothing here yet.'
+        : `Daily Reminders. ${items
+            .map((item) => `${item.text}, ${item.done ? 'done' : 'not done'}`)
+            .join('. ')}`,
+    )
+  }, [view, reminders.loaded, reminders.store.items, readAloud.speak])
 
   async function launchApp(target: LaunchTarget, label: string) {
     setNotice(null)
@@ -170,6 +199,27 @@ export default function App() {
     setUpdateSummary(result.value.summary)
   }
 
+  function handleVoiceAction(action: VoiceAction) {
+    setNotice(null)
+    switch (action) {
+      case 'openVideoCall':
+        void launchApp('jitsi', 'Video Call Family')
+        break
+      case 'openInternet':
+        void launchApp('firefox', 'Web and Email')
+        break
+      case 'readReminders':
+        setView('reminders')
+        break
+      case 'askForHelp':
+        void launchApp('rustdesk', 'RustDesk')
+        break
+      case 'goHome':
+        setView('home')
+        break
+    }
+  }
+
   async function handleAdjustVolume(action: VolumeAction) {
     setNotice(null)
     const bridge = window.simpleOS
@@ -230,6 +280,22 @@ export default function App() {
           onOpenWifiSettings={() => void handleOpenWifiSettings()}
           onAdjustVolume={(action) => void handleAdjustVolume(action)}
           onAdjustBrightness={(action) => void handleAdjustBrightness(action)}
+        />
+        <VoiceControls
+          readAloudEnabled={readAloud.enabled}
+          speaking={readAloud.speaking}
+          readAloudMessage={readAloud.message}
+          onToggleReadAloud={() => readAloud.setEnabled(!readAloud.enabled)}
+          onStopReading={readAloud.stop}
+          voiceAvailable={voice.available}
+          voiceStatus={voice.status}
+          transcript={voice.transcript}
+          actionLabel={voice.actionLabel}
+          voiceMessage={voice.message}
+          onStartListening={() => void voice.start()}
+          onFinishListening={voice.finish}
+          onConfirmVoice={voice.confirm}
+          onCancelVoice={voice.cancel}
         />
       </header>
 
