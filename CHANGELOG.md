@@ -6,6 +6,14 @@ All notable changes to SimpleOS are recorded here. The format follows
 
 ## [Unreleased]
 
+Nothing yet.
+
+## [v1.0.0]
+
+The first stable release. It adds family connection tools, offline accessibility,
+a privacy-safe health panel and guarded OS recovery on top of the v0.3.0
+hardware, security and governance work.
+
 ### Added
 
 - A plain-English System Health & Safe Recovery panel in Caregiver Settings with
@@ -171,7 +179,8 @@ contribute to, and a full automated quality gate.
 - First prototype: initial image definition, system configs, Electron launcher,
   build script and documentation.
 
-[Unreleased]: https://github.com/MT25MB/SimpleOS/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/MT25MB/SimpleOS/compare/v1.0.0...HEAD
+[v1.0.0]: https://github.com/MT25MB/SimpleOS/compare/v0.3.0...v1.0.0
 [v0.3.0]: https://github.com/MT25MB/SimpleOS/compare/v0.2.0...v0.3.0
 [v0.2.0]: https://github.com/MT25MB/SimpleOS/compare/v0.1.0...v0.2.0
 [v0.1.0]: https://github.com/MT25MB/SimpleOS/releases/tag/v0.1.0
