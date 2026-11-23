@@ -65,3 +65,45 @@ describe('scripts/build-iso.sh contract', () => {
     expect(buildIso).toContain('Type the device path exactly')
   })
 })
+
+describe('ISO installer safeguards', () => {
+  const config = readFileSync(resolve(root, 'os-image/config.toml'), 'utf8')
+  const kickstart = readFileSync(
+    resolve(root, 'os-image/anaconda/interactive-defaults.ks'),
+    'utf8',
+  )
+
+  it('uses only documented bootc-image-builder blueprint fields', () => {
+    expect(config).toContain('name = "simpleos"')
+    expect(config).toContain('[customizations.kernel]')
+    expect(config).toContain('append = "systemd.unit=graphical.target"')
+    expect(config).toContain('[customizations.iso]')
+    expect(config).toContain('volume_id = "SIMPLEOS-INSTALL"')
+    const active = config
+      .split('\n')
+      .filter((line) => line.trim() && !line.trim().startsWith('#'))
+      .join('\n')
+    expect(active).not.toMatch(/unattended|kickstart|password|user/)
+  })
+
+  it('sets graphical boot, automatic partitioning and no root prompts', () => {
+    expect(kickstart).toContain('xconfig --startxonboot')
+    expect(kickstart).toContain('clearpart --all --initlabel')
+    expect(kickstart).toContain('autopart --type=plain')
+    expect(kickstart).toContain('rootpw --lock')
+    expect(kickstart).toContain('firstboot --disable')
+    expect(kickstart).toContain('services --enabled=greetd.service')
+    expect(kickstart).toContain('bootc --source-imgref @IMAGE_REF@')
+    expect(kickstart).toContain('reboot')
+  })
+
+  it('wires the config and rendered kickstart into the ISO build', () => {
+    expect(buildIso).toContain('KICKSTART_TEMPLATE="$REPO_ROOT/os-image/anaconda/interactive-defaults.ks"')
+    expect(buildIso).toContain('CONFIG_FILE="$REPO_ROOT/os-image/config.toml"')
+    expect(buildIso).toContain('sed "s|@IMAGE_REF@|$IMAGE_TAG|g"')
+    expect(buildIso).toContain('--config /config.toml')
+    expect(buildIso).toContain(':/config.toml:ro')
+    expect(buildIso).toContain(':/usr/share/anaconda/interactive-defaults.ks:ro')
+    expect(buildIso).toContain('Type INSTALL to continue')
+  })
+})

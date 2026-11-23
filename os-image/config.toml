@@ -1,0 +1,14 @@
+# bootc-image-builder blueprint for the SimpleOS USB installer.
+#
+# Only documented blueprint fields are used here: bootc-image-builder rejects
+# unknown keys. The ISO kickstart (interactive-defaults.ks) carries the
+# graphical-target, partitioning and no-root-prompt safeguards.
+name = "simpleos"
+
+# The installed system must always reach the graphical kiosk session, even on
+# hardware that would otherwise choose a text default target.
+[customizations.kernel]
+append = "systemd.unit=graphical.target"
+
+[customizations.iso]
+volume_id = "SIMPLEOS-INSTALL"

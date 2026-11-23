@@ -19,6 +19,9 @@
 #   REMOTE_IMAGE=ghcr.io/you/simpleos:latest bash scripts/build-iso.sh
 #   bash scripts/build-iso.sh --flash /dev/sdb      # flash after checks
 #
+# Set SIMPLEOS_ASSUME_YES=1 to skip the interactive acknowledgement when the
+# script is run by automation.
+#
 # NOTE: ISO generation needs root privileges because bootc-image-builder mounts
 # the host container storage. The script uses sudo when you are not already root.
 # -----------------------------------------------------------------------------
@@ -27,6 +30,8 @@ set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 CONTAINERFILE="$REPO_ROOT/os-image/Containerfile"
+CONFIG_FILE="$REPO_ROOT/os-image/config.toml"
+KICKSTART_TEMPLATE="$REPO_ROOT/os-image/anaconda/interactive-defaults.ks"
 
 OUTPUT_DIR="${OUTPUT_DIR:-$REPO_ROOT/output}"
 IMAGE_TAG="${IMAGE_TAG:-localhost/simpleos:local}"
@@ -115,6 +120,15 @@ done
 
 require_command "$CONTAINER_ENGINE"
 [[ -f "$CONTAINERFILE" ]] || die "Containerfile not found at $CONTAINERFILE"
+[[ -f "$CONFIG_FILE" ]] || die "Build config not found at $CONFIG_FILE"
+[[ -f "$KICKSTART_TEMPLATE" ]] || die "Kickstart template not found at $KICKSTART_TEMPLATE"
+
+KICKSTART_RENDERED="$(mktemp)"
+trap 'rm -f "$KICKSTART_RENDERED"' EXIT
+sed "s|@IMAGE_REF@|$IMAGE_TAG|g" "$KICKSTART_TEMPLATE" > "$KICKSTART_RENDERED"
+if grep -q '@IMAGE_REF@' "$KICKSTART_RENDERED"; then
+  die "Kickstart template still contains an unresolved image reference."
+fi
 
 # bootc-image-builder reads images from root container storage. Use sudo for
 # all container commands so build/pull and ISO generation see the same image.
@@ -145,6 +159,12 @@ fi
 # ------------------------------------------------------------------ ISO build
 
 echo "==> Generating bootable ISO in $OUTPUT_DIR"
+echo "    The installer will ERASE the target disk when someone installs SimpleOS."
+echo "    It creates the 'senior' account automatically; there are no root or user prompts."
+if [[ -t 0 && "${SIMPLEOS_ASSUME_YES:-0}" != "1" ]]; then
+  read -r -p 'Type INSTALL to continue, or anything else to cancel: ' ANSWER
+  [[ "$ANSWER" == "INSTALL" ]] || die "Cancelled. Nothing was built."
+fi
 mkdir -p "$OUTPUT_DIR"
 
 # A TTY is only useful when a person is watching; skip it in CI or scripts.
@@ -159,8 +179,11 @@ fi
   --pull=newer \
   --security-opt label=type:unconfined_t \
   --volume "$OUTPUT_DIR:/output" \
+  --volume "$CONFIG_FILE:/config.toml:ro" \
+  --volume "$KICKSTART_RENDERED:/usr/share/anaconda/interactive-defaults.ks:ro" \
   --volume /var/lib/containers/storage:/var/lib/containers/storage \
   "$BUILDER_IMAGE" \
+  --config /config.toml \
   --type iso \
   --output /output \
   "$IMAGE_TAG"

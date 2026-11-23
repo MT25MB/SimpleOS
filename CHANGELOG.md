@@ -6,7 +6,14 @@ All notable changes to SimpleOS are recorded here. The format follows
 
 ## [Unreleased]
 
-Nothing yet.
+### Added
+
+- A documented bootc-image-builder ISO configuration with a rendered Anaconda
+  kickstart: graphical target on boot, automatic clean partitioning, locked root
+  and no user-creation prompts.
+- A plain-English [USB install walkthrough](docs/usb-install.md) covering safe
+  flashing on Linux, Windows and macOS, booting from USB and the 15-minute
+  caregiver setup.
 
 ## [v1.1.0]
 
