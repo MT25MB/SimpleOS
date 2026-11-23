@@ -40,7 +40,7 @@ SimpleOS takes those problems seriously. The system cannot be damaged by a stray
 - **Easy to talk to.** Hold to Speak understands five simple commands locally with Vosk. No audio ever leaves the computer.
 - **Family one tap.** Up to four family contact cards open a private video room in the locked-down Firefox.
 - **Calm when idle.** An optional photo frame shows local family photos and a big clock, and closes instantly when touched.
-- **Safe recovery.** Caregiver Settings shows a privacy-safe health summary and can restart the launcher, check for updates, or roll back the last OS update with one confirmed press.
+- **System health and safe recovery.** Caregiver Settings shows a plain-English health summary and can restart the launcher, check for updates, or roll back the last OS update with one confirmed press. Rollback is limited to one narrow system action; the everyday user never gets sudo.
 
 ### What is in the repository
 

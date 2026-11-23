@@ -11,9 +11,9 @@ its own, and every draft includes both links.
 
 | Fact | Why it matters |
 | --- | --- |
-| Published releases: `v0.1.0`, `v0.2.0`, `v0.3.0` and `v1.0.0` | Do not call `v0.1.0` the current release. |
-| `v1.0.0` is the current release; `main` is clean after it | Say "latest release is v1.0.0". |
-| 217 automated tests pass on `main` | A real, verifiable number — safe to state with the date. |
+| Published releases: `v0.1.0`, `v0.2.0`, `v0.3.0`, `v1.0.0` and `v1.1.0` | Do not call `v0.1.0` the current release. |
+| `v1.1.0` is the current release; `main` is clean after it | Say "latest release is v1.1.0". |
+| 222 automated tests pass on `main` | A real, verifiable number — safe to state with the date. |
 | Free, MIT licensed, no account or tracking | True for the whole project. |
 | Caregiver PIN has no recovery path yet | A real limitation. State it rather than hiding it. |
 | Remote help uses RustDesk and needs setup | Never imply anyone can connect without the person's knowledge. |
@@ -50,7 +50,7 @@ for my person, and can I still help when I am not there?*
 > I can connect with RustDesk when someone asks for help, and there is a PIN on
 > the settings so the everyday account cannot wander into them.
 >
-> It is early — the latest published release is v1.0.0, and it is still being
+> It is early — the latest published release is v1.1.0, and it is still being
 > tested and improved. Two honest caveats: the caregiver PIN cannot be reset if
 > forgotten, and remote help needs a one-time setup. I would rather say that up
 > front.
@@ -100,7 +100,7 @@ for my person, and can I still help when I am not there?*
 >
 > **Where it stands honestly**
 >
-> This is an early project. The latest published release is v1.0.0. Two things
+> This is an early project. The latest published release is v1.1.0. Two things
 > are not done yet: a forgotten caregiver PIN
 > cannot be recovered, and remote help needs a one-time setup by you. If either
 > of those is a dealbreaker, wait a little.
@@ -180,7 +180,7 @@ made of, and is it real?* Answer that in the first paragraph.
 > - **State:** reminders and a salted scrypt PIN hash are written atomically with
 >   `0600` permissions. The PIN has a five-attempt, 30-second cooldown enforced
 >   in the main process.
-> - **Verification:** one `bash scripts/test-all.sh` runs 217 tests, type-check,
+> - **Verification:** one `bash scripts/test-all.sh` runs 222 tests, type-check,
 >   production build, shell syntax checks and a staged-artifact gate. The same
 >   job gates image builds, Pages deploys and releases in CI. `scripts/test-vm.sh`
 >   boots the image in QEMU/KVM with qcow2, ISO and reset modes; `scripts/build-iso.sh`
@@ -190,7 +190,7 @@ made of, and is it real?* Answer that in the first paragraph.
 > contrast tokens, 48px+ tap targets, visible focus rings, no zoom blocking, and
 > tests that reject technical jargon in senior-facing components.
 >
-> Where it stands: the latest published release is v1.0.0. It is early and I
+> Where it stands: the latest published release is v1.1.0. It is early and I
 > would call it early-adopter ready, not production-hardened for everyone. Known gaps: no PIN recovery, and
 > remote help via RustDesk needs a one-time setup. There is also one open
 > moderate transitive dependency advisory in the repo that I am tracking.
@@ -235,7 +235,7 @@ made of, and is it real?* Answer that in the first paragraph.
 > - Does the IPC sender check plus allowlists cover the realistic escape paths,
 >   or am I missing one?
 >
-> Status: early. Latest release is v1.0.0. 217 tests pass locally and in CI.
+> Status: early. Latest release is v1.1.0. 222 tests pass locally and in CI.
 > No PIN recovery yet.
 >
 > <https://github.com/MT25MB/SimpleOS> · <https://mt25mb.github.io/SimpleOS/>
@@ -265,13 +265,13 @@ CTA asks for review rather than adoption because the project is early.
 Before posting any draft:
 
 - [ ] Both links are present: <https://github.com/MT25MB/SimpleOS> and <https://mt25mb.github.io/SimpleOS/>
-- [ ] Release framing is correct: v1.0.0 is the latest published release
+- [ ] Release framing is correct: v1.1.0 is the latest published release
 - [ ] "Early", "testing" and "early adopter" are used; "battle-tested", "production-ready for everyone" and "thousands of users" are not
 - [ ] No invented testimonials, user counts, download counts, or clinical/health claims
 - [ ] "Unbreakable" is never used as a literal guarantee — prefer "hard to break by accident" and "restarts into the version that worked"
 - [ ] Remote help is described as opt-in and caregiver-set-up, never as always-on access
 - [ ] The two known limitations are mentioned where a reader would rely on them: no PIN recovery, RustDesk setup needed
-- [ ] The test count (217) is restated with its date if the post will live for a while
+- [ ] The test count (222) is restated with its date if the post will live for a while
 - [ ] Caregiver copy contains no Linux jargon: no bootc, rpm-ostree, IPC, CSP, compositor, scrypt, or QEMU
 - [ ] Technical copy does not drift into marketing adjectives
 - [ ] Community-specific rules are checked before posting (self-promotion limits, title formats, flair)
@@ -283,5 +283,5 @@ Before posting any draft:
 - No permissions to publish were given; these are drafts only.
 - The website at `mt25mb.github.io/SimpleOS/` was reachable when these drafts
   were written, and the repository is public.
-- The 217-test figure is accurate as of this document; re-run
+- The 222-test figure is accurate as of this document; re-run
   `bash scripts/test-all.sh` before restating it later.

@@ -6,6 +6,13 @@ All notable changes to SimpleOS are recorded here. The format follows
 
 ## [Unreleased]
 
+Nothing yet.
+
+## [v1.2.0]
+
+A release-preparation update for the hardened USB installer and fully aligned
+documentation.
+
 ### Added
 
 - A documented bootc-image-builder ISO configuration with a rendered Anaconda
@@ -14,6 +21,9 @@ All notable changes to SimpleOS are recorded here. The format follows
 - A plain-English [USB install walkthrough](docs/usb-install.md) covering safe
   flashing on Linux, Windows and macOS, booting from USB and the 15-minute
   caregiver setup.
+- Explicit README and website wording for System Health, one-click Rollback,
+  offline Vosk voice commands, Read-Aloud, Family Contact Cards and the Idle
+  Photo Frame.
 
 ## [v1.1.0]
 
@@ -222,7 +232,8 @@ contribute to, and a full automated quality gate.
 - First prototype: initial image definition, system configs, Electron launcher,
   build script and documentation.
 
-[Unreleased]: https://github.com/MT25MB/SimpleOS/compare/v1.1.0...HEAD
+[Unreleased]: https://github.com/MT25MB/SimpleOS/compare/v1.2.0...HEAD
+[v1.2.0]: https://github.com/MT25MB/SimpleOS/compare/v1.1.0...v1.2.0
 [v1.1.0]: https://github.com/MT25MB/SimpleOS/compare/v1.0.0...v1.1.0
 [v1.0.0]: https://github.com/MT25MB/SimpleOS/compare/v0.3.0...v1.0.0
 [v0.3.0]: https://github.com/MT25MB/SimpleOS/compare/v0.2.0...v0.3.0
