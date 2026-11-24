@@ -8,6 +8,15 @@ All notable changes to SimpleOS are recorded here. The format follows
 
 Nothing yet.
 
+## [v1.2.1]
+
+A small reliability patch on top of v1.2.0.
+
+### Fixed
+
+- The website's primary download button now opens GitHub Releases instead of the repository root.
+- Hold to Speak now grants microphone access in the kiosk. A narrow Electron permission handler allows `media` only on SimpleOS's own page and denies every other permission request.
+
 ## [v1.2.0]
 
 A release-preparation update for the hardened USB installer and fully aligned
@@ -232,7 +241,8 @@ contribute to, and a full automated quality gate.
 - First prototype: initial image definition, system configs, Electron launcher,
   build script and documentation.
 
-[Unreleased]: https://github.com/MT25MB/SimpleOS/compare/v1.2.0...HEAD
+[Unreleased]: https://github.com/MT25MB/SimpleOS/compare/v1.2.1...HEAD
+[v1.2.1]: https://github.com/MT25MB/SimpleOS/compare/v1.2.0...v1.2.1
 [v1.2.0]: https://github.com/MT25MB/SimpleOS/compare/v1.1.0...v1.2.0
 [v1.1.0]: https://github.com/MT25MB/SimpleOS/compare/v1.0.0...v1.1.0
 [v1.0.0]: https://github.com/MT25MB/SimpleOS/compare/v0.3.0...v1.0.0
