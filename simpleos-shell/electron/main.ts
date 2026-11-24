@@ -944,6 +944,17 @@ function createWindow(): void {
   })
   window.webContents.setWindowOpenHandler(() => ({ action: 'deny' }))
 
+  // Hold to Speak needs the microphone, but a kiosk has no permission prompt
+  // for the person to click. Grant media access only to our own page and deny
+  // every other permission request.
+  window.webContents.session.setPermissionRequestHandler(
+    (webContents, permission, callback) => {
+      const ownPage =
+        webContents === window.webContents && isAllowedAppUrl(webContents.getURL())
+      callback(permission === 'media' && ownPage)
+    },
+  )
+
   if (devUrl) {
     // Development only: the concurrently-run Vite dev server.
     void window.loadURL(devUrl)

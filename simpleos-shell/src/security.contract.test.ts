@@ -226,6 +226,9 @@ describe('local voice boundary', () => {
     expect(main).not.toContain('fetch(')
     expect(main).not.toContain('https://')
     expect(main).not.toContain('webkitSpeechRecognition')
+    // A kiosk cannot show a permission prompt; media is granted only to us.
+    expect(main).toContain('setPermissionRequestHandler')
+    expect(main).toContain("callback(permission === 'media' && ownPage)")
   })
 
   it('bounds and sanitizes renderer-supplied voice data', () => {
