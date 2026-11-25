@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useState } from 'react'
 
+/** The 18px root is multiplied by these to give 18px, 22px and 26px exactly. */
 export const FONT_SCALES = [
-  { label: 'Normal', value: 1 },
-  { label: 'Large', value: 1.15 },
-  { label: 'Extra Large', value: 1.35 },
+  { label: 'Normal', value: 1, pixels: 18 },
+  { label: 'Large', value: 22 / 18, pixels: 22 },
+  { label: 'Extra Large', value: 26 / 18, pixels: 26 },
 ] as const
 
 export type FontScale = (typeof FONT_SCALES)[number]['value']

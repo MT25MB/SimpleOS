@@ -137,6 +137,13 @@ export type ErrorCode =
 export type Result = { ok: true } | { ok: false; code: ErrorCode }
 export type ValueResult<T> = { ok: true; value: T } | { ok: false; code: ErrorCode }
 
+/** Result of the read-only first-run check. No file path crosses the bridge. */
+export interface SetupStatus {
+  complete: boolean
+  /** The name saved at the end of the wizard, when there is one. */
+  seniorName: string | null
+}
+
 /** The only API the preload script is allowed to expose to the renderer. */
 export interface SimpleOSBridge {
   launchApp(target: string): Promise<Result>
@@ -145,6 +152,8 @@ export interface SimpleOSBridge {
   hasPin(): Promise<ValueResult<{ hasPin: boolean }>>
   unlockWithPin(pin: string): Promise<Result>
   setPin(currentPin: string, newPin: string): Promise<Result>
+  getSetupStatus(): Promise<ValueResult<SetupStatus>>
+  completeSetup(seniorName: string, rustdeskId: string): Promise<Result>
   openSettings(target: string): Promise<Result>
   /** Close the external Wi-Fi/printer settings app and return to the kiosk. */
   closeSettings(): Promise<Result>

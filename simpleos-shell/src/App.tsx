@@ -8,6 +8,7 @@ import { NoticeBanner } from './components/NoticeBanner'
 import { PhotoFrame } from './components/PhotoFrame'
 import { PinScreen } from './components/PinScreen'
 import { RemindersPanel } from './components/RemindersPanel'
+import { SetupWizard, type SetupWizardResult } from './components/SetupWizard'
 import { Tile } from './components/Tile'
 import { VoiceControls } from './components/VoiceControls'
 import { TILES } from './data/tiles'
@@ -18,6 +19,7 @@ import { useReadAloud } from './hooks/useReadAloud'
 import { useReminders } from './hooks/useReminders'
 import { useVoiceNavigation } from './hooks/useVoiceNavigation'
 import { friendlyMessage } from './messages'
+import { greetingFor } from './setup'
 import type {
   BrightnessAction,
   Contact,
@@ -29,6 +31,7 @@ import type {
   LauncherTile,
   RecoveryAction,
   SettingsTarget,
+  SetupStatus,
   VoiceAction,
   VolumeAction,
 } from './types'
@@ -65,6 +68,9 @@ export default function App() {
   const [framePhotos, setFramePhotos] = useState<string[]>([])
   const [health, setHealth] = useState<HealthStatus | null>(null)
   const [recoveryMessage, setRecoveryMessage] = useState<string | null>(null)
+  const [setupStatus, setSetupStatus] = useState<SetupStatus | null>(null)
+  const [wizardOpen, setWizardOpen] = useState(false)
+  const [seniorName, setSeniorName] = useState('')
   const frame = useIdleFrame(frameDelay)
   const mainRef = useRef<HTMLElement>(null)
   const updateCheckedRef = useRef(false)
@@ -88,6 +94,19 @@ export default function App() {
     if (!bridge) return
     void bridge.loadContacts().then((result) => {
       if (result.ok) setContacts(result.value.contacts)
+    })
+  }, [])
+
+  // First run: a caregiver finishes the guided setup before the home screen is
+  // handed over. A missing or unreadable marker simply means "not set up yet".
+  useEffect(() => {
+    const bridge = window.simpleOS
+    if (!bridge) return
+    void bridge.getSetupStatus().then((result) => {
+      if (!result.ok) return
+      setSetupStatus(result.value)
+      if (result.value.seniorName) setSeniorName(result.value.seniorName)
+      if (!result.value.complete) setWizardOpen(true)
     })
   }, [])
 
@@ -287,6 +306,37 @@ export default function App() {
     return null
   }
 
+  /** Persist everything the wizard gathered, then hand over to senior mode. */
+  async function handleFinishSetup(result: SetupWizardResult) {
+    const bridge = window.simpleOS
+    if (!bridge) return
+    const saved = await bridge.completeSetup(result.seniorName, result.rustdeskId)
+    if (!saved.ok) {
+      setNotice({ tone: 'info', message: friendlyMessage(saved.code) })
+      return
+    }
+    if (result.contacts.length > 0) {
+      const stored = await bridge.saveContacts({ contacts: result.contacts })
+      if (stored.ok) setContacts(result.contacts)
+    }
+    if (result.reminders.length > 0) {
+      await bridge.saveReminders({ date: reminders.store.date, items: result.reminders })
+    }
+    setSeniorName(result.seniorName)
+    setSetupStatus({ complete: true, seniorName: result.seniorName })
+    setWizardOpen(false)
+    setView('home')
+    setNotice({
+      tone: 'caregiver',
+      message: `Setup is finished. ${result.seniorName} can use the computer now.`,
+    })
+  }
+
+  function rerunSetup() {
+    setWizardOpen(true)
+    setView('home')
+  }
+
   async function handleCallContact(contact: Contact) {
     setNotice(null)
     const bridge = window.simpleOS
@@ -385,7 +435,9 @@ export default function App() {
               height="512"
             />
           </h1>
-          <p className="app__tagline">What can I help you with today?</p>
+          <p className="app__tagline">
+            {seniorName ? greetingFor(seniorName) : 'What can I help you with today?'}
+          </p>
         </div>
         <FontScaleControl value={scale} onChange={setFontScale} />
         <HardwareControls
@@ -416,6 +468,7 @@ export default function App() {
         <NoticeBanner tone={notice.tone} message={notice.message} onDismiss={() => setNotice(null)} />
       )}
 
+      {!wizardOpen && (
       <main className="app__main" id="main-content" ref={mainRef} tabIndex={-1}>
         {view === 'home' ? (
           <ul className="tiles" aria-label="Main menu">
@@ -472,6 +525,7 @@ export default function App() {
                 onOpenRemoteHelp={() => void launchApp('rustdesk', 'RustDesk')}
                 onCheckUpdates={handleCheckUpdates}
                 onChangePin={() => setPinMode('change')}
+                onRerunSetup={rerunSetup}
                 error={caregiverError}
                 onDismissError={() => setCaregiverError(null)}
               />
@@ -479,6 +533,7 @@ export default function App() {
           </>
         )}
       </main>
+      )}
 
       <footer className="app__footer">
         <p>SimpleOS · Free and open source</p>
@@ -486,6 +541,16 @@ export default function App() {
 
       {pinMode && (
         <PinScreen mode={pinMode} onCancel={() => setPinMode(null)} onSubmit={handlePinSubmit} />
+      )}
+
+      {wizardOpen && (
+        <SetupWizard
+          initialName={seniorName || setupStatus?.seniorName || ''}
+          scale={scale}
+          onScaleChange={setFontScale}
+          onFinish={handleFinishSetup}
+          onCancel={setupStatus?.complete ? () => setWizardOpen(false) : undefined}
+        />
       )}
 
       {frame.active && <PhotoFrame photos={framePhotos} onDismiss={frame.dismiss} />}

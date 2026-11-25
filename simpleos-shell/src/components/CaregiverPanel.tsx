@@ -33,6 +33,7 @@ interface CaregiverPanelProps {
   onOpenRemoteHelp: () => void
   onCheckUpdates: () => void
   onChangePin: () => void
+  onRerunSetup: () => void
   error: ErrorCode | null
   onDismissError: () => void
 }
@@ -56,6 +57,7 @@ export function CaregiverPanel({
   onOpenRemoteHelp,
   onCheckUpdates,
   onChangePin,
+  onRerunSetup,
   error,
   onDismissError,
 }: CaregiverPanelProps) {
@@ -174,6 +176,19 @@ export function CaregiverPanel({
         onClick={onChangePin}
       >
         Change PIN
+      </button>
+
+      <h3 className="panel__subheading">First-run setup</h3>
+      <p className="panel__note">
+        Go through the five setup steps again to change the name, sound checks or family cards.
+      </p>
+      <button
+        type="button"
+        className="button button--secondary"
+        aria-label="Run the setup wizard again"
+        onClick={onRerunSetup}
+      >
+        Run Setup Again
       </button>
     </section>
   )

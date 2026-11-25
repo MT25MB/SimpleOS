@@ -6,6 +6,7 @@ import { ALLOWED_LAUNCH_TARGETS } from './data/launchTargets'
 const electronMain = readFileSync(resolve(__dirname, '../electron/main.ts'), 'utf8')
 const preload = readFileSync(resolve(__dirname, '../electron/preload.ts'), 'utf8')
 const pinCrypto = readFileSync(resolve(__dirname, '../electron/pin-crypto.ts'), 'utf8')
+const setupFile = readFileSync(resolve(__dirname, '../electron/setup.ts'), 'utf8')
 const allowlists = readFileSync(resolve(__dirname, '../electron/allowlists.ts'), 'utf8')
 
 describe('electron main security contract', () => {
@@ -26,6 +27,19 @@ describe('electron main security contract', () => {
     expect(pinCrypto).toContain('crypto.timingSafeEqual')
     expect(electronMain).toContain('pinsMatch(')
     expect(electronMain).not.toMatch(/const\s+CAREGIVER_PIN\s*=\s*['"]\d+/)
+  })
+
+  it('detects first run from setup-complete.json and validates writes in main', () => {
+    expect(electronMain).toContain("'simpleos:setup:status'")
+    expect(electronMain).toContain("'simpleos:setup:complete'")
+    expect(electronMain).toContain('setupCompletePath(simpleosConfigDir())')
+    expect(electronMain).toContain('isSetupCompleteFile(data)')
+    expect(electronMain).toContain('isValidSeniorName(seniorName)')
+    expect(electronMain).toContain('isValidRustdeskId(rustdeskId)')
+    expect(preload).toContain("getSetupStatus: () => ipcRenderer.invoke('simpleos:setup:status')")
+    expect(preload).toContain("completeSetup: (seniorName, rustdeskId)")
+    expect(setupFile).toContain('setup-complete.json')
+    expect(pinCrypto).toContain('PIN_MIN_LENGTH')
   })
 
   it('stores state under the simpleos config directory, never userData', () => {

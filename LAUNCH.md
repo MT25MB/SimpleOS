@@ -13,7 +13,7 @@ its own, and every draft includes both links.
 | --- | --- |
 | Published releases: `v0.1.0`, `v0.2.0`, `v0.3.0`, `v1.0.0`, `v1.1.0`, `v1.2.0`, `v1.2.1`, `v1.2.2`, `v1.2.3` and `v1.2.4` | Do not call `v0.1.0` the current release. |
 | `v1.2.4` is the current release; it ships a downloadable ISO | Say "latest release is v1.2.4". |
-| 235 automated tests pass on `main` | A real, verifiable number — safe to state with the date. |
+| 267 automated tests pass on `main` | A real, verifiable number — safe to state with the date. |
 | Free, MIT licensed, no account or tracking | True for the whole project. |
 | Caregiver PIN has no recovery path yet | A real limitation. State it rather than hiding it. |
 | Remote help uses RustDesk and needs setup | Never imply anyone can connect without the person's knowledge. |
@@ -180,7 +180,7 @@ made of, and is it real?* Answer that in the first paragraph.
 > - **State:** reminders and a salted scrypt PIN hash are written atomically with
 >   `0600` permissions. The PIN has a five-attempt, 30-second cooldown enforced
 >   in the main process.
-> - **Verification:** one `bash scripts/test-all.sh` runs 235 tests, type-check,
+> - **Verification:** one `bash scripts/test-all.sh` runs 267 tests, type-check,
 >   production build, shell syntax checks and a staged-artifact gate. The same
 >   job gates image builds, Pages deploys and releases in CI. `scripts/test-vm.sh`
 >   boots the image in QEMU/KVM with qcow2, ISO and reset modes; `scripts/build-iso.sh`
@@ -235,7 +235,7 @@ made of, and is it real?* Answer that in the first paragraph.
 > - Does the IPC sender check plus allowlists cover the realistic escape paths,
 >   or am I missing one?
 >
-> Status: early. Latest release is v1.2.4. 235 tests pass locally and in CI.
+> Status: early. Latest release is v1.2.4. 267 tests pass locally and in CI.
 > No PIN recovery yet.
 >
 > <https://github.com/MT25MB/SimpleOS> · <https://mt25mb.github.io/SimpleOS/>

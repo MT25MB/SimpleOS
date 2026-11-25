@@ -42,6 +42,14 @@ import {
   hashPin,
   pinsMatch,
 } from './pin-crypto'
+import {
+  SETUP_VERSION,
+  isSetupCompleteFile,
+  isValidRustdeskId,
+  isValidSeniorName,
+  setupCompletePath,
+  type SetupCompleteFile,
+} from './setup'
 import type {
   BatteryStatus,
   BrightnessAction,
@@ -125,6 +133,7 @@ const simpleosConfigDir = (): string =>
 
 const remindersPath = (): string => path.join(simpleosConfigDir(), 'reminders.json')
 const pinPath = (): string => path.join(simpleosConfigDir(), 'caregiver-pin.json')
+const setupPath = (): string => setupCompletePath(simpleosConfigDir())
 
 const MAX_REMINDERS = 100
 const MAX_REMINDER_TEXT = 200
@@ -536,6 +545,51 @@ ipcMain.handle(
         JSON.stringify({ salt, hash: hashPin(newPin, salt) }, null, 2),
       )
       pinThrottle.reset()
+      pinUnlocked = true
+      return OK
+    } catch {
+      return fail('STORAGE_FAILED')
+    }
+  },
+)
+
+// --------------------------------------------------------------- first-run setup
+
+/** A corrupt or half-written marker means "not set up", never a broken kiosk. */
+function readSetupComplete(): SetupCompleteFile | null {
+  try {
+    if (!fs.existsSync(setupPath())) return null
+    const data: unknown = JSON.parse(fs.readFileSync(setupPath(), 'utf8'))
+    return isSetupCompleteFile(data) ? data : null
+  } catch {
+    return null
+  }
+}
+
+ipcMain.handle(
+  'simpleos:setup:status',
+  async (event): Promise<ValueResult<{ complete: boolean; seniorName: string | null }>> => {
+    if (!isTrustedSender(event)) return fail('UNKNOWN_TARGET')
+    const file = readSetupComplete()
+    return { ok: true, value: { complete: file !== null, seniorName: file?.seniorName ?? null } }
+  },
+)
+
+ipcMain.handle(
+  'simpleos:setup:complete',
+  async (event, seniorName: unknown, rustdeskId: unknown): Promise<Result> => {
+    if (!isTrustedSender(event)) return fail('UNKNOWN_TARGET')
+    if (!isValidSeniorName(seniorName)) return fail('INVALID_INPUT')
+    if (!isValidRustdeskId(rustdeskId)) return fail('INVALID_INPUT')
+    try {
+      const file: SetupCompleteFile = {
+        version: SETUP_VERSION,
+        seniorName: seniorName.trim(),
+        rustdeskId: rustdeskId === '' ? null : rustdeskId,
+        completedAt: new Date().toISOString(),
+      }
+      writeJsonAtomically(setupPath(), JSON.stringify(file, null, 2))
+      // The wizard has just created the PIN, so this process is unlocked too.
       pinUnlocked = true
       return OK
     } catch {

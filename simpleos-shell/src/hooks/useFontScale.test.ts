@@ -14,25 +14,26 @@ describe('useFontScale', () => {
     expect(document.documentElement.style.getPropertyValue('--font-scale')).toBe('1')
   })
 
-  it('exposes exactly Normal, Large and Extra Large', () => {
-    expect(FONT_SCALES.map((option) => [option.label, option.value])).toEqual([
-      ['Normal', 1],
-      ['Large', 1.15],
-      ['Extra Large', 1.35],
+  it('exposes exactly 18px, 22px and 26px options', () => {
+    expect(FONT_SCALES.map((option) => [option.label, option.pixels])).toEqual([
+      ['Normal', 18],
+      ['Large', 22],
+      ['Extra Large', 26],
     ])
+    expect(FONT_SCALES.map((option) => 18 * option.value)).toEqual([18, 22, 26])
   })
 
   it('updates the scale and persists it', () => {
     const { result } = renderHook(() => useFontScale())
-    act(() => result.current.setFontScale(1.35))
-    expect(result.current.scale).toBe(1.35)
-    expect(document.documentElement.style.getPropertyValue('--font-scale')).toBe('1.35')
-    expect(window.localStorage.getItem('simpleos.fontScale')).toBe('1.35')
+    act(() => result.current.setFontScale(26 / 18))
+    expect(result.current.scale).toBe(26 / 18)
+    expect(document.documentElement.style.getPropertyValue('--font-scale')).toBe(String(26 / 18))
+    expect(window.localStorage.getItem('simpleos.fontScale')).toBe(String(26 / 18))
   })
 
   it('restores a valid stored scale but ignores invalid values', () => {
-    window.localStorage.setItem('simpleos.fontScale', '1.15')
-    expect(renderHook(() => useFontScale()).result.current.scale).toBe(1.15)
+    window.localStorage.setItem('simpleos.fontScale', String(22 / 18))
+    expect(renderHook(() => useFontScale()).result.current.scale).toBe(22 / 18)
 
     window.localStorage.setItem('simpleos.fontScale', '9')
     expect(renderHook(() => useFontScale()).result.current.scale).toBe(1)

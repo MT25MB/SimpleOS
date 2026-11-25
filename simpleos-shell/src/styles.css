@@ -777,6 +777,84 @@ input {
   margin-top: 1rem;
 }
 
+/* ------------------------------------------------- first-run setup wizard */
+
+.setup-wizard {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  max-width: none;
+  height: 100vh;
+  max-height: none;
+  margin: 0;
+  padding: 1.25rem;
+  overflow: auto;
+  color: var(--text);
+  background: var(--bg);
+  border: 0;
+}
+
+.setup-wizard::backdrop {
+  background: var(--bg);
+}
+
+.setup-wizard__card {
+  width: min(44rem, 100%);
+  margin: max(2rem, 6vh) auto;
+  padding: 2rem;
+  background: var(--surface);
+  border: 3px solid var(--text);
+  border-radius: 0.75rem;
+}
+
+.setup-wizard__progress {
+  margin: 0 0 0.5rem;
+  color: var(--text-soft);
+  font-weight: 700;
+}
+
+.setup-wizard h1 {
+  margin: 0 0 0.5rem;
+  font-size: 2rem;
+}
+
+.setup-wizard__intro {
+  margin: 0 0 1.5rem;
+  color: var(--text-soft);
+}
+
+.setup-wizard__body {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.setup-wizard__body h2 {
+  margin: 1.25rem 0 0;
+  font-size: 1.25rem;
+}
+
+.setup-wizard label {
+  font-weight: 700;
+}
+
+.setup-wizard input {
+  width: 100%;
+  min-height: 3.5rem;
+  padding: 0.75rem 1rem;
+  color: var(--text);
+  background: var(--bg);
+  border: 2px solid var(--border-strong);
+  border-radius: 0.5rem;
+}
+
+.setup-wizard__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
 /* ------------------------------------------------------- family call cards */
 
 .family__cards {

@@ -14,6 +14,8 @@ function mockBridge(overrides: Partial<SimpleOSBridge> = {}): SimpleOSBridge {
     hasPin: vi.fn().mockResolvedValue({ ok: true, value: { hasPin: true } }),
     unlockWithPin: vi.fn().mockResolvedValue(ok),
     setPin: vi.fn().mockResolvedValue(ok),
+    getSetupStatus: vi.fn().mockResolvedValue({ ok: true, value: { complete: true, seniorName: null } }),
+    completeSetup: vi.fn().mockResolvedValue(ok),
     openSettings: vi.fn().mockResolvedValue(ok),
     getUpdateStatus: vi.fn().mockResolvedValue({ ok: true, value: { summary: 'Your system is up to date.' } }),
     runAction: vi.fn().mockResolvedValue({ ok: true, value: {} }),
@@ -178,5 +180,54 @@ describe('App integration', () => {
     expect(bridge.adjustVolume).toHaveBeenNthCalledWith(3, 'volumeMute')
     expect(bridge.adjustBrightness).toHaveBeenNthCalledWith(1, 'brightnessDown')
     expect(bridge.adjustBrightness).toHaveBeenNthCalledWith(2, 'brightnessUp')
+  })
+
+  it('opens the setup wizard on a fresh computer instead of the home tiles', async () => {
+    const bridge = mockBridge({
+      getSetupStatus: vi
+        .fn()
+        .mockResolvedValue({ ok: true, value: { complete: false, seniorName: null } }),
+    })
+    window.simpleOS = bridge
+    render(<App />)
+    expect(await screen.findByText('Step 1 of 5')).toBeInTheDocument()
+    expect(bridge.getSetupStatus).toHaveBeenCalledTimes(1)
+    expect(screen.queryByRole('button', { name: /Video Call Family/ })).toBeNull()
+  })
+
+  it('finishes first-run setup, persists the marker and greets the senior', async () => {
+    const user = userEvent.setup()
+    const bridge = mockBridge({
+      getSetupStatus: vi
+        .fn()
+        .mockResolvedValue({ ok: true, value: { complete: false, seniorName: null } }),
+    })
+    window.simpleOS = bridge
+    render(<App />)
+    await screen.findByText('Step 1 of 5')
+
+    await user.type(screen.getByLabelText('First name'), 'Mom')
+    await user.click(screen.getByRole('button', { name: 'Next' }))
+    await user.type(screen.getByLabelText('New PIN (4 to 6 numbers)'), '1234')
+    await user.type(screen.getByLabelText('Enter it again'), '1234')
+    await user.click(screen.getByRole('button', { name: 'Next' }))
+    await user.click(screen.getByRole('button', { name: 'Next' }))
+    await user.click(screen.getByRole('button', { name: 'Next' }))
+    await user.click(screen.getByRole('button', { name: 'Finish & Switch to Senior Mode' }))
+
+    await waitFor(() => expect(bridge.completeSetup).toHaveBeenCalledWith('Mom', ''))
+    expect(await screen.findByText(/Good (morning|afternoon|evening), Mom/)).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /Video Call Family/ })).toBeInTheDocument()
+  })
+
+  it('can re-run the wizard from Caregiver Settings', async () => {
+    const user = userEvent.setup()
+    window.simpleOS = mockBridge()
+    render(<App />)
+    await user.click(screen.getByRole('button', { name: /Caregiver Settings/ }))
+    await user.type(screen.getByLabelText('PIN'), '1234')
+    await user.click(screen.getByRole('button', { name: /Unlock/ }))
+    await user.click(await screen.findByRole('button', { name: /Run the setup wizard again/ }))
+    expect(screen.getByText('Step 1 of 5')).toBeInTheDocument()
   })
 })

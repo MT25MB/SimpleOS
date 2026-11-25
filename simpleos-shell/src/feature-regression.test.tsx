@@ -24,6 +24,8 @@ function mockBridge(overrides: Partial<SimpleOSBridge> = {}): SimpleOSBridge {
     hasPin: vi.fn().mockResolvedValue({ ok: true, value: { hasPin: true } }),
     unlockWithPin: vi.fn().mockResolvedValue(ok),
     setPin: vi.fn().mockResolvedValue(ok),
+    getSetupStatus: vi.fn().mockResolvedValue({ ok: true, value: { complete: true, seniorName: null } }),
+    completeSetup: vi.fn().mockResolvedValue(ok),
     openSettings: vi.fn().mockResolvedValue(ok),
     getUpdateStatus: vi.fn().mockResolvedValue({ ok: true, value: { summary: 'Up to date.' } }),
     runAction: vi.fn().mockResolvedValue({ ok: true, value: {} }),

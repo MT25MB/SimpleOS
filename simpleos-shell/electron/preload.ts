@@ -23,6 +23,9 @@ const bridge: SimpleOSBridge = {
   unlockWithPin: (pin) => ipcRenderer.invoke('simpleos:pin:unlock', pin),
   setPin: (currentPin, newPin) =>
     ipcRenderer.invoke('simpleos:pin:set', currentPin, newPin),
+  getSetupStatus: () => ipcRenderer.invoke('simpleos:setup:status'),
+  completeSetup: (seniorName, rustdeskId) =>
+    ipcRenderer.invoke('simpleos:setup:complete', seniorName, rustdeskId),
   openSettings: (target) => ipcRenderer.invoke('simpleos:open-settings', target),
   closeSettings: () => ipcRenderer.invoke('simpleos:close-settings'),
   getUpdateStatus: () => ipcRenderer.invoke('simpleos:update-status'),

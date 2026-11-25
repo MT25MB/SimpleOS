@@ -6,7 +6,15 @@ All notable changes to SimpleOS are recorded here. The format follows
 
 ## [Unreleased]
 
-Nothing yet.
+### Added
+
+- A five-step First-Run Caregiver Setup Wizard. On a fresh install it opens before the senior home screen and asks for the senior's first name and text size, a four-to-six digit PIN, Wi-Fi and local sound/microphone checks, optional family call cards and reminders, and a remote-help handover step. It can be re-run from Caregiver Settings.
+- Text sizes now resolve to 18px, 22px and 26px (Normal, Large, Extra Large).
+- First-run completion is stored in `~/.config/simpleos/setup-complete.json`, written and validated by the main process.
+
+### Fixed
+
+- The wizard now creates the caregiver PIN through the existing scrypt-hashed PIN handler before handing the computer over, so an unattended first boot is never left without a PIN.
 
 ## [v1.2.4]
 

@@ -7,7 +7,7 @@ describe('FontScaleControl', () => {
   it('renders three labelled native radio inputs', () => {
     render(<FontScaleControl value={1} onChange={vi.fn()} />)
     const radios = screen.getAllByRole('radio') as HTMLInputElement[]
-    expect(radios.map((radio) => radio.value)).toEqual(['1', '1.15', '1.35'])
+    expect(radios.map((radio) => radio.value)).toEqual(['1', String(22 / 18), String(26 / 18)])
     expect(screen.getByText('Text size')).toBeInTheDocument()
     expect(screen.getByText('Extra Large')).toBeInTheDocument()
   })
@@ -18,6 +18,6 @@ describe('FontScaleControl', () => {
     render(<FontScaleControl value={1} onChange={onChange} />)
     expect(screen.getByLabelText('Normal')).toBeChecked()
     await user.click(screen.getByLabelText('Large'))
-    expect(onChange).toHaveBeenCalledWith(1.15)
+    expect(onChange).toHaveBeenCalledWith(22 / 18)
   })
 })
