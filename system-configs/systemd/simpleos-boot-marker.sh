@@ -10,7 +10,7 @@ session_ready() {
   local launcher=0 compositor=0 cmdline comm
   for cmdline in /proc/[0-9]*/cmdline; do
     [[ -r "$cmdline" ]] || continue
-    if tr '\0' ' ' < "$cmdline" 2>/dev/null | grep -q '/usr/libexec/simpleos/simpleos-shell'; then
+    if tr '\0' ' ' < "$cmdline" 2>/dev/null | grep -q '/usr/lib/simpleos/app/dist-electron/main.js'; then
       launcher=1
       break
     fi
