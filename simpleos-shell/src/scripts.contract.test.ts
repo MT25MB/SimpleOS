@@ -90,6 +90,8 @@ describe('scripts/test-boot.sh contract', () => {
   it('builds the image and qcow2 from source with the boot-test config', () => {
     expect(testBoot).toContain('CONTAINERFILE="$REPO_ROOT/os-image/Containerfile"')
     expect(testBoot).toContain('TEST_CONFIG="$REPO_ROOT/os-image/boot-test.toml"')
+    expect(testBoot).toContain('--no-cache')
+    expect(testBoot).toContain("grep -q 'session_ready'")
     expect(testBoot).toContain('--rootfs ext4')
     expect(testBoot).toContain('--type qcow2')
     expect(testBoot).toContain('Verifying kiosk session wiring in the built image')

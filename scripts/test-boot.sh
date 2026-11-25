@@ -126,7 +126,10 @@ if [[ "$RESET" -eq 1 ]]; then
 fi
 
 log "Building $IMAGE_TAG from $CONTAINERFILE"
+# --no-cache matters here: COPY layers for diagnostic scripts must not be
+# reused from an earlier commit, or the boot marker runs stale code.
 "${SUDO[@]}" "$CONTAINER_ENGINE" build \
+  --no-cache \
   --file "$CONTAINERFILE" \
   --tag "$IMAGE_TAG" \
   "$REPO_ROOT"
@@ -139,7 +142,8 @@ log "Verifying kiosk session wiring in the built image"
     && id -u senior \
     && id -u greeter \
     && command -v labwc \
-    && test -x /usr/libexec/simpleos/simpleos-shell' \
+    && test -x /usr/libexec/simpleos/simpleos-shell \
+    && grep -q 'session_ready' /usr/libexec/simpleos/boot-marker.sh' \
   || die "Built image is missing kiosk session wiring."
 
 if [[ ! -s "$DISK" ]]; then
