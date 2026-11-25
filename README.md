@@ -11,7 +11,7 @@ It is built for older adults and for the family members who help them. The idea 
 
 <img src="docs/assets/simpleos-banner.png" alt="SimpleOS banner. A calm and unbreakable operating system with an immutable base, a simplified launcher, and built-in scam protection." width="1240" height="600" style="max-width:100%;height:auto;aspect-ratio:1240 / 600;display:block;border-radius:8px" />
 
-[Brand assets and how to save new versions](docs/assets/README.md) · [Plain-English caregiver guide](docs/caregiver-guide.md) · [USB install walkthrough](docs/usb-install.md) · [Updates and recovery](docs/updates-and-recovery.md) · [Hardware support and power behaviour](docs/hardware-support.md) · [Changelog](CHANGELOG.md)
+[Brand assets and how to save new versions](docs/assets/README.md) · [Plain-English caregiver guide](docs/caregiver-guide.md) · [USB install walkthrough](docs/usb-install.md) · [Hardware compatibility and setup checklist](docs/hardware-compatibility.md) · [Updates and recovery](docs/updates-and-recovery.md) · [Hardware support and power behaviour](docs/hardware-support.md) · [Changelog](CHANGELOG.md)
 
 New here? Start with [CONTRIBUTING.md](CONTRIBUTING.md). For community expectations see the [Code of Conduct](CODE_OF_CONDUCT.md), and for private vulnerability reports see [SECURITY.md](SECURITY.md).
 
@@ -146,7 +146,7 @@ npm run build
 
 ## Testing in a virtual machine
 
-The image needs UEFI. Give the VM at least 4 GB of memory, 2 CPUs, and 20 GB of disk. On the first start, greetd signs in as `senior` and the setup service creates the account, adds Flathub, and installs Firefox, Loupe, and RustDesk. Give it a few minutes before the launcher appears.
+The image needs UEFI. Give the VM at least 4 GB of memory, 2 CPUs, and 20 GB of disk. On the first start, greetd signs in as `senior` and the setup service creates the account, adds Flathub, and installs Firefox, Loupe, and RustDesk. Give it a few minutes before the launcher appears. For the full minimum and recommended hardware list, and a plain-English setup checklist, see [hardware compatibility](docs/hardware-compatibility.md).
 
 ### The quick way, with QEMU on Linux
 

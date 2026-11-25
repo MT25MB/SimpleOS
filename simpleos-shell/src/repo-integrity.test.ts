@@ -140,6 +140,58 @@ describe('community and governance docs', () => {
   })
 })
 
+describe('hardware compatibility documentation', () => {
+  const page = read('docs/hardware-compatibility.md')
+
+  it('ships the page and links it from the README and the site', () => {
+    expect(existsSync(resolve(root, 'docs/hardware-compatibility.md'))).toBe(true)
+    expect(read('README.md')).toContain('docs/hardware-compatibility.md')
+    expect(read('docs/index.html')).toContain('href="hardware-compatibility.md"')
+  })
+
+  it('lists the minimum and recommended specifications', () => {
+    for (const term of [
+      'x86_64',
+      'UEFI',
+      '4 GB RAM',
+      '8 GB RAM',
+      '32 GB SSD',
+      'Intel or AMD integrated graphics',
+      'Wayland and labwc',
+      'Vosk',
+    ]) {
+      expect(page, `missing ${term}`).toContain(term)
+    }
+    expect(page).toContain('Minimum and recommended specifications')
+  })
+
+  it('gives a calm checklist for Secure Boot, USB boot, peripherals and Wi-Fi', () => {
+    for (const term of [
+      'Secure Boot',
+      'unsigned',
+      'boot-menu key',
+      'USB stick',
+      'Bluetooth',
+      'webcam',
+      'Wi-Fi driver',
+      'Back to SimpleOS',
+    ]) {
+      expect(page, `missing ${term}`).toContain(term)
+    }
+  })
+
+  it('keeps the docs site at AAA contrast, 18px+ type and 48px targets', () => {
+    const css = read('docs/styles.css')
+    expect(css).toContain('font-size: max(1.125rem')
+    expect(css).toContain('#0b1120')
+    expect(css).toContain('#f8fafc')
+    expect(css).toContain('min-height: 48px')
+    expect(page).toContain('WCAG AAA')
+    expect(page).toContain('18px')
+    expect(page).toContain('48 × 48px')
+  })
+})
+
 describe('updates and release alignment', () => {
   it('ships the plain-English recovery guide and links it from key docs', () => {
     const guide = read('docs/updates-and-recovery.md')

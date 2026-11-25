@@ -8,6 +8,8 @@
   --text: #f8fafc;
   --text-soft: #cbd5e1;
   --accent: #38bdf8;
+  /* Lighter sky for text on the dark cards: 8.77:1 on --surface (WCAG AAA). */
+  --accent-text: #7dd3fc;
   --accent-deep: #0ea5e9;
   --focus: #fde047;
   --border: #64748b;
@@ -281,7 +283,7 @@ a {
 
 .button--secondary:hover {
   border-color: var(--accent);
-  color: var(--accent);
+  color: var(--accent-text);
   background: var(--surface);
 }
 
@@ -522,7 +524,7 @@ a {
 code {
   font-family: ui-monospace, "Cascadia Code", "SFMono-Regular", Consolas, monospace;
   font-size: 0.9em;
-  color: var(--accent);
+  color: var(--accent-text);
   background: var(--surface);
   padding: 0.15em 0.4em;
   border-radius: 0.25rem;
@@ -559,7 +561,7 @@ code {
 .faq summary::after {
   content: "+";
   margin-inline-start: auto;
-  color: var(--accent);
+  color: var(--accent-text);
   font-size: 1.4rem;
   line-height: 1;
 }

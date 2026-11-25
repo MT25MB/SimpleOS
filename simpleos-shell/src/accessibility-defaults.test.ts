@@ -22,6 +22,25 @@ describe('accessibility defaults', () => {
     }
   })
 
+  it('keeps accent text on dark cards above 7:1 (WCAG AAA)', () => {
+    // The base accent is 6.83:1 on --surface, so text there uses a lighter sky.
+    const luminance = (hex: string): number => {
+      const channels = hex.replace('#', '').match(/../g)!.map((part) => {
+        const value = parseInt(part, 16) / 255
+        return value <= 0.04045 ? value / 12.92 : Math.pow((value + 0.055) / 1.055, 2.4)
+      })
+      return 0.2126 * channels[0] + 0.7152 * channels[1] + 0.0722 * channels[2]
+    }
+    const contrast = (a: string, b: string): number => {
+      const [hi, lo] = [luminance(a), luminance(b)].sort((x, y) => y - x)
+      return (hi + 0.05) / (lo + 0.05)
+    }
+    expect(contrast('#7dd3fc', '#1e293b')).toBeGreaterThanOrEqual(7)
+    expect(docsCss).toContain('--accent-text: #7dd3fc')
+    expect(docsCss).toMatch(/code\s*\{[\s\S]{0,200}color:\s*var\(--accent-text\)/)
+    expect(docsCss).toMatch(/\.button--secondary:hover[\s\S]{0,200}color:\s*var\(--accent-text\)/)
+  })
+
   it('draws a visible focus ring of at least 3px on interactive elements', () => {
     expect(appCss).toMatch(/:focus-visible[\s\S]{0,120}outline:\s*4px solid/)
     expect(docsCss).toMatch(/:focus-visible[\s\S]{0,120}outline:\s*3px solid/)
