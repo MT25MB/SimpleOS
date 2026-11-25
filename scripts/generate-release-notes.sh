@@ -7,6 +7,8 @@ set -euo pipefail
 VERSION="${1:-}"
 PREVIOUS="${2:-}"
 ISO_ASSET="${3:-}"
+# Used only in the generic VM instructions when no asset name is supplied.
+ISO_FOR_DOCS="${ISO_ASSET:-SimpleOS-vX.Y.Z.iso}"
 
 if [[ -z "$VERSION" ]]; then
   echo "Usage: $0 <version-tag> [previous-tag]" >&2
@@ -43,6 +45,45 @@ echo '```sh'
 echo "docker pull ghcr.io/OWNER/simpleos:$VERSION"
 echo "docker pull ghcr.io/OWNER/simpleos:latest"
 echo '```'
+echo
+
+echo "### What your computer needs"
+echo
+echo "- **Processor:** 64-bit x86 (Intel or AMD). ARM and RISC-V are not supported yet."
+echo "- **Firmware:** UEFI. The installer and the image need a UEFI boot path."
+echo "- **Memory:** at least 4 GB RAM (8 GB is more comfortable for video calls)."
+echo "- **Storage:** at least 20 GB for the installed system. The installer erases the whole target disk."
+echo "- **Network:** an internet connection on first start, so Firefox, Loupe and RustDesk can be installed."
+echo
+echo "Common Intel/AMD Wi-Fi, Bluetooth and graphics are covered by the firmware and"
+echo "drivers in the image. The everyday \`senior\` account has no administrator rights."
+echo
+
+echo "### Trying it in a virtual machine"
+echo
+echo "**VMware Workstation / Player:** create a new VM and choose **Linux / Fedora"
+echo "64-bit**. Give it **4096 MB RAM**, **2 CPUs** and a **40 GB** virtual disk. In"
+echo "VM settings, enable **UEFI** and turn off **3D acceleration**. Attach the"
+echo "joined \`$ISO_FOR_DOCS\` as the CD/DVD image and check *Connect at power on*."
+echo
+echo "**VirtualBox:** create a machine with type **Linux**, version **Fedora"
+echo "(64-bit)**, 4096 MB RAM, 2 CPUs and a 20 GB dynamic disk. Enable **EFI** in"
+echo "System settings and attach the ISO to the optical drive."
+echo
+echo "**Linux with QEMU:** install QEMU, OVMF and qemu-utils, then:"
+echo
+echo '```sh'
+echo "qemu-img create -f qcow2 simpleos-test.qcow2 20G"
+echo "qemu-system-x86_64 -m 4096 -smp 2 -accel kvm \\"
+echo "  -bios /usr/share/OVMF/OVMF_CODE.fd \\"
+echo "  -cdrom $ISO_FOR_DOCS \\"
+echo "  -drive file=simpleos-test.qcow2,format=qcow2 -vga virtio -display gtk"
+echo '```'
+echo
+echo "Drop \`-accel kvm\` if KVM is unavailable. At the boot menu choose **Install"
+echo "Fedora Linux 45** and press Enter. The install is unattended: it wipes the"
+echo "virtual disk, creates the \`senior\` account and installs the core apps. Give"
+echo "the first start a few minutes before the six-button launcher appears."
 echo
 
 if [[ -n "$ISO_ASSET" ]]; then
