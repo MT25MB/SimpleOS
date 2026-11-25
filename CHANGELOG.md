@@ -17,6 +17,10 @@ All notable changes to SimpleOS are recorded here. The format follows
 - The launcher passes `--no-sandbox` so Electron starts as the unprivileged `senior` user without a SUID sandbox helper, and the session exports Wayland environment variables for Electron's Ozone detection.
 - The installer kickstart declares a US keyboard layout explicitly, avoiding a keyboard prompt during unattended installation.
 
+### Added
+
+- A headless boot harness (`scripts/test-boot.sh`, `.github/workflows/boot-test.yml`) that builds the image from source, boots a qcow2 in QEMU with a hard timeout, captures serial and CPU-reset logs, and asserts that greetd, labwc and the launcher all started.
+
 ## [v1.2.2]
 
 The first release with a ready-made, attached ISO installer.

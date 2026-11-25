@@ -1,0 +1,17 @@
+[Unit]
+Description=SimpleOS headless boot-test milestone
+Documentation=https://github.com/MT25MB/SimpleOS
+ConditionKernelCommandLine=simpleos.boot_marker
+After=graphical.target
+Wants=graphical.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/libexec/simpleos/boot-marker.sh
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=simpleos-boot-marker
+TimeoutStartSec=180
+
+[Install]
+WantedBy=graphical.target

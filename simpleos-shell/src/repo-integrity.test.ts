@@ -197,6 +197,19 @@ describe('updates and release alignment', () => {
 })
 
 describe('GitHub Actions workflows', () => {
+  it('runs the headless boot test on a compatible runner', () => {
+    const boot = yaml.load(read('.github/workflows/boot-test.yml')) as {
+      on?: { workflow_dispatch?: unknown; schedule?: unknown }
+      jobs: Record<string, { 'runs-on'?: string; steps?: Array<{ run?: string; name?: string }> }>
+    }
+    const triggers = boot.on ?? (boot as unknown as Record<string, unknown>).true
+    expect((triggers as { workflow_dispatch?: unknown }).workflow_dispatch).toBeDefined()
+    expect((triggers as { schedule?: unknown }).schedule).toBeDefined()
+    expect(boot.jobs.boot?.['runs-on']).toBe('ubuntu-24.04')
+    const steps = boot.jobs.boot?.steps ?? []
+    expect(steps.some((s) => (s.run ?? '').includes('scripts/test-boot.sh --reset'))).toBe(true)
+  })
+
   it('parses as valid YAML with the required triggers and permissions', () => {
     const build = yaml.load(read('.github/workflows/build-image.yml')) as Record<string, unknown>
     const pages = yaml.load(read('.github/workflows/deploy-pages.yml')) as Record<string, unknown>

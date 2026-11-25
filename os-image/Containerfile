@@ -140,6 +140,8 @@ COPY system-configs/systemd/sleep.conf.d/10-simpleos-sleep.conf /etc/systemd/sle
 COPY system-configs/simpleos/transcribe.py /usr/libexec/simpleos/transcribe.py
 COPY system-configs/systemd/simpleos-rollback.service /etc/systemd/system/simpleos-rollback.service
 COPY system-configs/systemd/simpleos-rollback.sh /usr/libexec/simpleos/rollback.sh
+COPY system-configs/systemd/simpleos-boot-marker.service /etc/systemd/system/simpleos-boot-marker.service
+COPY system-configs/systemd/simpleos-boot-marker.sh /usr/libexec/simpleos/boot-marker.sh
 COPY system-configs/polkit/50-simpleos-rollback.rules /etc/polkit-1/rules.d/50-simpleos-rollback.rules
 
 # The kiosk launcher itself. main.js resolves its renderer at ../dist from
@@ -160,7 +162,7 @@ RUN mkdir -p /usr/libexec/simpleos \
       '  --no-sandbox \' \
       '  /usr/lib/simpleos/app/dist-electron/main.js' \
       > /usr/libexec/simpleos/simpleos-shell \
-    && chmod 0755 /etc/simpleos/firstboot.sh /etc/xdg/labwc/autostart /usr/libexec/simpleos/simpleos-shell /usr/libexec/simpleos/transcribe.py /usr/libexec/simpleos/rollback.sh \
+    && chmod 0755 /etc/simpleos/firstboot.sh /etc/xdg/labwc/autostart /usr/libexec/simpleos/simpleos-shell /usr/libexec/simpleos/transcribe.py /usr/libexec/simpleos/rollback.sh /usr/libexec/simpleos/boot-marker.sh \
     && printf '%s\n' "${SIMPLEOS_VERSION:-1.2.2}" > /etc/simpleos-image-version \
     && echo "simpleos" > /etc/hostname \
     && ln -sf /usr/share/zoneinfo/UTC /etc/localtime \
@@ -189,6 +191,7 @@ RUN mkdir -p /usr/libexec/simpleos \
         upower.service \
         rpm-ostreed-automatic.timer \
         simpleos-firstboot.service \
+        simpleos-boot-marker.service \
     && mkdir -p /etc/systemd/system/graphical.target.wants \
     && ln -sf /usr/lib/systemd/system/greetd.service \
         /etc/systemd/system/graphical.target.wants/greetd.service \

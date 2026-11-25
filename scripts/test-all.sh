@@ -50,12 +50,14 @@ BASH_BIN="$(command -v bash || true)"
 
 for script in \
   scripts/build-iso.sh \
+  scripts/test-boot.sh \
   scripts/test-vm.sh \
   scripts/test-all.sh \
   scripts/generate-release-notes.sh \
   scripts/flash-usb.sh \
   system-configs/labwc/autostart \
-  system-configs/systemd/simpleos-firstboot.sh; do
+  system-configs/systemd/simpleos-firstboot.sh \
+  system-configs/systemd/simpleos-boot-marker.sh; do
   [[ -f "$script" ]] || die "Missing expected script: $script"
   "$BASH_BIN" -n "$script" || die "Syntax error in $script"
   echo "    ok: $script"

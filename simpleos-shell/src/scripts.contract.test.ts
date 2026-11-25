@@ -68,6 +68,33 @@ describe('scripts/build-iso.sh contract', () => {
   })
 })
 
+describe('scripts/test-boot.sh contract', () => {
+  const testBoot = readFileSync(resolve(root, 'scripts/test-boot.sh'), 'utf8')
+
+  it('boots headlessly with a hard timeout and captured serial output', () => {
+    expect(testBoot).toContain('timeout --signal=TERM --kill-after=10s "$BOOT_TIMEOUT"')
+    expect(testBoot).toContain('-display none')
+    expect(testBoot).toContain('-serial stdio')
+    expect(testBoot).toContain('-no-reboot')
+    expect(testBoot).toContain('-d int,cpu_reset')
+    expect(testBoot).toContain('qemu-system-x86_64 "${QEMU_ARGS[@]}" > "$BOOT_LOG" 2>&1')
+  })
+
+  it('asserts the real desktop milestone and fails on panic or timeout', () => {
+    expect(testBoot).toContain("grep -q 'SIMPLEOS_BOOT_SUCCESS'")
+    expect(testBoot).toContain("grep -q 'SIMPLEOS_BOOT_FAILED'")
+    expect(testBoot).toContain('kernel panic|triple fault|cpu reset')
+    expect(testBoot).toContain('"$QEMU_RC" -eq 124')
+  })
+
+  it('builds the image and qcow2 from source with the boot-test config', () => {
+    expect(testBoot).toContain('CONTAINERFILE="$REPO_ROOT/os-image/Containerfile"')
+    expect(testBoot).toContain('TEST_CONFIG="$REPO_ROOT/os-image/boot-test.toml"')
+    expect(testBoot).toContain('--rootfs ext4')
+    expect(testBoot).toContain('--type qcow2')
+  })
+})
+
 describe('ISO installer safeguards', () => {
   const config = readFileSync(resolve(root, 'os-image/config.toml'), 'utf8')
   const kickstart = readFileSync(

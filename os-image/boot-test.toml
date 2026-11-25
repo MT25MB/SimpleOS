@@ -1,0 +1,7 @@
+# bootc-image-builder blueprint for the headless boot-test disk image.
+# The serial console is required to capture boot telemetry in QEMU, and the
+# boot_marker flag activates the test-only milestone service in the image.
+name = "simpleos-boot-test"
+
+[customizations.kernel]
+append = "console=ttyS0,115200 systemd.log_level=info simpleos.boot_marker=1"

@@ -43,6 +43,20 @@ describe('system guardrails contract', () => {
     expect(firstboot).toContain('useradd --no-create-home --groups video greeter')
   })
 
+  it('provides a gated serial boot milestone for headless testing', () => {
+    const markerService = read('system-configs/systemd/simpleos-boot-marker.service')
+    const markerScript = read('system-configs/systemd/simpleos-boot-marker.sh')
+    const bootConfig = read('os-image/boot-test.toml')
+    expect(markerService).toContain('ConditionKernelCommandLine=simpleos.boot_marker')
+    expect(markerService).toContain('WantedBy=graphical.target')
+    expect(markerScript).toContain("echo 'SIMPLEOS_BOOT_SUCCESS' > /dev/ttyS0")
+    expect(markerScript).toContain('pgrep -x labwc')
+    expect(markerScript).toContain('/usr/libexec/simpleos/simpleos-shell')
+    expect(bootConfig).toContain('console=ttyS0,115200')
+    expect(bootConfig).toContain('simpleos.boot_marker=1')
+    expect(containerfile).toContain('simpleos-boot-marker.service')
+  })
+
   it('wires greetd into the graphical boot target', () => {
     expect(containerfile).toContain('systemctl enable')
     expect(containerfile).toContain('greetd.service')

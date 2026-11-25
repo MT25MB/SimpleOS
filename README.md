@@ -109,6 +109,16 @@ SIMPLEOS_CONFIRM_FLASH=YES bash scripts/build-iso.sh --flash /dev/sdb
 
 A warning first. Flashing erases everything on that drive. Check the device name twice.
 
+### Automated headless boot test
+
+`scripts/test-boot.sh` builds the image from source, creates a bootable qcow2 disk, and boots it in QEMU with no window and a hard timeout. It captures serial output and QEMU interrupt/CPU-reset logs, and passes only when the guest reaches `SIMPLEOS_BOOT_SUCCESS` — which means greetd, labwc and the launcher all started. Run it on a Linux host with Podman, QEMU and OVMF:
+
+```sh
+bash scripts/test-boot.sh --reset
+```
+
+CI runs the same check in `.github/workflows/boot-test.yml` on Ubuntu 24.04 and uploads the logs.
+
 ### Run the tests and build the launcher
 
 From the repository root, one command checks everything:

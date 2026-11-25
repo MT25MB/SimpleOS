@@ -1,0 +1,42 @@
+# Headless boot test: builds the image from source and proves that greetd,
+# labwc and the kiosk launcher start, using a serial milestone and a hard timeout.
+name: Boot test
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Weekly, after the image build catches upstream drift.
+    - cron: '0 7 * * 1'
+
+permissions:
+  contents: read
+
+jobs:
+  boot:
+    name: Headless QEMU boot test
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Install QEMU, Podman and UEFI firmware
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y qemu-system-x86 qemu-utils ovmf podman
+
+      - name: Run headless boot test
+        env:
+          BOOT_TIMEOUT: '600'
+        run: |
+          sudo --preserve-env=BOOT_TIMEOUT \
+            bash scripts/test-boot.sh --reset --keep
+
+      - name: Upload boot logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: boot-test-logs
+          path: build-vm/boot-test-logs/
+          if-no-files-found: ignore
+          retention-days: 7
