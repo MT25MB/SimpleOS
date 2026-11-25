@@ -153,7 +153,7 @@ ready for the next tag.
    and a breaking change is a **major** (`1.0.0`). Never move or retag a
    published version.
 3. Set the same version in `simpleos-shell/package.json`. It currently reads
-   `1.2.1`, matching the latest release, `v1.2.1`.
+   `1.2.2`, matching the latest release, `v1.2.2`.
 4. Turn `[Unreleased]` into `[vX.Y.Z]`, add the compare link, and add a fresh
    empty `[Unreleased]` section with a link from the new version to `HEAD`.
 5. Run `bash scripts/test-all.sh`. The same gate runs in CI and blocks the
@@ -163,8 +163,8 @@ ready for the next tag.
    `git push origin vX.Y.Z`. A tag matching `v*.*.*` triggers
    `.github/workflows/release.yml`, which re-runs the gate before publishing
    notes generated from the commit history.
-8. Confirm the GitHub Release and the GHCR image were published, then update
-   this page if the supported-version table changes.
+8. Confirm the GitHub Release, the attached `.iso` asset and the GHCR image were
+   published, then update this page if the supported-version table changes.
 9. Keep the audited guardrails intact: the image must pass `bootc container lint`,
    first boot must keep its bounded retries and run-once marker, every Firefox
    policy key must match the official schema, and labwc must keep its `None`

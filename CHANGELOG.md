@@ -8,6 +8,16 @@ All notable changes to SimpleOS are recorded here. The format follows
 
 Nothing yet.
 
+## [v1.2.2]
+
+The first release with a ready-made, attached ISO installer.
+
+### Added
+
+- Published releases now include a bootable ISO asset. The release workflow builds and pushes the version-tagged container image, generates an ISO from that exact image, attaches it to the release, and links it from the release notes.
+- `build-iso.sh` accepts `TARGET_IMAGE_REF` so an ISO built from a pinned version can still install a system that tracks `latest` for updates.
+- The image workflow now also tags builds on version tags, so the `docker pull ghcr.io/OWNER/simpleos:vX.Y.Z` command in release notes works for future releases.
+
 ## [v1.2.1]
 
 A small reliability patch on top of v1.2.0.
@@ -241,7 +251,8 @@ contribute to, and a full automated quality gate.
 - First prototype: initial image definition, system configs, Electron launcher,
   build script and documentation.
 
-[Unreleased]: https://github.com/MT25MB/SimpleOS/compare/v1.2.1...HEAD
+[Unreleased]: https://github.com/MT25MB/SimpleOS/compare/v1.2.2...HEAD
+[v1.2.2]: https://github.com/MT25MB/SimpleOS/compare/v1.2.1...v1.2.2
 [v1.2.1]: https://github.com/MT25MB/SimpleOS/compare/v1.2.0...v1.2.1
 [v1.2.0]: https://github.com/MT25MB/SimpleOS/compare/v1.1.0...v1.2.0
 [v1.1.0]: https://github.com/MT25MB/SimpleOS/compare/v1.0.0...v1.1.0

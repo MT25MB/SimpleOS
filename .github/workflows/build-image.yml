@@ -6,6 +6,8 @@ name: Build and publish image
 on:
   push:
     branches: [main]
+    tags:
+      - 'v*.*.*'
   pull_request:
     branches: [main]
   schedule:
@@ -55,6 +57,7 @@ jobs:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
             type=raw,value=latest
+            type=ref,event=tag
             type=sha,format=short
             type=schedule,pattern=weekly-{{date 'YYYYMMDD'}}
 

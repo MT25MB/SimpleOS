@@ -94,6 +94,7 @@ describe('ISO installer safeguards', () => {
     expect(kickstart).toContain('firstboot --disable')
     expect(kickstart).toContain('services --enabled=greetd.service')
     expect(kickstart).toContain('bootc --source-imgref @IMAGE_REF@')
+    expect(kickstart).toContain('--target-imgref @TARGET_IMAGE_REF@')
     expect(kickstart).toContain('reboot')
   })
 
@@ -101,6 +102,8 @@ describe('ISO installer safeguards', () => {
     expect(buildIso).toContain('KICKSTART_TEMPLATE="$REPO_ROOT/os-image/anaconda/interactive-defaults.ks"')
     expect(buildIso).toContain('CONFIG_FILE="$REPO_ROOT/os-image/config.toml"')
     expect(buildIso).toContain('sed "s|@IMAGE_REF@|$IMAGE_TAG|g"')
+    expect(buildIso).toContain('TARGET_IMAGE_REF="${TARGET_IMAGE_REF:-$IMAGE_TAG}"')
+    expect(buildIso).toContain('sed -i "s|@TARGET_IMAGE_REF@|$TARGET_IMAGE_REF|g"')
     expect(buildIso).toContain('--config /config.toml')
     expect(buildIso).toContain(':/config.toml:ro')
     expect(buildIso).toContain(':/usr/share/anaconda/interactive-defaults.ks:ro')

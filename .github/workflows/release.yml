@@ -1,5 +1,7 @@
 # Publish a GitHub Release for a version tag, or on demand with a version input.
-# The quality gate must pass before a release is created.
+# The quality gate must pass before a release is created. Each release also ships
+# a bootable ISO built from the exact image the tag represents; the installed
+# system tracks :latest so updates keep working after installation.
 name: Release
 
 on:
@@ -16,6 +18,10 @@ on:
 permissions:
   contents: read
 
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository_owner }}/simpleos
+
 jobs:
   test:
     name: Quality gate
@@ -27,6 +33,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      packages: write
     steps:
       - name: Check out full history
         uses: actions/checkout@v7
@@ -86,6 +93,79 @@ jobs:
           echo "--- generated notes (first 40 lines) ---"
           head -n 40 release-notes.md
 
+      # Build and publish the image here so the version tag advertised in the
+      # notes really exists and the ISO is built from the tagged commit, even on
+      # a workflow_dispatch re-run of an older release.
+      - name: Normalize the GHCR image name
+        id: image
+        env:
+          IMAGE_NAME: ${{ env.IMAGE_NAME }}
+        run: echo "name=$(printf '%s' "$IMAGE_NAME" | tr '[:upper:]' '[:lower:]')" >> "$GITHUB_OUTPUT"
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v4
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v4
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push the version-tagged image
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: os-image/Containerfile
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ steps.image.outputs.name }}:${{ steps.version.outputs.value }}
+
+      - name: Ensure Podman is available
+        run: |
+          if ! command -v podman >/dev/null 2>&1; then
+            sudo apt-get update
+            sudo apt-get install -y podman
+          fi
+          podman --version
+
+      - name: Build the release ISO
+        id: iso
+        env:
+          VERSION: ${{ steps.version.outputs.value }}
+          REGISTRY: ${{ env.REGISTRY }}
+          IMAGE_NAME: ${{ steps.image.outputs.name }}
+          RUNNER_TEMP: ${{ runner.temp }}
+        run: |
+          set -euo pipefail
+          IMAGE_REF="${REGISTRY}/${IMAGE_NAME}:${VERSION}"
+          TARGET_REF="${REGISTRY}/${IMAGE_NAME}:latest"
+          # GHCR package names are lowercase even when the GitHub owner is not.
+          IMAGE_REF="$(printf '%s' "$IMAGE_REF" | tr '[:upper:]' '[:lower:]')"
+          TARGET_REF="$(printf '%s' "$TARGET_REF" | tr '[:upper:]' '[:lower:]')"
+
+          sudo podman pull "$IMAGE_REF"
+          ISO_DIR="$RUNNER_TEMP/simpleos-iso"
+          mkdir -p "$ISO_DIR"
+          SIMPLEOS_ASSUME_YES=1 TARGET_IMAGE_REF="$TARGET_REF" \
+            bash scripts/build-iso.sh --image "$IMAGE_REF" --output "$ISO_DIR"
+
+          ISO_PATH="$(find "$ISO_DIR" -type f -name '*.iso' -print -quit)"
+          [[ -n "$ISO_PATH" && -s "$ISO_PATH" ]] || {
+            echo "No usable ISO was produced." >&2
+            exit 1
+          }
+          ISO_NAME="SimpleOS-${VERSION}.iso"
+          mv "$ISO_PATH" "$ISO_DIR/$ISO_NAME"
+          ls -lh "$ISO_DIR/$ISO_NAME"
+
+          ISO_BYTES="$(stat -c%s "$ISO_DIR/$ISO_NAME")"
+          if (( ISO_BYTES > 2000000000 )); then
+            echo "::warning::ISO is larger than 2 GB; the GitHub asset upload may be rejected."
+          fi
+
+          echo "path=$ISO_DIR/$ISO_NAME" >> "$GITHUB_OUTPUT"
+          echo "name=$ISO_NAME" >> "$GITHUB_OUTPUT"
+
       - name: Publish release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -100,3 +180,25 @@ jobs:
               --notes-file release-notes.md \
               --target main
           fi
+
+      - name: Attach the ISO to the release
+        id: upload
+        if: steps.iso.outputs.path != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERSION: ${{ steps.version.outputs.value }}
+          ISO_PATH: ${{ steps.iso.outputs.path }}
+        run: |
+          gh release upload "$VERSION" "$ISO_PATH" --clobber
+          echo "Attached $(basename "$ISO_PATH") to $VERSION."
+
+      - name: Link the attached ISO in the release notes
+        if: steps.iso.outputs.path != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERSION: ${{ steps.version.outputs.value }}
+          PREVIOUS: ${{ steps.previous.outputs.value }}
+          ISO_ASSET: ${{ steps.iso.outputs.name }}
+        run: |
+          bash scripts/generate-release-notes.sh "$VERSION" "$PREVIOUS" "$ISO_ASSET" > release-notes.md
+          gh release edit "$VERSION" --notes-file release-notes.md --title "SimpleOS $VERSION"

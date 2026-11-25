@@ -97,7 +97,9 @@ bash scripts/build-iso.sh
 bash scripts/build-iso.sh --build
 ```
 
-You can change `IMAGE_TAG`, `OUTPUT_DIR`, `BUILDER_IMAGE`, and `CONTAINER_ENGINE`. Run `bash scripts/build-iso.sh --help` for the full list.
+Every published release also has a ready-made ISO attached on the [releases page](https://github.com/MT25MB/SimpleOS/releases), so building one yourself is optional. A release ISO is built from that release's exact image, while the installed computer still tracks `latest` for future updates.
+
+You can change `IMAGE_TAG`, `TARGET_IMAGE_REF`, `OUTPUT_DIR`, `BUILDER_IMAGE`, and `CONTAINER_ENGINE`. Run `bash scripts/build-iso.sh --help` for the full list. `TARGET_IMAGE_REF` controls which image the installed system updates from; it defaults to the image used to build the ISO.
 
 To flash a USB stick, use `--flash`. The script checks that the drive is removable and unmounted, then asks you to type the device name before it writes anything.
 

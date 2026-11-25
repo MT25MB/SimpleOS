@@ -17,6 +17,7 @@
 #   bash scripts/build-iso.sh                       # pull published image + ISO
 #   bash scripts/build-iso.sh --build               # build locally first + ISO
 #   REMOTE_IMAGE=ghcr.io/you/simpleos:latest bash scripts/build-iso.sh
+#   TARGET_IMAGE_REF=ghcr.io/you/simpleos:latest bash scripts/build-iso.sh --image ghcr.io/you/simpleos:v1.2.2
 #   bash scripts/build-iso.sh --flash /dev/sdb      # flash after checks
 #
 # Set SIMPLEOS_ASSUME_YES=1 to skip the interactive acknowledgement when the
@@ -35,6 +36,10 @@ KICKSTART_TEMPLATE="$REPO_ROOT/os-image/anaconda/interactive-defaults.ks"
 
 OUTPUT_DIR="${OUTPUT_DIR:-$REPO_ROOT/output}"
 IMAGE_TAG="${IMAGE_TAG:-localhost/simpleos:local}"
+# The installed system tracks this ref for updates. By default it matches the
+# image the ISO is built from; release builds set it to the rolling :latest tag
+# while pinning the ISO itself to a version-tagged image.
+TARGET_IMAGE_REF="${TARGET_IMAGE_REF:-$IMAGE_TAG}"
 REMOTE_IMAGE="${REMOTE_IMAGE:-ghcr.io/${GITHUB_REPOSITORY_OWNER:-MT25MB}/simpleos:latest}"
 BUILDER_IMAGE="${BUILDER_IMAGE:-quay.io/centos-bootc/bootc-image-builder:latest}"
 CONTAINER_ENGINE="${CONTAINER_ENGINE:-podman}"
@@ -61,8 +66,13 @@ Options:
   --pull               Pull the published image instead (default)
   --image REF          Image reference to pull (default: \$REMOTE_IMAGE)
   --output DIR         Directory for the generated ISO (default: ./output)
+
   --flash DEVICE       After building, write the ISO to this USB device
   -h, --help           Show this help
+
+Environment:
+  TARGET_IMAGE_REF     Image ref baked in as the installed system's update
+                       target (default: the image the ISO is built from).
 
 Examples:
   bash $0                            # pull ghcr.io image, build ISO
@@ -126,7 +136,8 @@ require_command "$CONTAINER_ENGINE"
 KICKSTART_RENDERED="$(mktemp)"
 trap 'rm -f "$KICKSTART_RENDERED"' EXIT
 sed "s|@IMAGE_REF@|$IMAGE_TAG|g" "$KICKSTART_TEMPLATE" > "$KICKSTART_RENDERED"
-if grep -q '@IMAGE_REF@' "$KICKSTART_RENDERED"; then
+sed -i "s|@TARGET_IMAGE_REF@|$TARGET_IMAGE_REF|g" "$KICKSTART_RENDERED"
+if grep -qE '@IMAGE_REF@|@TARGET_IMAGE_REF@' "$KICKSTART_RENDERED"; then
   die "Kickstart template still contains an unresolved image reference."
 fi
 

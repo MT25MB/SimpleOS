@@ -163,6 +163,24 @@ describe('updates and release alignment', () => {
     expect(release.jobs.test?.uses).toBe('./.github/workflows/test.yml')
     expect(release.jobs.release?.needs).toBe('test')
   })
+
+  it('builds and attaches a release ISO behind the same quality gate', () => {
+    const workflow = read('.github/workflows/release.yml')
+    expect(workflow).toContain('name: Build the release ISO')
+    expect(workflow).toContain('TARGET_IMAGE_REF="$TARGET_REF"')
+    expect(workflow).toContain('bash scripts/build-iso.sh --image "$IMAGE_REF"')
+    expect(workflow).toContain('name: Attach the ISO to the release')
+    expect(workflow).toContain('gh release upload "$VERSION" "$ISO_PATH" --clobber')
+    expect(workflow).toContain('name: Link the attached ISO in the release notes')
+
+    const notes = read('scripts/generate-release-notes.sh')
+    expect(notes).toContain('ISO_ASSET="${3:-}"')
+    expect(notes).toContain('releases/download/$VERSION/$ISO_ASSET')
+
+    const build = read('.github/workflows/build-image.yml')
+    expect(build).toMatch(/tags:\r?\n\s+- 'v\*\.\*\.\*'/)
+    expect(build).toContain('type=ref,event=tag')
+  })
 })
 
 describe('GitHub Actions workflows', () => {

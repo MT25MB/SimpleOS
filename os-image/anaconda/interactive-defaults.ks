@@ -23,8 +23,10 @@ rootpw --lock
 firstboot --disable
 services --enabled=greetd.service
 
-# Install this bootc image as the operating system.
-bootc --source-imgref @IMAGE_REF@ --target-imgref @IMAGE_REF@
+# Install this bootc image as the operating system. @IMAGE_REF@ pins the image
+# used to build the installer; @TARGET_IMAGE_REF@ is what the installed system
+# tracks for updates (release ISOs use :latest so updates keep working).
+bootc --source-imgref @IMAGE_REF@ --target-imgref @TARGET_IMAGE_REF@
 
 # Finish and restart into SimpleOS.
 reboot
