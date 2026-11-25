@@ -52,6 +52,7 @@ describe('system guardrails contract', () => {
     expect(markerScript).toContain("echo 'SIMPLEOS_BOOT_SUCCESS' > /dev/ttyS0")
     expect(markerScript).toContain('pgrep -x labwc')
     expect(markerScript).toContain('/usr/libexec/simpleos/simpleos-shell')
+    expect(bootConfig).toContain('systemd.unit=graphical.target')
     expect(bootConfig).toContain('console=ttyS0,115200')
     expect(bootConfig).toContain('simpleos.boot_marker=1')
     expect(containerfile).toContain('simpleos-boot-marker.service')
@@ -62,6 +63,7 @@ describe('system guardrails contract', () => {
     expect(containerfile).toContain('greetd.service')
     expect(containerfile).toContain('/etc/systemd/system/graphical.target.wants/greetd.service')
     expect(containerfile).toContain('/etc/systemd/system/display-manager.service')
+    expect(containerfile).toContain('/etc/systemd/system/default.target')
     expect(containerfile).toContain('--no-sandbox')
   })
 

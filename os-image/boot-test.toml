@@ -4,4 +4,4 @@
 name = "simpleos-boot-test"
 
 [customizations.kernel]
-append = "console=ttyS0,115200 systemd.log_level=info simpleos.boot_marker=1"
+append = "systemd.unit=graphical.target console=ttyS0,115200 systemd.log_level=info simpleos.boot_marker=1"

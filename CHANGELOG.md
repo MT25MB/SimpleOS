@@ -20,6 +20,7 @@ All notable changes to SimpleOS are recorded here. The format follows
 ### Added
 
 - A headless boot harness (`scripts/test-boot.sh`, `.github/workflows/boot-test.yml`) that builds the image from source, boots a qcow2 in QEMU with a hard timeout, captures serial and CPU-reset logs, and asserts that greetd, labwc and the launcher all started.
+- The image now explicitly sets `graphical.target` as its default target, so non-ISO installs boot into the kiosk without relying on a kernel argument.
 
 ## [v1.2.2]
 
