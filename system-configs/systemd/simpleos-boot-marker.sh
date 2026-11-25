@@ -17,5 +17,15 @@ for _ in $(seq 1 120); do
 done
 
 echo 'SIMPLEOS_BOOT_FAILED: desktop session did not start' > /dev/ttyS0
+{
+  echo '--- greetd enablement ---'
+  /usr/bin/systemctl is-enabled greetd.service 2>&1 || true
+  echo '--- greetd status ---'
+  /usr/bin/systemctl status greetd.service --no-pager -l 2>&1 || true
+  echo '--- greetd journal ---'
+  /usr/bin/journalctl -u greetd.service -n 80 --no-pager 2>&1 || true
+  echo '--- first-boot marker ---'
+  ls -l /var/lib/simpleos/firstboot-complete 2>&1 || true
+} > /dev/ttyS0 2>&1
 /usr/bin/systemctl poweroff
 exit 1

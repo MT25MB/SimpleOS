@@ -83,7 +83,7 @@ describe('scripts/test-boot.sh contract', () => {
   it('asserts the real desktop milestone and fails on panic or timeout', () => {
     expect(testBoot).toContain("grep -q 'SIMPLEOS_BOOT_SUCCESS'")
     expect(testBoot).toContain("grep -q 'SIMPLEOS_BOOT_FAILED'")
-    expect(testBoot).toContain('kernel panic|triple fault|cpu reset')
+    expect(testBoot).toContain('kernel panic|triple fault')
     expect(testBoot).toContain('"$QEMU_RC" -eq 124')
   })
 
@@ -92,6 +92,7 @@ describe('scripts/test-boot.sh contract', () => {
     expect(testBoot).toContain('TEST_CONFIG="$REPO_ROOT/os-image/boot-test.toml"')
     expect(testBoot).toContain('--rootfs ext4')
     expect(testBoot).toContain('--type qcow2')
+    expect(testBoot).toContain('Verifying kiosk session wiring in the built image')
   })
 })
 

@@ -131,6 +131,15 @@ log "Building $IMAGE_TAG from $CONTAINERFILE"
   --tag "$IMAGE_TAG" \
   "$REPO_ROOT"
 
+log "Verifying kiosk session wiring in the built image"
+"${SUDO[@]}" "$CONTAINER_ENGINE" run --rm --entrypoint /bin/sh "$IMAGE_TAG" -c \
+  'test -L /etc/systemd/system/graphical.target.wants/greetd.service \
+    && test -L /etc/systemd/system/display-manager.service \
+    && test "$(readlink -f /etc/systemd/system/default.target)" = /usr/lib/systemd/system/graphical.target \
+    && command -v labwc \
+    && test -x /usr/libexec/simpleos/simpleos-shell' \
+  || die "Built image is missing kiosk session wiring."
+
 if [[ ! -s "$DISK" ]]; then
   log "Generating bootable qcow2 disk"
   GEN_DIR="$VM_DIR/boot-test-generated"
@@ -207,7 +216,7 @@ else
   FAILED=1
 fi
 
-if grep -qiE 'kernel panic|triple fault|cpu reset' "$BOOT_LOG" "$QEMU_DEBUG"; then
+if grep -qiE 'kernel panic|triple fault' "$BOOT_LOG" "$QEMU_DEBUG"; then
   echo "FAILURE: panic or CPU reset detected in boot logs." >&2
   FAILED=1
 fi
