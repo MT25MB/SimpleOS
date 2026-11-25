@@ -14,7 +14,7 @@ The first release with a ready-made, attached ISO installer.
 
 ### Added
 
-- Published releases now include a bootable ISO asset. The release workflow builds and pushes the version-tagged container image, generates an ISO from that exact image, attaches it to the release, and links it from the release notes.
+- Published releases now include a bootable ISO. The release workflow builds and pushes the version-tagged container image, generates an ISO from that exact image, attaches it as numbered parts with a checksum (GitHub caps single assets at 2 GB), and gives reassembly instructions in the release notes.
 - `build-iso.sh` accepts `TARGET_IMAGE_REF` so an ISO built from a pinned version can still install a system that tracks `latest` for updates.
 - The image workflow now also tags builds on version tags, so the `docker pull ghcr.io/OWNER/simpleos:vX.Y.Z` command in release notes works for future releases.
 

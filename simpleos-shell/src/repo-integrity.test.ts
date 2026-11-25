@@ -170,13 +170,15 @@ describe('updates and release alignment', () => {
     expect(workflow).toContain('name: Build the release ISO')
     expect(workflow).toContain('TARGET_IMAGE_REF="$TARGET_REF"')
     expect(workflow).toContain('bash scripts/build-iso.sh --image "$IMAGE_REF"')
-    expect(workflow).toContain('name: Attach the ISO to the release')
-    expect(workflow).toContain('gh release upload "$VERSION" "$ISO_PATH" --clobber')
+    expect(workflow).toContain('name: Attach the ISO parts to the release')
+    expect(workflow).toContain('gh release upload "$VERSION" "${ASSETS[@]}" "$ISO_DIR/$ISO_NAME.sha256" --clobber')
     expect(workflow).toContain('name: Link the attached ISO in the release notes')
+    expect(workflow).toContain('split -b 1500m -d -a 1')
 
     const notes = read('scripts/generate-release-notes.sh')
     expect(notes).toContain('ISO_ASSET="${3:-}"')
-    expect(notes).toContain('releases/download/$VERSION/$ISO_ASSET')
+    expect(notes).toContain('cat ${ISO_ASSET}.part* > $ISO_ASSET')
+    expect(notes).toContain('sha256sum -c')
 
     const build = read('.github/workflows/build-image.yml')
     expect(build).toMatch(/tags:\r?\n\s+- 'v\*\.\*\.\*'/)

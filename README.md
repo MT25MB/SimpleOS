@@ -97,7 +97,7 @@ bash scripts/build-iso.sh
 bash scripts/build-iso.sh --build
 ```
 
-Every published release also has a ready-made ISO attached on the [releases page](https://github.com/MT25MB/SimpleOS/releases), so building one yourself is optional. A release ISO is built from that release's exact image, while the installed computer still tracks `latest` for future updates.
+Every published release also has a ready-made installer on the [releases page](https://github.com/MT25MB/SimpleOS/releases), so building one yourself is optional. It is attached as numbered ISO parts with a checksum because the full installer is larger than GitHub's per-file limit; [the USB walkthrough](docs/usb-install.md) shows how to join them. A release ISO is built from that release's exact image, while the installed computer still tracks `latest` for future updates.
 
 You can change `IMAGE_TAG`, `TARGET_IMAGE_REF`, `ROOTFS_TYPE`, `OUTPUT_DIR`, `BUILDER_IMAGE`, and `CONTAINER_ENGINE`. Run `bash scripts/build-iso.sh --help` for the full list. `TARGET_IMAGE_REF` controls which image the installed system updates from; it defaults to the image used to build the ISO. `ROOTFS_TYPE` selects the installed system's root filesystem (`ext4` by default).
 

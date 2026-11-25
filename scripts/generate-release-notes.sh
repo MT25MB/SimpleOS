@@ -69,8 +69,16 @@ echo "- First boot needs network access for Flathub and the core applications."
 echo "- The caregiver PIN is set on first use and has no recovery mechanism yet."
 if [[ -n "$ISO_ASSET" ]]; then
   REPOSITORY="${GITHUB_REPOSITORY:-MT25MB/SimpleOS}"
-  echo "- A bootable ISO is attached to this release: [$ISO_ASSET](https://github.com/$REPOSITORY/releases/download/$VERSION/$ISO_ASSET)."
-  echo "  Flash it with the safety-checked script above, and test it in a VM first."
+  echo "- A bootable ISO is attached as numbered parts ($ISO_ASSET.part0, .part1, …) plus a .sha256 checksum."
+  echo "  Download every part, then put them back together and verify them:"
+  echo
+  echo '```sh'
+  echo "cat ${ISO_ASSET}.part* > $ISO_ASSET"
+  echo "sha256sum -c ${ISO_ASSET}.sha256"
+  echo '```'
+  echo
+  echo "  Then flash it with the safety-checked script above, and test it in a VM first."
+  echo "  All parts: <https://github.com/$REPOSITORY/releases/tag/$VERSION>"
 else
   echo "- No prebuilt ISO is attached to this release. Build one with the script above."
 fi

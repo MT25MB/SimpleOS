@@ -157,15 +157,26 @@ jobs:
             exit 1
           }
           ISO_NAME="SimpleOS-${VERSION}.iso"
-          mv "$ISO_PATH" "$ISO_DIR/$ISO_NAME"
+          # bootc-image-builder writes the ISO as root, so the runner user needs
+          # sudo to rename it and to take ownership for the steps below.
+          sudo mv "$ISO_PATH" "$ISO_DIR/$ISO_NAME"
+          sudo chown "$(id -u):$(id -g)" "$ISO_DIR/$ISO_NAME"
           ls -lh "$ISO_DIR/$ISO_NAME"
 
-          ISO_BYTES="$(stat -c%s "$ISO_DIR/$ISO_NAME")"
-          if (( ISO_BYTES > 2000000000 )); then
-            echo "::warning::ISO is larger than 2 GB; the GitHub asset upload may be rejected."
-          fi
-
-          echo "path=$ISO_DIR/$ISO_NAME" >> "$GITHUB_OUTPUT"
+          # GitHub Free caps a single release asset at 2 GB. The installer is
+          # larger, so ship it as numbered parts plus a checksum.
+          (
+            cd "$ISO_DIR"
+            split -b 1500m -d -a 1 "$ISO_NAME" "${ISO_NAME}.part"
+            sha256sum "$ISO_NAME" > "${ISO_NAME}.sha256"
+          )
+          ISO_PARTS="$(find "$ISO_DIR" -maxdepth 1 -type f -name "${ISO_NAME}.part*" -printf '%f\n' | sort | tr '\n' ' ')"
+          [[ -n "$ISO_PARTS" ]] || {
+            echo "ISO splitting produced no parts." >&2
+            exit 1
+          }
+          echo "Prepared parts: $ISO_PARTS"
+          echo "parts=$ISO_PARTS" >> "$GITHUB_OUTPUT"
           echo "name=$ISO_NAME" >> "$GITHUB_OUTPUT"
 
       - name: Publish release
@@ -183,19 +194,27 @@ jobs:
               --target main
           fi
 
-      - name: Attach the ISO to the release
+      - name: Attach the ISO parts to the release
         id: upload
-        if: steps.iso.outputs.path != ''
+        if: steps.iso.outputs.parts != ''
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VERSION: ${{ steps.version.outputs.value }}
-          ISO_PATH: ${{ steps.iso.outputs.path }}
+          ISO_PARTS: ${{ steps.iso.outputs.parts }}
+          ISO_NAME: ${{ steps.iso.outputs.name }}
+          ISO_DIR: ${{ runner.temp }}/simpleos-iso
         run: |
-          gh release upload "$VERSION" "$ISO_PATH" --clobber
-          echo "Attached $(basename "$ISO_PATH") to $VERSION."
+          read -r -a PARTS <<< "$ISO_PARTS"
+          for part in "${PARTS[@]}"; do
+            [[ -s "$ISO_DIR/$part" ]] || { echo "Missing ISO part: $part" >&2; exit 1; }
+          done
+          ASSETS=()
+          for part in "${PARTS[@]}"; do ASSETS+=("$ISO_DIR/$part"); done
+          gh release upload "$VERSION" "${ASSETS[@]}" "$ISO_DIR/$ISO_NAME.sha256" --clobber
+          echo "Attached ${#ASSETS[@]} ISO parts and a checksum to $VERSION."
 
       - name: Link the attached ISO in the release notes
-        if: steps.iso.outputs.path != ''
+        if: steps.iso.outputs.parts != ''
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VERSION: ${{ steps.version.outputs.value }}

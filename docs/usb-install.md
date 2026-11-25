@@ -13,7 +13,14 @@ installer file. Read it before you start, because one step erases a USB stick.
 
 ### The easy way
 
-Download the latest `.iso` from the [releases page](https://github.com/MT25MB/SimpleOS/releases).
+Download the latest installer from the [releases page](https://github.com/MT25MB/SimpleOS/releases). The ISO is larger than GitHub's limit for a single download, so it is attached as numbered parts with a checksum. Download all the parts into one folder, then rejoin and verify them:
+
+```sh
+cat SimpleOS-*.iso.part* > SimpleOS.iso
+sha256sum -c SimpleOS-*.iso.sha256
+```
+
+Use the exact file names shown on the release page. If the checksum passes, continue below with the joined `.iso`.
 
 ### Build it yourself (Linux)
 
