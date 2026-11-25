@@ -179,6 +179,55 @@ jobs:
           echo "parts=$ISO_PARTS" >> "$GITHUB_OUTPUT"
           echo "name=$ISO_NAME" >> "$GITHUB_OUTPUT"
 
+      - name: Create ISO combine scripts
+        id: combine
+        env:
+          VERSION: ${{ steps.version.outputs.value }}
+          ISO_PARTS: ${{ steps.iso.outputs.parts }}
+          ISO_NAME: ${{ steps.iso.outputs.name }}
+          RUNNER_TEMP: ${{ runner.temp }}
+        run: |
+          set -euo pipefail
+          ISO_DIR="$RUNNER_TEMP/simpleos-iso"
+          COPY_ARGS=""
+          for part in $ISO_PARTS; do
+            if [[ -z "$COPY_ARGS" ]]; then
+              COPY_ARGS="\"$part\""
+            else
+              COPY_ARGS="$COPY_ARGS+\"$part\""
+            fi
+          done
+          printf '%s\r\n' \
+            '@echo off' \
+            'setlocal' \
+            'cd /d "%~dp0"' \
+            "echo Joining SimpleOS ${VERSION} ISO parts..." \
+            "if exist \"${ISO_NAME}\" del \"${ISO_NAME}\"" \
+            "copy /b ${COPY_ARGS} \"${ISO_NAME}\"" \
+            'if errorlevel 1 goto :fail' \
+            "if exist \"${ISO_NAME}.sha256\" certutil -hashfile \"${ISO_NAME}\" SHA256" \
+            'echo.' \
+            "echo Compare the hash above with the value in ${ISO_NAME}.sha256" \
+            "echo Then use ${ISO_NAME} as your VM boot CD/DVD." \
+            'pause' \
+            'exit /b 0' \
+            ':fail' \
+            'echo FAILED to join the parts. Check that all parts are in this folder.' \
+            'pause' \
+            'exit /b 1' \
+            > "$ISO_DIR/combine-iso-parts.bat"
+          {
+            echo '#!/usr/bin/env bash'
+            echo 'set -euo pipefail'
+            echo 'cd "$(dirname "$0")"'
+            echo "echo \"Joining SimpleOS ${VERSION} ISO parts...\""
+            printf 'cat %s > %s\n' "$ISO_PARTS" "$ISO_NAME"
+            echo "sha256sum -c ${ISO_NAME}.sha256"
+            echo "echo \"Done: ${ISO_NAME} - use it in your VM or flash it to USB.\""
+          } > "$ISO_DIR/combine-iso-parts.sh"
+          chmod +x "$ISO_DIR/combine-iso-parts.sh"
+          ls -l "$ISO_DIR/combine-iso-parts."*
+
       - name: Publish release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -210,8 +259,13 @@ jobs:
           done
           ASSETS=()
           for part in "${PARTS[@]}"; do ASSETS+=("$ISO_DIR/$part"); done
-          gh release upload "$VERSION" "${ASSETS[@]}" "$ISO_DIR/$ISO_NAME.sha256" --clobber
-          echo "Attached ${#ASSETS[@]} ISO parts and a checksum to $VERSION."
+          gh release upload "$VERSION" \
+            "${ASSETS[@]}" \
+            "$ISO_DIR/$ISO_NAME.sha256" \
+            "$ISO_DIR/combine-iso-parts.bat" \
+            "$ISO_DIR/combine-iso-parts.sh" \
+            --clobber
+          echo "Attached ${#ASSETS[@]} ISO parts, a checksum and combine scripts to $VERSION."
 
       - name: Link the attached ISO in the release notes
         if: steps.iso.outputs.parts != ''

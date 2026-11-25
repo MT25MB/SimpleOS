@@ -13,14 +13,27 @@ installer file. Read it before you start, because one step erases a USB stick.
 
 ### The easy way
 
-Download the latest installer from the [releases page](https://github.com/MT25MB/SimpleOS/releases). The ISO is larger than GitHub's limit for a single download, so it is attached as numbered parts with a checksum. Download all the parts into one folder, then rejoin and verify them:
+Download the latest installer from the [releases page](https://github.com/MT25MB/SimpleOS/releases). The ISO is larger than GitHub's limit for a single download, so it is attached as numbered parts plus a checksum.
+
+**Easiest:** download `combine-iso-parts.bat` (Windows) or `combine-iso-parts.sh` (Linux/macOS) along with all the parts and the `.sha256` file. Put them in one folder and run the script. It joins the parts, checks the hash, and tells you when the ISO is ready. The manual steps below do the same thing without a script.
+
+**On Windows**, open Command Prompt in that folder. Put the part names from the release page into this command, in order:
+
+```bat
+copy /b SimpleOS-vX.Y.Z.iso.part0+SimpleOS-vX.Y.Z.iso.part1+SimpleOS-vX.Y.Z.iso.part2 SimpleOS-vX.Y.Z.iso
+certutil -hashfile SimpleOS-vX.Y.Z.iso SHA256
+```
+
+The hash must match the value in the `.sha256` file you downloaded. If there are more parts, add them to the `copy` command in order.
+
+**On Linux or macOS**, open Terminal in that folder:
 
 ```sh
 cat SimpleOS-*.iso.part* > SimpleOS.iso
 sha256sum -c SimpleOS-*.iso.sha256
 ```
 
-Use the exact file names shown on the release page. If the checksum passes, continue below with the joined `.iso`.
+On macOS use `shasum -a 256 -c SimpleOS-*.iso.sha256`. If the check passes, continue below with the joined `.iso`.
 
 ### Build it yourself (Linux)
 
