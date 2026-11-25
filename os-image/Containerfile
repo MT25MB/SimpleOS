@@ -152,9 +152,13 @@ COPY --from=shell-build /src/dist /usr/lib/simpleos/app/dist
 COPY --from=shell-build /src/dist-electron /usr/lib/simpleos/app/dist-electron
 COPY --from=shell-build /src/node_modules/electron /usr/lib/simpleos/app/node_modules/electron
 
-# The final layer sets the hostname and UTC timezone, hides foot's desktop
-# entry so it stays invisible to the user, and enables the boot services.
-RUN mkdir -p /usr/libexec/simpleos \
+# The final layer creates both greetd session users, sets the hostname and UTC
+# timezone, hides foot's desktop entry, and enables the boot services. Creating
+# the users here matters: greetd validates them at startup, so they must exist
+# before first boot runs.
+RUN (id -u senior >/dev/null 2>&1 || useradd --create-home --user-group --shell /bin/bash senior) \
+    && (id -u greeter >/dev/null 2>&1 || useradd --no-create-home --groups video greeter) \
+    && mkdir -p /usr/libexec/simpleos \
     && printf '%s\n' \
       '#!/bin/sh' \
       '# Kiosk launcher supervised by labwc/autostart.' \

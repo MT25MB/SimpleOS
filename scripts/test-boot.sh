@@ -136,6 +136,8 @@ log "Verifying kiosk session wiring in the built image"
   'test -L /etc/systemd/system/graphical.target.wants/greetd.service \
     && test -L /etc/systemd/system/display-manager.service \
     && test "$(readlink -f /etc/systemd/system/default.target)" = /usr/lib/systemd/system/graphical.target \
+    && id -u senior \
+    && id -u greeter \
     && command -v labwc \
     && test -x /usr/libexec/simpleos/simpleos-shell' \
   || die "Built image is missing kiosk session wiring."

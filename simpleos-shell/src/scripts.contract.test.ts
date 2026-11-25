@@ -93,6 +93,8 @@ describe('scripts/test-boot.sh contract', () => {
     expect(testBoot).toContain('--rootfs ext4')
     expect(testBoot).toContain('--type qcow2')
     expect(testBoot).toContain('Verifying kiosk session wiring in the built image')
+    expect(testBoot).toContain('id -u senior')
+    expect(testBoot).toContain('id -u greeter')
   })
 })
 

@@ -143,6 +143,8 @@ jobs:
               && test -x /usr/libexec/simpleos/simpleos-shell \
               && test -x /usr/libexec/simpleos/firstboot.sh \
               && test "$(readlink -f /etc/systemd/system/default.target)" = /usr/lib/systemd/system/graphical.target \
+              && id -u senior \
+              && id -u greeter \
               && command -v labwc \
               && grep -q "useradd --no-create-home --groups video greeter" /etc/simpleos/firstboot.sh \
               && grep -q "<action name=\"None\"/>" /etc/xdg/labwc/rc.xml'
