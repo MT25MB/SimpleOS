@@ -53,6 +53,14 @@ describe('preload bridge contract', () => {
   it('exposes the unified runAction dispatcher', () => {
     expect(preload).toContain("runAction: (action) => ipcRenderer.invoke('simpleos:run-action', action)")
   })
+
+  it('always gives a way back from external settings apps', () => {
+    expect(electronMain).toContain("'simpleos:close-settings'")
+    expect(electronMain).toContain('alwaysOnTop: true')
+    expect(electronMain).toContain('Back to SimpleOS')
+    expect(electronMain).toContain('settingsProcess.kill()')
+    expect(preload).toContain("closeSettings: () => ipcRenderer.invoke('simpleos:close-settings')")
+  })
 })
 
 describe('caregiver runAction allowlist', () => {
@@ -80,7 +88,7 @@ describe('caregiver runAction allowlist', () => {
   it('never forwards renderer strings into spawned commands or arguments', () => {
     // Every spawn in main.ts uses an allowlisted ApprovedCommand, whose values
     // are literals from the frozen maps — never the `action`/`target` argument.
-    expect(electronMain).toContain('spawnApproved(SAFE_ACTIONS[name])')
+    expect(electronMain).toContain('spawnSettings(approved)')
     expect(electronMain).not.toContain('spawn(action')
     expect(electronMain).not.toContain('spawn(target')
     expect(electronMain).not.toContain('execFile(action')

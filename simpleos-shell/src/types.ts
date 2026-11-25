@@ -145,6 +145,8 @@ export interface SimpleOSBridge {
   unlockWithPin(pin: string): Promise<Result>
   setPin(currentPin: string, newPin: string): Promise<Result>
   openSettings(target: string): Promise<Result>
+  /** Close the external Wi-Fi/printer settings app and return to the kiosk. */
+  closeSettings(): Promise<Result>
   getUpdateStatus(): Promise<ValueResult<{ summary: string }>>
   /** Unified, allowlisted caregiver/help action dispatcher. */
   runAction(action: CaregiverAction): Promise<ValueResult<{ summary?: string }>>

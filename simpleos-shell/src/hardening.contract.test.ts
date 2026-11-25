@@ -45,7 +45,7 @@ describe('main process data validation', () => {
 
   it('keeps caregiver actions allowlisted with no renderer-supplied commands', () => {
     expect(main).toContain('Object.hasOwn(SAFE_ACTIONS, action)')
-    expect(main).toContain('spawnApproved(SAFE_ACTIONS[name])')
+    expect(main).toContain('spawnSettings(approved)')
     for (const action of ['screenShare', 'networkSettings', 'printerSettings', 'checkUpdates']) {
       expect(allowlists).toContain(`${action}:`)
     }

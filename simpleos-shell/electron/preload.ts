@@ -24,6 +24,7 @@ const bridge: SimpleOSBridge = {
   setPin: (currentPin, newPin) =>
     ipcRenderer.invoke('simpleos:pin:set', currentPin, newPin),
   openSettings: (target) => ipcRenderer.invoke('simpleos:open-settings', target),
+  closeSettings: () => ipcRenderer.invoke('simpleos:close-settings'),
   getUpdateStatus: () => ipcRenderer.invoke('simpleos:update-status'),
   // Single allowlisted dispatcher for caregiver/help actions. The main process
   // validates the action name; no shell strings ever cross this boundary.

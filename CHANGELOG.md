@@ -6,7 +6,9 @@ All notable changes to SimpleOS are recorded here. The format follows
 
 ## [Unreleased]
 
-Nothing yet.
+### Fixed
+
+- Wi-Fi and printer settings now show an always-on-top **Back to SimpleOS** button, so a caregiver can always leave those windows even though the kiosk disables the usual close shortcuts.
 
 ## [v1.2.3]
 

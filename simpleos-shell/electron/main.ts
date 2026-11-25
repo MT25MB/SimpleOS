@@ -21,7 +21,7 @@ import os from 'node:os'
 import fs from 'node:fs'
 import crypto from 'node:crypto'
 import { pathToFileURL } from 'node:url'
-import { spawn, execFile } from 'node:child_process'
+import { spawn, execFile, type ChildProcess } from 'node:child_process'
 import {
   ALLOWED_APPS,
   ALLOWED_SETTINGS,
@@ -86,6 +86,12 @@ const fail = (code: ErrorCode): { ok: false; code: ErrorCode } => ({ ok: false, 
 // The one window we ever create. IPC calls from any other sender (an injected
 // frame, a pop-up, a preload in another webContents) are rejected.
 let launcherWindow: BrowserWindow | null = null
+
+// External settings apps (Wi-Fi, printer) open on top of the kiosk. Track the
+// process and show a small always-on-top exit button so a caregiver can always
+// get back without hunting for a title-bar X or a disabled keyboard shortcut.
+let settingsProcess: ChildProcess | null = null
+let settingsExitWindow: BrowserWindow | null = null
 
 /** The single local file we are allowed to display. Never any other file. */
 const appFileUrl = pathToFileURL(path.join(__dirname, '..', 'dist', 'index.html')).href
@@ -174,6 +180,70 @@ function spawnDetached(command: string, args: readonly string[]): Promise<Result
     child.once('spawn', () => {
       child.unref()
       resolve(OK)
+    })
+  })
+}
+
+/** Close the external settings app and bring the launcher back into view. */
+function closeSettingsApp(): void {
+  if (settingsProcess && !settingsProcess.killed) {
+    settingsProcess.kill()
+  }
+  settingsProcess = null
+  if (settingsExitWindow && !settingsExitWindow.isDestroyed()) {
+    settingsExitWindow.close()
+  }
+  settingsExitWindow = null
+  launcherWindow?.focus()
+}
+
+/** A small button that stays above the settings app, so there is always a way back. */
+function showSettingsExitButton(): void {
+  if (settingsExitWindow && !settingsExitWindow.isDestroyed()) return
+  const html = `<!doctype html><html lang="en"><head><meta charset="utf-8">
+    <style>
+      html,body{margin:0;height:100%;background:#0b1120;color:#fff;font-family:Inter,sans-serif}
+      button{width:100%;height:100%;min-height:72px;border:3px solid #fff;border-radius:12px;
+        background:#0b1120;color:#fff;font-size:22px;font-weight:700;cursor:pointer}
+      button:focus-visible{outline:6px solid #fff;outline-offset:3px}
+    </style></head><body><button type="button" onclick="window.close()">Back to SimpleOS</button></body></html>`
+  const button = new BrowserWindow({
+    frame: false,
+    resizable: false,
+    skipTaskbar: true,
+    alwaysOnTop: true,
+    width: 280,
+    height: 84,
+    backgroundColor: '#0B1120',
+    webPreferences: { contextIsolation: true, nodeIntegration: false },
+  })
+  settingsExitWindow = button
+  button.on('closed', () => {
+    settingsExitWindow = null
+    closeSettingsApp()
+  })
+  void button.loadURL(`data:text/html;charset=utf-8,${encodeURIComponent(html)}`)
+}
+
+/** Launch a settings app and make sure the person can get back to the kiosk. */
+function spawnSettings(approved: ApprovedCommand): Promise<Result> {
+  return new Promise((resolve) => {
+    const child = spawn(approved.command, [...approved.args], { detached: true, stdio: 'ignore' })
+    settingsProcess = child
+    child.once('error', () => {
+      settingsProcess = null
+      resolve(fail('APP_NOT_FOUND'))
+    })
+    child.once('spawn', () => {
+      child.unref()
+      showSettingsExitButton()
+      resolve(OK)
+    })
+    child.once('exit', () => {
+      settingsProcess = null
+      if (settingsExitWindow && !settingsExitWindow.isDestroyed()) settingsExitWindow.close()
+      settingsExitWindow = null
+      launcherWindow?.focus()
     })
   })
 }
@@ -566,7 +636,11 @@ ipcMain.handle(
       return result.ok ? { ok: true, value: { summary: result.value.summary } } : result
     }
 
-    const result = await spawnApproved(SAFE_ACTIONS[name])
+    const approved = SAFE_ACTIONS[name]
+    const result =
+      name === 'networkSettings' || name === 'printerSettings'
+        ? await spawnSettings(approved)
+        : await spawnApproved(approved)
     if (!result.ok) return result
 
     return {
@@ -592,9 +666,15 @@ ipcMain.handle(
     if (typeof target !== 'string' || !Object.hasOwn(ALLOWED_SETTINGS, target)) {
       return fail('UNKNOWN_TARGET')
     }
-    return spawnApproved(ALLOWED_SETTINGS[target])
+    return spawnSettings(ALLOWED_SETTINGS[target])
   },
 )
+
+ipcMain.handle('simpleos:close-settings', async (event): Promise<Result> => {
+  if (!isTrustedSender(event)) return fail('UNKNOWN_TARGET')
+  closeSettingsApp()
+  return OK
+})
 
 ipcMain.handle(
   'simpleos:update-status',
