@@ -174,6 +174,7 @@ describe('updates and release alignment', () => {
     expect(workflow).toContain('gh release upload "$VERSION" \\')
     expect(workflow).toContain('"$ISO_DIR/combine-iso-parts.bat" \\')
     expect(workflow).toContain('name: Verify the kiosk session is enabled')
+    expect(workflow).toContain('check greetd-wants')
     expect(workflow).toContain('graphical.target.wants/greetd.service')
     expect(workflow).toContain('name: Create ISO combine scripts')
     expect(workflow).toContain('combine-iso-parts.bat')

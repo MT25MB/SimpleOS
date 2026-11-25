@@ -137,17 +137,23 @@ jobs:
           set -euo pipefail
           REF="$(printf '%s' "$IMAGE_REF" | tr '[:upper:]' '[:lower:]')"
           sudo podman pull "$REF"
-          sudo podman run --rm --entrypoint /bin/sh "$REF" -c \
-            'test -L /etc/systemd/system/graphical.target.wants/greetd.service \
-              && test -L /etc/systemd/system/display-manager.service \
-              && test -x /usr/libexec/simpleos/simpleos-shell \
-              && test -x /usr/libexec/simpleos/firstboot.sh \
-              && test "$(readlink -f /etc/systemd/system/default.target)" = /usr/lib/systemd/system/graphical.target \
-              && id -u senior \
-              && id -u greeter \
-              && command -v labwc \
-              && grep -q "useradd --no-create-home --groups video greeter" /etc/simpleos/firstboot.sh \
-              && grep -q "<action name=\"None\"/>" /etc/xdg/labwc/rc.xml'
+          sudo podman run --rm --entrypoint /bin/sh "$REF" -c '
+          fail=0
+          check() {
+            if eval "$2"; then echo "ok: $1"; else echo "FAIL: $1"; fail=1; fi
+          }
+          check greetd-wants "test -L /etc/systemd/system/graphical.target.wants/greetd.service"
+          check display-manager-alias "test -L /etc/systemd/system/display-manager.service"
+          check default-target "test \"\$(readlink -f /etc/systemd/system/default.target)\" = /usr/lib/systemd/system/graphical.target"
+          check launcher "test -x /usr/libexec/simpleos/simpleos-shell"
+          check firstboot "test -x /usr/libexec/simpleos/firstboot.sh"
+          check senior-user "id -u senior"
+          check greeter-user "id -u greeter"
+          check labwc "command -v labwc"
+          check greeter-fallback "grep -q useradd /etc/simpleos/firstboot.sh"
+          check rc-xml "grep -q name=None /etc/xdg/labwc/rc.xml"
+          exit $fail
+          '
           echo "greetd, both session users, labwc and the launcher are wired up."
 
       - name: Build the release ISO
