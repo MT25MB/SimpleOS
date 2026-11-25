@@ -317,6 +317,41 @@ input {
   font-size: 1rem;
 }
 
+/* ------------------------------------------------------- backup and restore */
+
+.backup__choose {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+/* Native file input stays focusable for keyboard and screen-reader users. */
+.backup__input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.backup__preview {
+  margin-top: 1rem;
+  padding: 1rem;
+  border: 2px solid var(--border-strong);
+  border-radius: 0.5rem;
+  background: var(--surface);
+}
+
+.backup__preview ul {
+  margin: 0.5rem 0;
+  padding-left: 1.5rem;
+}
+
 .font-scale {
   margin: 0;
   padding: 0.75rem 1rem 1rem;

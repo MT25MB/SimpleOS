@@ -10,6 +10,8 @@ import type {
   RecoveryAction,
   SettingsTarget,
 } from '../types'
+import type { BackupFile } from '../backup'
+import { BackupPanel } from './BackupPanel'
 import { ContactEditor } from './ContactEditor'
 import { FontScaleControl } from './FontScaleControl'
 import { QuickCheckPanel } from './QuickCheckPanel'
@@ -34,6 +36,8 @@ interface CaregiverPanelProps {
   onCheckUpdates: () => void
   onChangePin: () => void
   onRerunSetup: () => void
+  seniorName: string
+  onApplyBackup: (backup: BackupFile) => Promise<string | null>
   error: ErrorCode | null
   onDismissError: () => void
 }
@@ -58,6 +62,8 @@ export function CaregiverPanel({
   onCheckUpdates,
   onChangePin,
   onRerunSetup,
+  seniorName,
+  onApplyBackup,
   error,
   onDismissError,
 }: CaregiverPanelProps) {
@@ -164,6 +170,13 @@ export function CaregiverPanel({
       >
         Open RustDesk
       </button>
+
+      <BackupPanel
+        seniorName={seniorName}
+        scale={scale}
+        frameDelay={frameDelay}
+        onApply={onApplyBackup}
+      />
 
       <h3 className="panel__subheading">Caregiver PIN</h3>
       <p className="panel__note">

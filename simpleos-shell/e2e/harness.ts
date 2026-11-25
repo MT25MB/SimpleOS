@@ -92,7 +92,13 @@ export async function openApp(page: Page, config: E2EConfig = {}): Promise<void>
         log('setPin', next)
         return ok
       },
-      getSetupStatus: async () => ({ ok: true, value: read('setup', { complete: true, seniorName: null }) }),
+      getSetupStatus: async () => ({
+        ok: true,
+        value: {
+          ...read('setup', { complete: true, seniorName: null }),
+          rustdeskId: read('rustdeskId', null),
+        },
+      }),
       completeSetup: async (seniorName: string, rustdeskId: string) => {
         write('setup', { complete: true, seniorName })
         write('rustdeskId', rustdeskId)

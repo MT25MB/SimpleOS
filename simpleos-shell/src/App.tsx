@@ -18,6 +18,7 @@ import { useIdleFrame } from './hooks/useIdleFrame'
 import { useReadAloud } from './hooks/useReadAloud'
 import { useReminders } from './hooks/useReminders'
 import { useVoiceNavigation } from './hooks/useVoiceNavigation'
+import type { BackupFile } from './backup'
 import { friendlyMessage } from './messages'
 import { greetingFor } from './setup'
 import type {
@@ -323,7 +324,7 @@ export default function App() {
       await bridge.saveReminders({ date: reminders.store.date, items: result.reminders })
     }
     setSeniorName(result.seniorName)
-    setSetupStatus({ complete: true, seniorName: result.seniorName })
+    setSetupStatus({ complete: true, seniorName: result.seniorName, rustdeskId: result.rustdeskId })
     setWizardOpen(false)
     setView('home')
     setNotice({
@@ -335,6 +336,29 @@ export default function App() {
   function rerunSetup() {
     setWizardOpen(true)
     setView('home')
+  }
+
+  /** Apply a validated backup through the same allowlisted bridge methods. */
+  async function handleApplyBackup(backup: BackupFile): Promise<string | null> {
+    const bridge = window.simpleOS
+    if (!bridge) return friendlyMessage('BRIDGE_UNAVAILABLE')
+    const setup = await bridge.completeSetup(backup.seniorName, backup.rustdeskId ?? '')
+    if (!setup.ok) return friendlyMessage(setup.code)
+    const savedContacts = await bridge.saveContacts(backup.contacts)
+    if (!savedContacts.ok) return friendlyMessage(savedContacts.code)
+    const savedReminders = await bridge.saveReminders(backup.reminders)
+    if (!savedReminders.ok) return friendlyMessage(savedReminders.code)
+    setSeniorName(backup.seniorName)
+    setSetupStatus({
+      complete: true,
+      seniorName: backup.seniorName,
+      rustdeskId: backup.rustdeskId,
+    })
+    setContacts(backup.contacts.contacts)
+    setFontScale(backup.fontScale)
+    setFrameDelay(backup.frameDelay)
+    setNotice({ tone: 'caregiver', message: 'Backup restored. Your settings are back.' })
+    return null
   }
 
   async function handleCallContact(contact: Contact) {
@@ -526,6 +550,8 @@ export default function App() {
                 onCheckUpdates={handleCheckUpdates}
                 onChangePin={() => setPinMode('change')}
                 onRerunSetup={rerunSetup}
+                seniorName={seniorName}
+                onApplyBackup={handleApplyBackup}
                 error={caregiverError}
                 onDismissError={() => setCaregiverError(null)}
               />

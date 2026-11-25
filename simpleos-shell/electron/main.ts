@@ -568,10 +568,19 @@ function readSetupComplete(): SetupCompleteFile | null {
 
 ipcMain.handle(
   'simpleos:setup:status',
-  async (event): Promise<ValueResult<{ complete: boolean; seniorName: string | null }>> => {
+  async (
+    event,
+  ): Promise<ValueResult<{ complete: boolean; seniorName: string | null; rustdeskId: string | null }>> => {
     if (!isTrustedSender(event)) return fail('UNKNOWN_TARGET')
     const file = readSetupComplete()
-    return { ok: true, value: { complete: file !== null, seniorName: file?.seniorName ?? null } }
+    return {
+      ok: true,
+      value: {
+        complete: file !== null,
+        seniorName: file?.seniorName ?? null,
+        rustdeskId: file?.rustdeskId ?? null,
+      },
+    }
   },
 )
 

@@ -142,6 +142,8 @@ export interface SetupStatus {
   complete: boolean
   /** The name saved at the end of the wizard, when there is one. */
   seniorName: string | null
+  /** A public remote-help ID, never a credential. */
+  rustdeskId: string | null
 }
 
 /** The only API the preload script is allowed to expose to the renderer. */
