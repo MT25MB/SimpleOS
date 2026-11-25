@@ -43,6 +43,10 @@ jobs:
         working-directory: simpleos-shell
         run: npm run validate:configs
 
+      - name: Install the Chromium browser for end-to-end tests
+        working-directory: simpleos-shell
+        run: npx playwright install --with-deps chromium
+
       - name: Run test suite
         working-directory: simpleos-shell
         run: npm run test

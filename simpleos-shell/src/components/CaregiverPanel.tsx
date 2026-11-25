@@ -123,7 +123,7 @@ export function CaregiverPanel({
         <button
           type="button"
           className="button button--secondary"
-          aria-label="Open Wi-Fi and network settings"
+          aria-label="Wi-Fi &amp; Network — open network settings"
           onClick={() => onOpenSettings('network')}
         >
           Wi-Fi &amp; Network
@@ -131,7 +131,7 @@ export function CaregiverPanel({
         <button
           type="button"
           className="button button--secondary"
-          aria-label="Open printer settings"
+          aria-label="Printers — open printer settings"
           onClick={() => onOpenSettings('printer')}
         >
           Printers
@@ -139,7 +139,7 @@ export function CaregiverPanel({
         <button
           type="button"
           className="button button--secondary"
-          aria-label="Check for system updates"
+          aria-label="Check for updates now"
           onClick={onCheckUpdates}
         >
           Check for updates
@@ -172,7 +172,7 @@ export function CaregiverPanel({
       <button
         type="button"
         className="button button--secondary"
-        aria-label="Change your caregiver PIN"
+        aria-label="Change PIN — change your caregiver PIN"
         onClick={onChangePin}
       >
         Change PIN
@@ -185,7 +185,7 @@ export function CaregiverPanel({
       <button
         type="button"
         className="button button--secondary"
-        aria-label="Run the setup wizard again"
+        aria-label="Run Setup Again — run the setup wizard again"
         onClick={onRerunSetup}
       >
         Run Setup Again

@@ -12,7 +12,9 @@
     "typecheck:electron": "tsc -p electron/tsconfig.json",
     "compile:electron": "esbuild electron/main.ts --bundle --platform=node --format=cjs --target=node20 --external:electron --outfile=dist-electron/main.js && esbuild electron/preload.ts --bundle --platform=node --format=cjs --target=node20 --external:electron --outfile=dist-electron/preload.js",
     "build": "npm run typecheck:electron && tsc --noEmit && vite build && npm run compile:electron",
-    "test": "vitest run",
+    "test": "vitest run && playwright test",
+    "test:unit": "vitest run",
+    "test:e2e": "playwright test",
     "test:watch": "vitest",
     "validate:configs": "node validate-configs.mjs",
     "build:electron": "npm run build && electron-builder",
@@ -24,6 +26,8 @@
     "react-dom": "^19.3.1"
   },
   "devDependencies": {
+    "@axe-core/playwright": "^4.14.1",
+    "@playwright/test": "^1.65.1",
     "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/react": "^16.1.0",
     "@testing-library/user-event": "^14.5.2",

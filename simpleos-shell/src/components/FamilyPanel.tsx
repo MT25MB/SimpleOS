@@ -65,7 +65,7 @@ export function FamilyPanel({ contacts, onCall, onFallback }: FamilyPanelProps) 
               <button
                 type="button"
                 className="button family__call"
-                aria-label={`Call ${contact.name} now`}
+                aria-label={`Call Now for ${contact.name}`}
                 onClick={() => onCall(contact)}
               >
                 Call Now

@@ -12,7 +12,6 @@ export function Tile({ tile, onSelect }: TileProps) {
     <button
       type="button"
       className="tile"
-      aria-label={`${tile.title}. ${tile.subtitle}`}
       onClick={() => onSelect(tile)}
     >
       <Icon name={tile.icon} />

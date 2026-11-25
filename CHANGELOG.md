@@ -6,7 +6,14 @@ All notable changes to SimpleOS are recorded here. The format follows
 
 ## [Unreleased]
 
-Nothing yet.
+### Added
+
+- Playwright end-to-end journeys for the full first-run setup and Senior Mode (read-aloud, push-to-talk, reminders, family calls, idle photo frame and the PIN gate).
+- Automated axe-core WCAG AAA checks across six screens at all three text sizes, plus 48×48px target and horizontal-clipping assertions. `npm test` now runs both the unit suite and the browser suite.
+
+### Fixed
+
+- Accessible names on home tiles, family call cards and Caregiver Settings buttons now include their visible text, so screen readers match what people see.
 
 ## [v1.3.0]
 

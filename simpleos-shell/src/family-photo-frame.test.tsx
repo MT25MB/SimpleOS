@@ -36,7 +36,7 @@ describe('family call cards', () => {
     render(<FamilyPanel contacts={[contact]} onCall={onCall} onFallback={vi.fn()} />)
     expect(screen.getByText('Anna')).toBeInTheDocument()
     expect(screen.getByText('Daughter')).toBeInTheDocument()
-    await user.click(screen.getByRole('button', { name: 'Call Anna now' }))
+    await user.click(screen.getByRole('button', { name: /Call Now for Anna/ }))
     expect(onCall).toHaveBeenCalledWith(contact)
   })
 

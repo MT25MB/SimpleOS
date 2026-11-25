@@ -227,7 +227,7 @@ describe('App integration', () => {
     await user.click(screen.getByRole('button', { name: /Caregiver Settings/ }))
     await user.type(screen.getByLabelText('PIN'), '1234')
     await user.click(screen.getByRole('button', { name: /Unlock/ }))
-    await user.click(await screen.findByRole('button', { name: /Run the setup wizard again/ }))
+    await user.click(await screen.findByRole('button', { name: /Run Setup Again/ }))
     expect(screen.getByText('Step 1 of 5')).toBeInTheDocument()
   })
 })

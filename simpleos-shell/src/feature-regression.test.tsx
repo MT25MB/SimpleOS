@@ -114,7 +114,7 @@ describe('family contacts integration', () => {
     window.simpleOS = bridge
     render(<App />)
     await user.click(screen.getByRole('button', { name: /Video Call Family/ }))
-    await user.click(await screen.findByRole('button', { name: 'Call Anna now' }))
+    await user.click(await screen.findByRole('button', { name: /Call Now for Anna/ }))
     expect(bridge.callContact).toHaveBeenCalledWith(contact.roomUrl)
   })
 

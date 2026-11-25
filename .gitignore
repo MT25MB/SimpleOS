@@ -57,6 +57,11 @@ desktop.ini
 .vscode/
 .idea/
 
+# Playwright end-to-end test artifacts
+playwright-report/
+test-results/
+blob-report/
+
 # Environment / secrets
 .env
 .env.local
