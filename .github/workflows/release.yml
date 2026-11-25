@@ -140,8 +140,12 @@ jobs:
           sudo podman run --rm --entrypoint /bin/sh "$REF" -c \
             'test -L /etc/systemd/system/graphical.target.wants/greetd.service \
               && test -L /etc/systemd/system/display-manager.service \
-              && test -x /usr/libexec/simpleos/simpleos-shell'
-          echo "greetd is wired into graphical.target and the launcher is present."
+              && test -x /usr/libexec/simpleos/simpleos-shell \
+              && test -x /usr/libexec/simpleos/firstboot.sh \
+              && command -v labwc \
+              && grep -q "useradd --no-create-home --groups video greeter" /etc/simpleos/firstboot.sh \
+              && grep -q "<action name=\"None\"/>" /etc/xdg/labwc/rc.xml'
+          echo "greetd, both session users, labwc and the launcher are wired up."
 
       - name: Build the release ISO
         id: iso

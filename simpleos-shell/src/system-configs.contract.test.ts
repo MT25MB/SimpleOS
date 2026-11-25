@@ -40,6 +40,7 @@ describe('system guardrails contract', () => {
     expect(greetd).toContain('user = "senior"')
     expect(firstboot).toMatch(/for group in wheel sudo admin/)
     expect(firstboot).toContain('useradd --create-home --user-group')
+    expect(firstboot).toContain('useradd --no-create-home --groups video greeter')
   })
 
   it('wires greetd into the graphical boot target', () => {
@@ -47,6 +48,7 @@ describe('system guardrails contract', () => {
     expect(containerfile).toContain('greetd.service')
     expect(containerfile).toContain('/etc/systemd/system/graphical.target.wants/greetd.service')
     expect(containerfile).toContain('/etc/systemd/system/display-manager.service')
+    expect(containerfile).toContain('--no-sandbox')
   })
 
   it('runs first boot once, without waiting for full connectivity, before greetd', () => {

@@ -54,7 +54,12 @@
     <cornerRadius>4</cornerRadius>
     <!-- Maximized windows have no titlebar: fewer buttons, fewer mistakes. -->
     <maximizedDecoration>none</maximizedDecoration>
-    <font name="Inter" size="18" weight="medium"/>
+    <!-- labwc expects child elements, not attributes, for font settings. -->
+    <font>
+      <name>Inter</name>
+      <size>18</size>
+      <weight>medium</weight>
+    </font>
   </theme>
 
   <mouse>
@@ -64,22 +69,22 @@
       the right-click root menu.
     -->
     <context name="Desktop">
-      <mousebind button="Left" action="Press"/>
-      <mousebind button="Left" action="Click"/>
-      <mousebind button="Left" action="DoubleClick"/>
-      <mousebind button="Middle" action="Press"/>
-      <mousebind button="Middle" action="Click"/>
-      <mousebind button="Right" action="Press"/>
-      <mousebind button="Right" action="Click"/>
+      <mousebind button="Left" action="Press"><action name="None"/></mousebind>
+      <mousebind button="Left" action="Click"><action name="None"/></mousebind>
+      <mousebind button="Left" action="DoubleClick"><action name="None"/></mousebind>
+      <mousebind button="Middle" action="Press"><action name="None"/></mousebind>
+      <mousebind button="Middle" action="Click"><action name="None"/></mousebind>
+      <mousebind button="Right" action="Press"><action name="None"/></mousebind>
+      <mousebind button="Right" action="Click"><action name="None"/></mousebind>
     </context>
     <context name="Root">
-      <mousebind button="Left" action="Press"/>
-      <mousebind button="Left" action="Click"/>
-      <mousebind button="Left" action="DoubleClick"/>
-      <mousebind button="Middle" action="Press"/>
-      <mousebind button="Middle" action="Click"/>
-      <mousebind button="Right" action="Press"/>
-      <mousebind button="Right" action="Click"/>
+      <mousebind button="Left" action="Press"><action name="None"/></mousebind>
+      <mousebind button="Left" action="Click"><action name="None"/></mousebind>
+      <mousebind button="Left" action="DoubleClick"><action name="None"/></mousebind>
+      <mousebind button="Middle" action="Press"><action name="None"/></mousebind>
+      <mousebind button="Middle" action="Click"><action name="None"/></mousebind>
+      <mousebind button="Right" action="Press"><action name="None"/></mousebind>
+      <mousebind button="Right" action="Click"><action name="None"/></mousebind>
     </context>
   </mouse>
 

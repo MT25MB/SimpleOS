@@ -89,6 +89,7 @@ describe('ISO installer safeguards', () => {
   })
 
   it('sets graphical boot, automatic partitioning and no root prompts', () => {
+    expect(kickstart).toContain('keyboard us')
     expect(kickstart).toContain('xconfig --startxonboot')
     expect(kickstart).toContain('clearpart --all --initlabel')
     expect(kickstart).toContain('autopart --type=plain')

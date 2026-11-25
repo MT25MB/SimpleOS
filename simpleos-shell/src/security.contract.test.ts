@@ -141,8 +141,8 @@ describe('session and privilege boundary', () => {
     // labwc schema uses <initial>, not the Openbox-only <firstdesk>.
     expect(rc).toContain('<initial>1</initial>')
     expect(rc).not.toContain('<firstdesk>')
-    // Right-click is bound only to empty Press/Click actions: no root menu.
-    const rightClicks = [...rc.matchAll(/<mousebind button="Right"([^>]*)\/>/g)]
+    // Right-click is bound only to explicit None actions: no root menu.
+    const rightClicks = [...rc.matchAll(/<mousebind button="Right"([^>]*)><action name="None"\/><\/mousebind>/g)]
     expect(rightClicks.length).toBeGreaterThan(0)
     for (const [, attrs] of rightClicks) {
       expect(attrs).toMatch(/action="(Press|Click)"/)

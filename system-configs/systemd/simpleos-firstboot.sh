@@ -35,6 +35,18 @@ else
   log_info "User '$SENIOR_USER' already exists; skipping creation."
 fi
 
+# greetd's fallback session (agreety) runs as 'greeter'. Create it so a failed
+# autologin still lands in a usable session instead of an empty VT.
+if ! id -u greeter >/dev/null 2>&1; then
+  if useradd --no-create-home --groups video greeter; then
+    log_info "Created fallback user 'greeter'."
+  else
+    log_warn "Could not create 'greeter'; greetd's fallback session will be unavailable."
+  fi
+else
+  log_info "User 'greeter' already exists; skipping creation."
+fi
+
 # Defensive: strip administrative groups in case they were ever added.
 for group in wheel sudo admin; do
   if getent group "$group" >/dev/null 2>&1; then

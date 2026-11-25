@@ -2,6 +2,7 @@
 # Rendered by scripts/build-iso.sh, which replaces @IMAGE_REF@ with the image
 # being installed. The installer wipes the chosen target disk completely.
 lang en_US.UTF-8
+keyboard us
 timezone UTC
 
 # Boot straight into the graphical kiosk session (greetd -> labwc -> shell).

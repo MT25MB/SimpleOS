@@ -144,6 +144,8 @@ COPY system-configs/polkit/50-simpleos-rollback.rules /etc/polkit-1/rules.d/50-s
 
 # The kiosk launcher itself. main.js resolves its renderer at ../dist from
 # dist-electron, so keeping both folders together preserves that contract.
+# --no-sandbox is needed because the npm-copied Electron sandbox helper is not
+# SUID-root; without it Electron refuses to start as the unprivileged senior user.
 COPY --from=shell-build /src/dist /usr/lib/simpleos/app/dist
 COPY --from=shell-build /src/dist-electron /usr/lib/simpleos/app/dist-electron
 COPY --from=shell-build /src/node_modules/electron /usr/lib/simpleos/app/node_modules/electron
@@ -155,6 +157,7 @@ RUN mkdir -p /usr/libexec/simpleos \
       '#!/bin/sh' \
       '# Kiosk launcher supervised by labwc/autostart.' \
       'exec /usr/lib/simpleos/app/node_modules/electron/dist/electron \' \
+      '  --no-sandbox \' \
       '  /usr/lib/simpleos/app/dist-electron/main.js' \
       > /usr/libexec/simpleos/simpleos-shell \
     && chmod 0755 /etc/simpleos/firstboot.sh /etc/xdg/labwc/autostart /usr/libexec/simpleos/simpleos-shell /usr/libexec/simpleos/transcribe.py /usr/libexec/simpleos/rollback.sh \

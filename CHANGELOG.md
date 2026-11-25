@@ -12,6 +12,10 @@ All notable changes to SimpleOS are recorded here. The format follows
 - First-boot setup no longer waits for `network-online.target`, which could delay the desktop indefinitely on a fresh machine with no configured network.
 - labwc now uses software GL rendering so the desktop works on old GPUs and in virtual machines.
 - The release workflow verifies the kiosk session wiring inside the built image before generating an ISO.
+- The first-boot service now creates greetd's fallback `greeter` account, so a failed autologin still has a usable session.
+- labwc's config now uses the documented child-element form for fonts and explicit `None` actions for disabled mouse bindings, so the compositor does not reject its config.
+- The launcher passes `--no-sandbox` so Electron starts as the unprivileged `senior` user without a SUID sandbox helper, and the session exports Wayland environment variables for Electron's Ozone detection.
+- The installer kickstart declares a US keyboard layout explicitly, avoiding a keyboard prompt during unattended installation.
 
 ## [v1.2.2]
 
