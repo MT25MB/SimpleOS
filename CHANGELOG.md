@@ -6,6 +6,12 @@ All notable changes to SimpleOS are recorded here. The format follows
 
 ## [Unreleased]
 
+Nothing yet.
+
+## [v1.3.0]
+
+A guided first-run release: a caregiver now sets the computer up before handing it over.
+
 ### Added
 
 - A five-step First-Run Caregiver Setup Wizard. On a fresh install it opens before the senior home screen and asks for the senior's first name and text size, a four-to-six digit PIN, Wi-Fi and local sound/microphone checks, optional family call cards and reminders, and a remote-help handover step. It can be re-run from Caregiver Settings.
@@ -296,7 +302,8 @@ contribute to, and a full automated quality gate.
 - First prototype: initial image definition, system configs, Electron launcher,
   build script and documentation.
 
-[Unreleased]: https://github.com/MT25MB/SimpleOS/compare/v1.2.4...HEAD
+[Unreleased]: https://github.com/MT25MB/SimpleOS/compare/v1.3.0...HEAD
+[v1.3.0]: https://github.com/MT25MB/SimpleOS/compare/v1.2.4...v1.3.0
 [v1.2.4]: https://github.com/MT25MB/SimpleOS/compare/v1.2.3...v1.2.4
 [v1.2.3]: https://github.com/MT25MB/SimpleOS/compare/v1.2.2...v1.2.3
 [v1.2.2]: https://github.com/MT25MB/SimpleOS/compare/v1.2.1...v1.2.2
