@@ -7,6 +7,7 @@ const read = (path: string) => readFileSync(resolve(root, path), 'utf8')
 
 const containerfile = read('os-image/Containerfile')
 const autostart = read('system-configs/labwc/autostart')
+const environment = read('system-configs/labwc/environment')
 const rc = read('system-configs/labwc/rc.xml')
 const policies = JSON.parse(read('system-configs/firefox/policies.json'))
 const greetd = read('system-configs/greetd/config.toml')
@@ -26,6 +27,12 @@ describe('system guardrails contract', () => {
     for (const pkg of ['labwc', 'greetd', 'swaybg', 'foot', 'flatpak', 'pipewire', 'cups', 'orca']) {
       expect(containerfile).toMatch(new RegExp(`\\b${pkg}\\b`))
     }
+  })
+
+  it('installs a cursor theme for the large kiosk pointer', () => {
+    expect(containerfile).toMatch(/\badwaita-icon-theme\b/)
+    expect(environment).toContain('XCURSOR_THEME=Adwaita')
+    expect(environment).toContain('XCURSOR_SIZE=48')
   })
 
   it('defaults to UTC and hides foot from menus', () => {

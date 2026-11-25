@@ -150,6 +150,7 @@ jobs:
           check senior-user "id -u senior"
           check greeter-user "id -u greeter"
           check labwc "command -v labwc"
+          check cursor-theme "test -d /usr/share/icons/Adwaita/cursors"
           check greeter-fallback "grep -q useradd /etc/simpleos/firstboot.sh"
           check rc-xml "grep -q None /etc/xdg/labwc/rc.xml"
           exit $fail

@@ -9,6 +9,7 @@ All notable changes to SimpleOS are recorded here. The format follows
 ### Fixed
 
 - Wi-Fi and printer settings now show an always-on-top **Back to SimpleOS** button, so a caregiver can always leave those windows even though the kiosk disables the usual close shortcuts.
+- The image now installs the Adwaita cursor theme used by the 48px kiosk pointer, so the cursor is visible on real hardware and in VMs.
 
 ## [v1.2.3]
 

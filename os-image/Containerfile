@@ -77,6 +77,7 @@ RUN --mount=type=cache,target=/var/cache \
         orca \
         rsms-inter-fonts \
         google-noto-sans-fonts \
+        adwaita-icon-theme \
         linux-firmware \
         mesa-dri-drivers \
         NetworkManager \

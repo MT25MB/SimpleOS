@@ -142,6 +142,7 @@ log "Verifying kiosk session wiring in the built image"
     && id -u senior \
     && id -u greeter \
     && command -v labwc \
+    && test -d /usr/share/icons/Adwaita/cursors \
     && test -x /usr/libexec/simpleos/simpleos-shell \
     && grep -q 'session_ready' /usr/libexec/simpleos/boot-marker.sh' \
   || die "Built image is missing kiosk session wiring."
