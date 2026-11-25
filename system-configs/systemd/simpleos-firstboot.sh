@@ -124,5 +124,20 @@ else
   log_info "Installed core applications: ${APPS[*]}"
 fi
 
+# -----------------------------------------------------------------------------
+# 5. Put the managed browser policies where the Flatpak Firefox actually reads
+#    them. Its systemconfig extension is mounted at /app/etc/firefox, so the
+#    host copy in /etc/firefox/policies is otherwise ignored.
+# -----------------------------------------------------------------------------
+FIREFOX_ARCH="$(flatpak info --show-arch org.mozilla.firefox 2>/dev/null || printf '%s' "$(uname -m)")"
+POLICY_DIR="/var/lib/flatpak/extension/org.mozilla.firefox.systemconfig/${FIREFOX_ARCH}/stable/policies"
+if mkdir -p "$POLICY_DIR" \
+  && cp /etc/firefox/policies/policies.json "$POLICY_DIR/policies.json" \
+  && chmod 0644 "$POLICY_DIR/policies.json"; then
+  log_info "Installed managed Firefox policies for the Flatpak browser."
+else
+  log_warn "Could not install Firefox policies; the browser may be less restricted."
+fi
+
 log_info "First boot setup finished."
 exit 0

@@ -23,6 +23,18 @@ describe('system guardrails contract', () => {
     expect(containerfile).toContain('ostree container commit')
   })
 
+  it('locks down the Flatpak browser with managed policies and a safety extension', () => {
+    expect(policies.policies.HttpsOnlyMode).toBe('force_enabled')
+    expect(policies.policies.SafeBrowsing).toBe(true)
+    expect(policies.policies.EnableTrackingProtection.Value).toBe(true)
+    expect(policies.policies.PopupBlocking.Default).toBe(true)
+    expect(policies.policies.Extensions.Locked).toContain('uBlock0@raymondhill.net')
+    expect(policies.policies.Extensions.Locked).toContain('simpleos-safe@simpleos.local')
+    const settings = policies.policies.ExtensionSettings
+    expect(settings['simpleos-safe@simpleos.local'].installation_mode).toBe('force_installed')
+    expect(firstboot).toContain('org.mozilla.firefox.systemconfig')
+  })
+
   it('installs every essential package including foot and orca', () => {
     for (const pkg of ['labwc', 'greetd', 'swaybg', 'foot', 'flatpak', 'pipewire', 'cups', 'orca']) {
       expect(containerfile).toMatch(new RegExp(`\\b${pkg}\\b`))

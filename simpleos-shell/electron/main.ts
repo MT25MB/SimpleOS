@@ -452,6 +452,17 @@ interface PinRecord {
 // not in the UI, so a modified renderer cannot skip it.
 const pinThrottle = createPinThrottle()
 
+// The renderer hides caregiver screens behind a PIN, but a modified renderer
+// could call IPC directly. Risky actions are gated here too. A fresh launch
+// starts locked; entering the PIN unlocks this process for its lifetime.
+let pinUnlocked = false
+
+/** Actions that change the system or expose caregiver controls. */
+const PIN_GATED_ACTIONS: readonly CaregiverAction[] = Object.freeze([
+  'triggerUpdate',
+  'printerSettings',
+] as CaregiverAction[])
+
 function readPinRecord(): PinRecord | null {
   try {
     if (!fs.existsSync(pinPath())) return null
@@ -496,6 +507,7 @@ ipcMain.handle('simpleos:pin:unlock', async (event, pin: unknown): Promise<Resul
     return fail('PIN_INCORRECT')
   }
   pinThrottle.reset()
+  pinUnlocked = true
   return OK
 })
 
@@ -524,6 +536,7 @@ ipcMain.handle(
         JSON.stringify({ salt, hash: hashPin(newPin, salt) }, null, 2),
       )
       pinThrottle.reset()
+      pinUnlocked = true
       return OK
     } catch {
       return fail('STORAGE_FAILED')
@@ -631,6 +644,9 @@ ipcMain.handle(
     }
 
     const name = action as CaregiverAction
+    if (PIN_GATED_ACTIONS.includes(name) && !pinUnlocked) {
+      return fail('PIN_REQUIRED')
+    }
     if (name === 'checkUpdates') {
       const result = await checkUpdateStatus()
       return result.ok ? { ok: true, value: { summary: result.value.summary } } : result
@@ -966,6 +982,9 @@ ipcMain.handle(
   'simpleos:recovery',
   async (event, action: unknown): Promise<ValueResult<{ summary: string }>> => {
     if (!isTrustedSender(event)) return fail('UNKNOWN_TARGET')
+    if ((action === 'rollBack' || action === 'restartLauncher') && !pinUnlocked) {
+      return fail('PIN_REQUIRED')
+    }
     if (action === 'restartLauncher') {
       setTimeout(() => {
         app.relaunch()

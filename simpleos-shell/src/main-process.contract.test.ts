@@ -54,6 +54,14 @@ describe('preload bridge contract', () => {
     expect(preload).toContain("runAction: (action) => ipcRenderer.invoke('simpleos:run-action', action)")
   })
 
+  it('requires a PIN in the main process for risky actions', () => {
+    expect(electronMain).toContain('let pinUnlocked = false')
+    expect(electronMain).toContain('PIN_GATED_ACTIONS')
+    expect(electronMain).toContain("return fail('PIN_REQUIRED')")
+    expect(electronMain).toContain("action === 'rollBack' || action === 'restartLauncher'")
+    expect(electronMain).toContain('pinUnlocked = true')
+  })
+
   it('always gives a way back from external settings apps', () => {
     expect(electronMain).toContain("'simpleos:close-settings'")
     expect(electronMain).toContain('alwaysOnTop: true')

@@ -91,7 +91,7 @@ describe('Firefox enterprise guardrails', () => {
     expect(
       policies.policies.ExtensionSettings['uBlock0@raymondhill.net'].install_url,
     ).toContain('/latest/ublock-origin/latest.xpi')
-    expect(policies.policies.PopupBlocking.Default).toBe(false)
+    expect(policies.policies.PopupBlocking.Default).toBe(true)
     expect(policies.policies.PopupBlocking.Locked).toBe(true)
     for (const kind of ['Camera', 'Microphone']) {
       expect(policies.policies.Permissions[kind].Allow).toContain('https://meet.jit.si')

@@ -11,6 +11,12 @@ All notable changes to SimpleOS are recorded here. The format follows
 - Wi-Fi and printer settings now show an always-on-top **Back to SimpleOS** button, so a caregiver can always leave those windows even though the kiosk disables the usual close shortcuts.
 - The image now installs the Adwaita cursor theme used by the 48px kiosk pointer, so the cursor is visible on real hardware and in VMs.
 
+### Added
+
+- Browser safety: managed Firefox policies are now installed where the Flatpak browser actually reads them. They force HTTPS-only, Safe Browsing and tracking protection, block pop-ups, lock extensions, and deny new camera/microphone/notification/location requests except for approved call sites.
+- A locked SimpleOS Safe Browser extension blocks downloads and shows a calm "ask a caregiver" message.
+- Risky launcher actions (updates, printer settings, rollback, restart) are now gated by the caregiver PIN in the main process, not only in the UI.
+
 ## [v1.2.3]
 
 A reliability release that makes the kiosk session boot reliably on real hardware and in virtual machines.

@@ -147,6 +147,7 @@ echo
 echo "### Notes"
 echo
 echo "- First boot needs network access for Flathub and the core applications."
+echo "- Downloads are blocked in the web browser to reduce the risk of unwanted software. Ask a caregiver if you need to save a file."
 echo "- The caregiver PIN is set on first use and has no recovery mechanism yet."
 if [[ -n "$ISO_ASSET" ]]; then
   echo "- The attached ISO is split into parts; see Download the bootable installer above."

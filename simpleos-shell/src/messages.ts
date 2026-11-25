@@ -12,6 +12,7 @@ export const MESSAGES: Record<ErrorCode, string> = {
   STORAGE_FAILED: "We couldn't save your reminders. Try again.",
   PIN_INCORRECT: "That PIN isn't right. Try again.",
   PIN_NOT_SET: "No caregiver PIN is set on this computer yet.",
+  PIN_REQUIRED: 'Please ask a caregiver to enter their PIN first.',
   PIN_TOO_SHORT: 'Your PIN needs at least 4 numbers.',
   PIN_TOO_LONG: 'Use 12 numbers or fewer for your PIN.',
   PIN_NOT_NUMERIC: 'Use numbers only for your PIN.',

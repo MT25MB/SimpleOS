@@ -121,6 +121,7 @@ export type ErrorCode =
   | 'STORAGE_FAILED'
   | 'PIN_INCORRECT'
   | 'PIN_NOT_SET'
+  | 'PIN_REQUIRED'
   | 'PIN_TOO_SHORT'
   | 'PIN_TOO_LONG'
   | 'PIN_NOT_NUMERIC'

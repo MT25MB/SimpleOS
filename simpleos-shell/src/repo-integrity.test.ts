@@ -11,6 +11,14 @@ describe('docs links and assets', () => {
   const site = read('docs/index.html')
   const readme = read('README.md')
 
+  it('ships the managed safety extension package', () => {
+    const xpi = readFileSync(resolve(root, 'simpleos-shell/safe-browser/simpleos-safe-browser.xpi'))
+    expect(xpi.subarray(0, 2).toString()).toBe('PK')
+    const manifest = JSON.parse(read('simpleos-shell/safe-browser/manifest.json'))
+    expect(manifest.browser_specific_settings.gecko.id).toBe('simpleos-safe@simpleos.local')
+    expect(read('simpleos-shell/safe-browser/background.js')).toContain('browser.downloads.cancel')
+  })
+
   it('references image assets that exist', () => {
     const refs = [...site.matchAll(/src="(assets\/[^"]+)"/g)].map((m) => m[1])
     expect(refs.length).toBeGreaterThanOrEqual(2)

@@ -1,0 +1,16 @@
+{
+  "manifest_version": 2,
+  "name": "SimpleOS Safe Browser",
+  "version": "1.0.0",
+  "description": "Stops downloads and explains how to ask a caregiver. Managed by SimpleOS.",
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "simpleos-safe@simpleos.local",
+      "strict_min_version": "115.0"
+    }
+  },
+  "permissions": ["downloads", "notifications"],
+  "background": {
+    "scripts": ["background.js"]
+  }
+}
