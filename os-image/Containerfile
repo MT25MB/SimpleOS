@@ -157,8 +157,7 @@ COPY --from=shell-build /src/node_modules/electron /usr/lib/simpleos/app/node_mo
 # the users here matters: greetd validates them at startup, so they must exist
 # before first boot runs.
 RUN (id -u senior >/dev/null 2>&1 || useradd --create-home --user-group --shell /bin/bash senior) \
-    && (getent group video >/dev/null 2>&1 || groupadd video) \
-    && (id -u greeter >/dev/null 2>&1 || useradd --no-create-home --groups video greeter) \
+    && (id -u greeter >/dev/null 2>&1 || useradd --no-create-home greeter) \
     && mkdir -p /usr/libexec/simpleos \
     && printf '%s\n' \
       '#!/bin/sh' \

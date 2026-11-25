@@ -65,8 +65,7 @@ describe('system guardrails contract', () => {
     expect(containerfile).toContain('/etc/systemd/system/display-manager.service')
     expect(containerfile).toContain('/etc/systemd/system/default.target')
     expect(containerfile).toContain('useradd --create-home --user-group --shell /bin/bash senior')
-    expect(containerfile).toContain('getent group video')
-    expect(containerfile).toContain('useradd --no-create-home --groups video greeter')
+    expect(containerfile).toContain('useradd --no-create-home greeter')
     expect(containerfile).toContain('--no-sandbox')
   })
 
