@@ -49,6 +49,8 @@ describe('scripts/build-iso.sh contract', () => {
   it('builds or pulls an image and generates an ISO with bootc-image-builder', () => {
     expect(buildIso).toContain('bootc-image-builder')
     expect(buildIso).toContain('--type iso')
+    expect(buildIso).toContain('ROOTFS_TYPE="${ROOTFS_TYPE:-ext4}"')
+    expect(buildIso).toContain('--rootfs "$ROOTFS_TYPE"')
     expect(buildIso).toContain('*.iso')
   })
 

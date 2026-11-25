@@ -42,6 +42,9 @@ IMAGE_TAG="${IMAGE_TAG:-localhost/simpleos:local}"
 TARGET_IMAGE_REF="${TARGET_IMAGE_REF:-$IMAGE_TAG}"
 REMOTE_IMAGE="${REMOTE_IMAGE:-ghcr.io/${GITHUB_REPOSITORY_OWNER:-MT25MB}/simpleos:latest}"
 BUILDER_IMAGE="${BUILDER_IMAGE:-quay.io/centos-bootc/bootc-image-builder:latest}"
+# Some bootc base images do not declare a default root filesystem, so the
+# builder must be told which one to use for the installed system.
+ROOTFS_TYPE="${ROOTFS_TYPE:-ext4}"
 CONTAINER_ENGINE="${CONTAINER_ENGINE:-podman}"
 
 MODE="pull"
@@ -73,6 +76,7 @@ Options:
 Environment:
   TARGET_IMAGE_REF     Image ref baked in as the installed system's update
                        target (default: the image the ISO is built from).
+  ROOTFS_TYPE          Root filesystem for the installed system (default: ext4).
 
 Examples:
   bash $0                            # pull ghcr.io image, build ISO
@@ -195,6 +199,7 @@ fi
   --volume /var/lib/containers/storage:/var/lib/containers/storage \
   "$BUILDER_IMAGE" \
   --config /config.toml \
+  --rootfs "$ROOTFS_TYPE" \
   --type iso \
   --output /output \
   "$IMAGE_TAG"
