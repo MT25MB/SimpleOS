@@ -26,6 +26,8 @@ echo 'SIMPLEOS_BOOT_FAILED: desktop session did not start' > /dev/ttyS0
   /usr/bin/journalctl -u greetd.service -n 80 --no-pager 2>&1 || true
   echo '--- first-boot marker ---'
   ls -l /var/lib/simpleos/firstboot-complete 2>&1 || true
+  echo '--- launcher log ---'
+  cat /tmp/simpleos-shell.log 2>&1 || true
 } > /dev/ttyS0 2>&1
 /usr/bin/systemctl poweroff
 exit 1

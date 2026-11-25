@@ -69,6 +69,7 @@ describe('system guardrails contract', () => {
     expect(containerfile).toContain('--no-sandbox')
     expect(containerfile).toContain('--disable-gpu')
     expect(containerfile).toContain('--disable-dev-shm-usage')
+    expect(containerfile).toContain('/tmp/simpleos-shell.log')
   })
 
   it('runs first boot once, without waiting for full connectivity, before greetd', () => {
