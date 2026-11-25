@@ -70,6 +70,8 @@ describe('system guardrails contract', () => {
     expect(containerfile).toContain('--disable-gpu')
     expect(containerfile).toContain('--disable-dev-shm-usage')
     expect(containerfile).toContain('/tmp/simpleos-shell.log')
+    expect(containerfile).toContain('--ozone-platform=wayland')
+    expect(containerfile).toContain('--enable-logging=stderr --v=1')
   })
 
   it('runs first boot once, without waiting for full connectivity, before greetd', () => {
