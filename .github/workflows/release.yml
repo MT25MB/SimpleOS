@@ -30,7 +30,9 @@ jobs:
   release:
     name: Publish GitHub Release
     needs: test
-    runs-on: ubuntu-latest
+    # bootc-image-builder's osbuild uses bwrap, which Ubuntu 26.04's AppArmor
+    # profile blocks during privileged mounts. Pin the ISO build to 24.04.
+    runs-on: ubuntu-24.04
     permissions:
       contents: write
       packages: write

@@ -166,6 +166,7 @@ describe('updates and release alignment', () => {
 
   it('builds and attaches a release ISO behind the same quality gate', () => {
     const workflow = read('.github/workflows/release.yml')
+    expect(workflow).toContain('runs-on: ubuntu-24.04')
     expect(workflow).toContain('name: Build the release ISO')
     expect(workflow).toContain('TARGET_IMAGE_REF="$TARGET_REF"')
     expect(workflow).toContain('bash scripts/build-iso.sh --image "$IMAGE_REF"')
