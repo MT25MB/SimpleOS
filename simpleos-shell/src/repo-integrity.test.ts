@@ -183,7 +183,7 @@ describe('updates and release alignment', () => {
     expect(notes).toContain('ISO_ASSET="${3:-}"')
     expect(notes).toContain('### Download the bootable installer')
     expect(notes).toContain('combine-iso-parts.bat')
-    expect(notes).toContain('copy /b ${ISO_ASSET}.part0+${ISO_ASSET}.part1+${ISO_ASSET}.part2 $ISO_ASSET')
+    expect(notes).toContain('cmd /c copy /b ${ISO_ASSET}.part0+${ISO_ASSET}.part1+${ISO_ASSET}.part2 $ISO_ASSET')
     expect(notes).toContain('certutil -hashfile $ISO_ASSET SHA256')
     expect(notes).toContain('cat ${ISO_ASSET}.part* > $ISO_ASSET')
     expect(notes).toContain('sha256sum -c')

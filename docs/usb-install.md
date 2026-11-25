@@ -20,9 +20,11 @@ Download the latest installer from the [releases page](https://github.com/MT25MB
 **On Windows**, open Command Prompt in that folder. Put the part names from the release page into this command, in order:
 
 ```bat
-copy /b SimpleOS-vX.Y.Z.iso.part0+SimpleOS-vX.Y.Z.iso.part1+SimpleOS-vX.Y.Z.iso.part2 SimpleOS-vX.Y.Z.iso
+cmd /c copy /b SimpleOS-vX.Y.Z.iso.part0+SimpleOS-vX.Y.Z.iso.part1+SimpleOS-vX.Y.Z.iso.part2 SimpleOS-vX.Y.Z.iso
 certutil -hashfile SimpleOS-vX.Y.Z.iso SHA256
 ```
+
+The `cmd /c` prefix makes this work in PowerShell too, where `copy` means Copy-Item and cannot join files. Or just run `combine-iso-parts.bat`.
 
 The hash must match the value in the `.sha256` file you downloaded. If there are more parts, add them to the `copy` command in order.
 

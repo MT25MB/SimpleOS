@@ -59,9 +59,12 @@ if [[ -n "$ISO_ASSET" ]]; then
   echo "**Windows:** open Command Prompt in that folder and run:"
   echo
   echo '```bat'
-  echo "copy /b ${ISO_ASSET}.part0+${ISO_ASSET}.part1+${ISO_ASSET}.part2 $ISO_ASSET"
+  echo "cmd /c copy /b ${ISO_ASSET}.part0+${ISO_ASSET}.part1+${ISO_ASSET}.part2 $ISO_ASSET"
   echo "certutil -hashfile $ISO_ASSET SHA256"
   echo '```'
+  echo
+  echo "The \`cmd /c\` prefix also makes this work in PowerShell, where \`copy\`"
+  echo "means Copy-Item and cannot join files. Or just run \`combine-iso-parts.bat\`."
   echo
   echo "The hash printed by certutil must match the value inside the \`.sha256\`"
   echo "file. If you downloaded more than three parts, add them to the copy"
