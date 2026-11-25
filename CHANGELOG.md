@@ -6,6 +6,12 @@ All notable changes to SimpleOS are recorded here. The format follows
 
 ## [Unreleased]
 
+Nothing yet.
+
+## [v1.2.4]
+
+A safety and usability release: visible cursor, an escape from settings, and stronger browser protections.
+
 ### Fixed
 
 - Wi-Fi and printer settings now show an always-on-top **Back to SimpleOS** button, so a caregiver can always leave those windows even though the kiosk disables the usual close shortcuts.
@@ -282,7 +288,8 @@ contribute to, and a full automated quality gate.
 - First prototype: initial image definition, system configs, Electron launcher,
   build script and documentation.
 
-[Unreleased]: https://github.com/MT25MB/SimpleOS/compare/v1.2.3...HEAD
+[Unreleased]: https://github.com/MT25MB/SimpleOS/compare/v1.2.4...HEAD
+[v1.2.4]: https://github.com/MT25MB/SimpleOS/compare/v1.2.3...v1.2.4
 [v1.2.3]: https://github.com/MT25MB/SimpleOS/compare/v1.2.2...v1.2.3
 [v1.2.2]: https://github.com/MT25MB/SimpleOS/compare/v1.2.1...v1.2.2
 [v1.2.1]: https://github.com/MT25MB/SimpleOS/compare/v1.2.0...v1.2.1
