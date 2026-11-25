@@ -64,6 +64,7 @@ describe('compositor and session resilience', () => {
   it('keeps a large cursor, maximized windows and no desktop click menus', () => {
     expect(environment).toContain('XCURSOR_SIZE=48')
     expect(environment).toContain('XCURSOR_THEME=Adwaita')
+    expect(environment).toContain('LIBGL_ALWAYS_SOFTWARE=1')
     expect(rc).toContain('<action name="Maximize"/>')
     expect(rc).toContain('<context name="Desktop">')
     expect(rc).toContain('<context name="Root">')

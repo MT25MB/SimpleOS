@@ -10,8 +10,10 @@
 
 [Unit]
 Description=SimpleOS First Boot Setup
-After=local-fs.target network-online.target
-Wants=network-online.target
+# App installation is optional and retries with bounded timeouts, so do not let
+# a missing network connection delay the desktop from starting.
+After=local-fs.target network.target
+Wants=network.target
 Before=greetd.service
 ConditionPathExists=!/var/lib/simpleos/firstboot-complete
 

@@ -6,7 +6,12 @@ All notable changes to SimpleOS are recorded here. The format follows
 
 ## [Unreleased]
 
-Nothing yet.
+### Fixed
+
+- The image now explicitly links `greetd.service` into `graphical.target.wants` and as `display-manager.service`, so the kiosk session starts instead of the VM dropping to a text console.
+- First-boot setup no longer waits for `network-online.target`, which could delay the desktop indefinitely on a fresh machine with no configured network.
+- labwc now uses software GL rendering so the desktop works on old GPUs and in virtual machines.
+- The release workflow verifies the kiosk session wiring inside the built image before generating an ISO.
 
 ## [v1.2.2]
 

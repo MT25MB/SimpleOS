@@ -57,6 +57,9 @@ ENV TZ=UTC
 # application menus further down this file.
 # BuildKit cache mounts keep repeated local builds fast (pattern from uBlue's
 # Containerfile). /tmp is a tmpfs so no package scratch files enter the image.
+# The explicit greetd links below matter: graphical.target pulls
+# display-manager.service, and without these links the image boots to a text
+# console instead of the kiosk session.
 RUN --mount=type=cache,target=/var/cache \
     --mount=type=cache,target=/var/log \
     --mount=type=tmpfs,target=/tmp \
@@ -183,6 +186,11 @@ RUN mkdir -p /usr/libexec/simpleos \
         upower.service \
         rpm-ostreed-automatic.timer \
         simpleos-firstboot.service \
+    && mkdir -p /etc/systemd/system/graphical.target.wants \
+    && ln -sf /usr/lib/systemd/system/greetd.service \
+        /etc/systemd/system/graphical.target.wants/greetd.service \
+    && ln -sf /usr/lib/systemd/system/greetd.service \
+        /etc/systemd/system/display-manager.service \
     && ostree container commit
 
 # Fail the build if the image is not a clean, bootable container (uBlue pattern).

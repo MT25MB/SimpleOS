@@ -130,6 +130,19 @@ jobs:
           fi
           podman --version
 
+      - name: Verify the kiosk session is enabled
+        env:
+          IMAGE_REF: ${{ env.REGISTRY }}/${{ steps.image.outputs.name }}:${{ steps.version.outputs.value }}
+        run: |
+          set -euo pipefail
+          REF="$(printf '%s' "$IMAGE_REF" | tr '[:upper:]' '[:lower:]')"
+          sudo podman pull "$REF"
+          sudo podman run --rm --entrypoint /bin/sh "$REF" -c \
+            'test -L /etc/systemd/system/graphical.target.wants/greetd.service \
+              && test -L /etc/systemd/system/display-manager.service \
+              && test -x /usr/libexec/simpleos/simpleos-shell'
+          echo "greetd is wired into graphical.target and the launcher is present."
+
       - name: Build the release ISO
         id: iso
         env:

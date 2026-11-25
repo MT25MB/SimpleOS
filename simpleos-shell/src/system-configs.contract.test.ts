@@ -42,10 +42,18 @@ describe('system guardrails contract', () => {
     expect(firstboot).toContain('useradd --create-home --user-group')
   })
 
-  it('runs first boot once, after the network is ready, before greetd', () => {
+  it('wires greetd into the graphical boot target', () => {
+    expect(containerfile).toContain('systemctl enable')
+    expect(containerfile).toContain('greetd.service')
+    expect(containerfile).toContain('/etc/systemd/system/graphical.target.wants/greetd.service')
+    expect(containerfile).toContain('/etc/systemd/system/display-manager.service')
+  })
+
+  it('runs first boot once, without waiting for full connectivity, before greetd', () => {
     expect(firstbootService).toContain('ConditionPathExists=!/var/lib/simpleos/firstboot-complete')
-    expect(firstbootService).toContain('After=local-fs.target network-online.target')
-    expect(firstbootService).toContain('Wants=network-online.target')
+    expect(firstbootService).toContain('After=local-fs.target network.target')
+    expect(firstbootService).toContain('Wants=network.target')
+    expect(firstbootService).not.toContain('network-online.target')
     expect(firstbootService).toContain('Before=greetd.service')
     expect(firstbootService).toContain('Type=oneshot')
     expect(firstbootService).toContain('ExecStartPost=/usr/bin/touch /var/lib/simpleos/firstboot-complete')
