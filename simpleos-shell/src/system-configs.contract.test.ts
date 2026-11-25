@@ -67,6 +67,8 @@ describe('system guardrails contract', () => {
     expect(containerfile).toContain('useradd --create-home --user-group --shell /bin/bash senior')
     expect(containerfile).toContain('useradd --no-create-home greeter')
     expect(containerfile).toContain('--no-sandbox')
+    expect(containerfile).toContain('--disable-gpu')
+    expect(containerfile).toContain('--disable-dev-shm-usage')
   })
 
   it('runs first boot once, without waiting for full connectivity, before greetd', () => {

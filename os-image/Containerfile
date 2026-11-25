@@ -164,6 +164,8 @@ RUN (id -u senior >/dev/null 2>&1 || useradd --create-home --user-group --shell 
       '# Kiosk launcher supervised by labwc/autostart.' \
       'exec /usr/lib/simpleos/app/node_modules/electron/dist/electron \' \
       '  --no-sandbox \' \
+      '  --disable-gpu \' \
+      '  --disable-dev-shm-usage \' \
       '  /usr/lib/simpleos/app/dist-electron/main.js' \
       > /usr/libexec/simpleos/simpleos-shell \
     && chmod 0755 /etc/simpleos/firstboot.sh /etc/xdg/labwc/autostart /usr/libexec/simpleos/simpleos-shell /usr/libexec/simpleos/transcribe.py /usr/libexec/simpleos/rollback.sh /usr/libexec/simpleos/boot-marker.sh \

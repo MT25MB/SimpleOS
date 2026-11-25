@@ -22,6 +22,7 @@ All notable changes to SimpleOS are recorded here. The format follows
 - A headless boot harness (`scripts/test-boot.sh`, `.github/workflows/boot-test.yml`) that builds the image from source, boots a qcow2 in QEMU with a hard timeout, captures serial and CPU-reset logs, and asserts that greetd, labwc and the launcher all started.
 - The image now explicitly sets `graphical.target` as its default target, so non-ISO installs boot into the kiosk without relying on a kernel argument.
 - Both greetd session users (`senior` and the fallback `greeter`) are created in the image at build time. greetd validates them at startup, so creating them only in first boot made greetd exit immediately and hit `start-limit-hit`.
+- The launcher disables GPU and `/dev/shm` usage so Electron starts reliably in headless VMs and on old hardware.
 
 ## [v1.2.2]
 
