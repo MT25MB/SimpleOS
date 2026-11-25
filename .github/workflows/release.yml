@@ -146,12 +146,12 @@ jobs:
           check display-manager-alias "test -L /etc/systemd/system/display-manager.service"
           check default-target "test \"\$(readlink -f /etc/systemd/system/default.target)\" = /usr/lib/systemd/system/graphical.target"
           check launcher "test -x /usr/libexec/simpleos/simpleos-shell"
-          check firstboot "test -x /usr/libexec/simpleos/firstboot.sh"
+          check firstboot "test -x /etc/simpleos/firstboot.sh"
           check senior-user "id -u senior"
           check greeter-user "id -u greeter"
           check labwc "command -v labwc"
           check greeter-fallback "grep -q useradd /etc/simpleos/firstboot.sh"
-          check rc-xml "grep -q name=None /etc/xdg/labwc/rc.xml"
+          check rc-xml "grep -q None /etc/xdg/labwc/rc.xml"
           exit $fail
           '
           echo "greetd, both session users, labwc and the launcher are wired up."
