@@ -6,6 +6,12 @@ All notable changes to SimpleOS are recorded here. The format follows
 
 ## [Unreleased]
 
+Nothing yet.
+
+## [v1.2.3]
+
+A reliability release that makes the kiosk session boot reliably on real hardware and in virtual machines.
+
 ### Fixed
 
 - The image now explicitly links `greetd.service` into `graphical.target.wants` and as `display-manager.service`, so the kiosk session starts instead of the VM dropping to a text console.
@@ -267,7 +273,8 @@ contribute to, and a full automated quality gate.
 - First prototype: initial image definition, system configs, Electron launcher,
   build script and documentation.
 
-[Unreleased]: https://github.com/MT25MB/SimpleOS/compare/v1.2.2...HEAD
+[Unreleased]: https://github.com/MT25MB/SimpleOS/compare/v1.2.3...HEAD
+[v1.2.3]: https://github.com/MT25MB/SimpleOS/compare/v1.2.2...v1.2.3
 [v1.2.2]: https://github.com/MT25MB/SimpleOS/compare/v1.2.1...v1.2.2
 [v1.2.1]: https://github.com/MT25MB/SimpleOS/compare/v1.2.0...v1.2.1
 [v1.2.0]: https://github.com/MT25MB/SimpleOS/compare/v1.1.0...v1.2.0
