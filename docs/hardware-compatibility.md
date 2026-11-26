@@ -106,11 +106,33 @@ Wi-Fi" message. If no networks appear at all:
 - if the card is unusual, a small USB Wi-Fi adapter with a common chipset is
   an easy fix.
 
+### 5. Using SimpleOS in VMware (or another virtual machine)
+
+SimpleOS fills the **guest display** — the screen area inside the virtual
+machine. It always keeps the correct aspect ratio. If the picture inside the
+VMware window looks stretched sideways, or has black bars around it, that is
+VMware scaling the guest display to fit the host window, not a problem with
+SimpleOS.
+
+In VMware Workstation, fix the display once:
+
+1. With the virtual machine running, open the **View** menu.
+2. Choose **Autofit**, then **Fit Guest Now**. This makes VMware keep the
+   guest's shape (aspect ratio) and add small black bars instead of stretching.
+   Do **not** choose **Stretch Guest**.
+3. If you want the guest display to change size whenever you resize the VMware
+   window, leave **Autofit Guest** switched on. Otherwise switch it off and use
+   **Fit Guest Now** after resizing.
+
+A 16:9 guest display (for example 1920 × 1080) is the best match for most
+monitors. SimpleOS needs no extra display driver in VMware.
+
 ## If something looks wrong
 
 | What you see | What to try |
 | --- | --- |
 | Black screen on first start | The machine needs UEFI. Check Secure Boot above. |
+| The picture is stretched sideways in VMware | VMware menu **View → Autofit → Fit Guest Now**; do not use **Stretch Guest**. |
 | No Wi-Fi networks at all | Check the Wi-Fi switch, then try a USB adapter. |
 | No sound in a call | Plug in USB speakers, or check the volume buttons in the header. |
 | Text is hard to read | Caregiver Settings, then Text size, then Large or Extra Large. |

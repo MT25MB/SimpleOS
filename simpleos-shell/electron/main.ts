@@ -15,7 +15,7 @@
  *
  * This file is compiled to dist-electron/main.js by `npm run compile:electron`.
  */
-import { app, BrowserWindow, ipcMain, nativeImage, type IpcMainInvokeEvent } from 'electron'
+import { app, BrowserWindow, Menu, ipcMain, nativeImage, type IpcMainInvokeEvent } from 'electron'
 import path from 'node:path'
 import os from 'node:os'
 import fs from 'node:fs'
@@ -1172,6 +1172,24 @@ function createWindow(): void {
     },
   })
   launcherWindow = window
+
+  // Electron's default Linux menu bar has no place in a kiosk. It also eats
+  // vertical space and makes the launcher look like a normal app window.
+  Menu.setApplicationMenu(null)
+
+  // kiosk/fullscreen in the constructor is a request, not a guarantee: on
+  // Wayland the output may not be ready yet, and labwc can leave the window at
+  // its default size. Re-assert once the page has loaded and again shortly
+  // after so the launcher always ends up filling the whole output.
+  const fillScreen = () => {
+    if (window.isDestroyed()) return
+    if (!window.isFullScreen()) window.setFullScreen(true)
+    window.setKiosk(true)
+    window.setResizable(false)
+    window.focus()
+  }
+  window.webContents.once('did-finish-load', () => fillScreen())
+  setTimeout(fillScreen, 1500).unref()
 
   // Nothing in the launcher ever needs to navigate away or open another
   // window. Deny both rather than trying to maintain an allowlist of URLs.

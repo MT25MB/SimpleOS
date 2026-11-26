@@ -17,7 +17,7 @@
 #   bash scripts/build-iso.sh                       # pull published image + ISO
 #   bash scripts/build-iso.sh --build               # build locally first + ISO
 #   REMOTE_IMAGE=ghcr.io/you/simpleos:latest bash scripts/build-iso.sh
-#   TARGET_IMAGE_REF=ghcr.io/you/simpleos:latest bash scripts/build-iso.sh --image ghcr.io/you/simpleos:v1.4.6
+#   TARGET_IMAGE_REF=ghcr.io/you/simpleos:latest bash scripts/build-iso.sh --image ghcr.io/you/simpleos:v1.4.7
 #   bash scripts/build-iso.sh --flash /dev/sdb      # flash after checks
 #
 # Set SIMPLEOS_ASSUME_YES=1 to skip the interactive acknowledgement when the

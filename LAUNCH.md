@@ -11,9 +11,9 @@ its own, and every draft includes both links.
 
 | Fact | Why it matters |
 | --- | --- |
-| Published releases: `v0.1.0`, `v0.2.0`, `v0.3.0`, `v1.0.0`, `v1.1.0`, `v1.2.0`, `v1.2.1`, `v1.2.2`, `v1.2.3`, `v1.2.4`, `v1.3.0`, `v1.4.0`, `v1.4.1`, `v1.4.2`, `v1.4.3`, `v1.4.4`, `v1.4.5` and `v1.4.6` | Do not call `v0.1.0` the current release. |
-| `v1.4.6` is the current release; it ships a downloadable ISO | Say "latest release is v1.4.6". |
-| 286 unit tests and 28 browser tests pass on `main` | Real, verifiable numbers — safe to state with the date. |
+| Published releases: `v0.1.0`, `v0.2.0`, `v0.3.0`, `v1.0.0`, `v1.1.0`, `v1.2.0`, `v1.2.1`, `v1.2.2`, `v1.2.3`, `v1.2.4`, `v1.3.0`, `v1.4.0`, `v1.4.1`, `v1.4.2`, `v1.4.3`, `v1.4.4`, `v1.4.5`, `v1.4.6` and `v1.4.7` | Do not call `v0.1.0` the current release. |
+| `v1.4.7` is the current release; it ships a downloadable ISO | Say "latest release is v1.4.7". |
+| 289 unit tests and 28 browser tests pass on `main` | Real, verifiable numbers — safe to state with the date. |
 | Free, MIT licensed, no account or tracking | True for the whole project. |
 | Caregiver PIN has no recovery path yet | A real limitation. State it rather than hiding it. |
 | Remote help uses RustDesk and needs setup | Never imply anyone can connect without the person's knowledge. |
@@ -50,7 +50,7 @@ for my person, and can I still help when I am not there?*
 > I can connect with RustDesk when someone asks for help, and there is a PIN on
 > the settings so the everyday account cannot wander into them.
 >
-> It is early — the latest published release is v1.4.6, and it is still being
+> It is early — the latest published release is v1.4.7, and it is still being
 > tested and improved. Two honest caveats: the caregiver PIN cannot be reset if
 > forgotten, and remote help needs a one-time setup. I would rather say that up
 > front.
@@ -100,7 +100,7 @@ for my person, and can I still help when I am not there?*
 >
 > **Where it stands honestly**
 >
-> This is an early project. The latest published release is v1.4.6. Two things
+> This is an early project. The latest published release is v1.4.7. Two things
 > are not done yet: a forgotten caregiver PIN
 > cannot be recovered, and remote help needs a one-time setup by you. If either
 > of those is a dealbreaker, wait a little.
@@ -180,7 +180,7 @@ made of, and is it real?* Answer that in the first paragraph.
 > - **State:** reminders and a salted scrypt PIN hash are written atomically with
 >   `0600` permissions. The PIN has a five-attempt, 30-second cooldown enforced
 >   in the main process.
-> - **Verification:** one `bash scripts/test-all.sh` runs 286 unit tests and 28 browser tests, type-check,
+> - **Verification:** one `bash scripts/test-all.sh` runs 289 unit tests and 28 browser tests, type-check,
 >   production build, shell syntax checks and a staged-artifact gate. The same
 >   job gates image builds, Pages deploys and releases in CI. `scripts/test-vm.sh`
 >   boots the image in QEMU/KVM with qcow2, ISO and reset modes; `scripts/build-iso.sh`
@@ -190,7 +190,7 @@ made of, and is it real?* Answer that in the first paragraph.
 > contrast tokens, 48px+ tap targets, visible focus rings, no zoom blocking, and
 > tests that reject technical jargon in senior-facing components.
 >
-> Where it stands: the latest published release is v1.4.6. It is early and I
+> Where it stands: the latest published release is v1.4.7. It is early and I
 > would call it early-adopter ready, not production-hardened for everyone. Known gaps: no PIN recovery, and
 > remote help via RustDesk needs a one-time setup. There is also one open
 > moderate transitive dependency advisory in the repo that I am tracking.
@@ -235,7 +235,7 @@ made of, and is it real?* Answer that in the first paragraph.
 > - Does the IPC sender check plus allowlists cover the realistic escape paths,
 >   or am I missing one?
 >
-> Status: early. Latest release is v1.4.6. 286 unit tests and 28 browser tests pass locally and in CI.
+> Status: early. Latest release is v1.4.7. 289 unit tests and 28 browser tests pass locally and in CI.
 > No PIN recovery yet.
 >
 > <https://github.com/MT25MB/SimpleOS> · <https://mt25mb.github.io/SimpleOS/>

@@ -59,9 +59,9 @@ input {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  /* Fill the whole kiosk output; a centred width cap leaves unused margins on
+     large monitors and in virtual machines. */
   padding: 2rem clamp(1rem, 4vw, 4rem) 1.25rem;
-  max-width: 90rem;
-  margin: 0 auto;
 }
 
 /* Off-screen until focused, then the first stop in the tab order. */

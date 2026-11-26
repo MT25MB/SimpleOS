@@ -22,6 +22,14 @@ describe('electron main security contract', () => {
     expect(electronMain).toContain("'dist', 'index.html'")
   })
 
+  it('removes the menu bar and re-asserts fullscreen so the kiosk fills the output', () => {
+    expect(electronMain).toContain('Menu.setApplicationMenu(null)')
+    expect(electronMain).toContain('window.webContents.once(\'did-finish-load\', () => fillScreen())')
+    expect(electronMain).toContain('setTimeout(fillScreen, 1500).unref()')
+    expect(electronMain).toContain('window.setKiosk(true)')
+    expect(electronMain).toContain('if (!window.isFullScreen()) window.setFullScreen(true)')
+  })
+
   it('hashes the PIN with scryptSync and verifies with timingSafeEqual', () => {
     expect(pinCrypto).toContain('crypto.scryptSync')
     expect(pinCrypto).toContain('crypto.timingSafeEqual')

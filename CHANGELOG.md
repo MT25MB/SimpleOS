@@ -8,6 +8,14 @@ All notable changes to SimpleOS are recorded here. The format follows
 
 Nothing yet.
 
+## [v1.4.7]
+
+### Fixed
+
+- The launcher now reliably fills the whole display: the Electron menu bar is removed and fullscreen/kiosk is re-asserted after the page loads, so the setup and home screens are no longer stuck in a small centred window.
+- The `.app` shell no longer has a centred maximum width, so the interface uses the full width of the kiosk output.
+- Added VMware display guidance: use **View → Autofit → Fit Guest Now** (not **Stretch Guest**) so the guest keeps its aspect ratio.
+
 ## [v1.4.6]
 
 ### Added
@@ -361,7 +369,8 @@ contribute to, and a full automated quality gate.
 - First prototype: initial image definition, system configs, Electron launcher,
   build script and documentation.
 
-[Unreleased]: https://github.com/MT25MB/SimpleOS/compare/v1.4.6...HEAD
+[Unreleased]: https://github.com/MT25MB/SimpleOS/compare/v1.4.7...HEAD
+[v1.4.7]: https://github.com/MT25MB/SimpleOS/compare/v1.4.6...v1.4.7
 [v1.4.6]: https://github.com/MT25MB/SimpleOS/compare/v1.4.5...v1.4.6
 [v1.4.5]: https://github.com/MT25MB/SimpleOS/compare/v1.4.4...v1.4.5
 [v1.4.4]: https://github.com/MT25MB/SimpleOS/compare/v1.4.3...v1.4.4
