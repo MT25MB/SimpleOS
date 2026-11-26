@@ -144,6 +144,8 @@ log "Verifying kiosk session wiring in the built image"
     && test -d /home/greeter \
     && command -v labwc \
     && test -d /usr/share/icons/Adwaita/cursors \
+    && test -f /usr/share/icons/default/index.theme \
+    && grep -q 'Inherits=Adwaita' /usr/share/icons/default/index.theme \
     && grep -q 'WLR_NO_HARDWARE_CURSORS=1' /etc/xdg/labwc/environment \
     && test -f /etc/polkit-1/rules.d/50-simpleos-power.rules \
     && grep -q 'org.freedesktop.login1.reboot' /etc/polkit-1/rules.d/50-simpleos-power.rules \

@@ -54,6 +54,28 @@ input {
   outline-offset: 3px;
 }
 
+/* ------------------------------------------------------- visible pointer */
+/* The compositor pointer can disappear on virtual GPUs. SimpleOS draws its
+   own high-contrast arrow instead, so hide the native one inside the kiosk. */
+html,
+body,
+.app,
+.app * {
+  cursor: none !important;
+}
+
+.kiosk-pointer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 36px;
+  height: 36px;
+  margin: -2px 0 0 -2px;
+  pointer-events: none;
+  z-index: 10000;
+  filter: drop-shadow(0 1px 2px rgb(0 0 0 / 0.8));
+}
+
 .app {
   min-height: 100vh;
   display: flex;

@@ -48,6 +48,14 @@ describe('system guardrails contract', () => {
     expect(environment).toContain('WLR_NO_HARDWARE_CURSORS=1')
   })
 
+  it('adds a system XCursor fallback and exports cursor settings to the shell', () => {
+    expect(containerfile).toContain('/usr/share/icons/default/index.theme')
+    expect(containerfile).toContain('Inherits=Adwaita')
+    expect(containerfile).toContain('export XCURSOR_THEME="${XCURSOR_THEME:-Adwaita}"')
+    expect(containerfile).toContain('export XCURSOR_SIZE="${XCURSOR_SIZE:-48}"')
+    expect(containerfile).toContain('export WLR_NO_HARDWARE_CURSORS="${WLR_NO_HARDWARE_CURSORS:-1}"')
+  })
+
   it('defaults to UTC and hides foot from menus', () => {
     expect(containerfile).toContain('TZ=UTC')
     expect(containerfile).toContain('zoneinfo/UTC')

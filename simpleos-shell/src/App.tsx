@@ -8,6 +8,7 @@ import { NoticeBanner } from './components/NoticeBanner'
 import { PhotoAlbum } from './components/PhotoAlbum'
 import { PhotoFrame } from './components/PhotoFrame'
 import { PinScreen } from './components/PinScreen'
+import { KioskPointer } from './components/KioskPointer'
 import { PowerControls } from './components/PowerControls'
 import { RemindersPanel } from './components/RemindersPanel'
 import { SetupWizard, type SetupWizardResult } from './components/SetupWizard'
@@ -677,6 +678,8 @@ export default function App() {
       )}
 
       {frame.active && <PhotoFrame photos={framePhotos} onDismiss={frame.dismiss} />}
+
+      <KioskPointer />
 
       {pendingPower && (
         <dialog className="recovery__dialog" open aria-labelledby="power-confirm-title">

@@ -8,6 +8,13 @@ All notable changes to SimpleOS are recorded here. The format follows
 
 Nothing yet.
 
+## [v1.4.8]
+
+### Fixed
+
+- The pointer is now guaranteed to be visible: SimpleOS draws its own large, high-contrast arrow inside the kiosk, so the cursor can no longer disappear on virtual GPUs.
+- Added a system-wide XCursor fallback (`/usr/share/icons/default` inheriting Adwaita) and exported the cursor settings to the Electron launcher, so wlroots and Chromium can resolve a pointer theme in VMware.
+
 ## [v1.4.7]
 
 ### Fixed
@@ -369,7 +376,8 @@ contribute to, and a full automated quality gate.
 - First prototype: initial image definition, system configs, Electron launcher,
   build script and documentation.
 
-[Unreleased]: https://github.com/MT25MB/SimpleOS/compare/v1.4.7...HEAD
+[Unreleased]: https://github.com/MT25MB/SimpleOS/compare/v1.4.8...HEAD
+[v1.4.8]: https://github.com/MT25MB/SimpleOS/compare/v1.4.7...v1.4.8
 [v1.4.7]: https://github.com/MT25MB/SimpleOS/compare/v1.4.6...v1.4.7
 [v1.4.6]: https://github.com/MT25MB/SimpleOS/compare/v1.4.5...v1.4.6
 [v1.4.5]: https://github.com/MT25MB/SimpleOS/compare/v1.4.4...v1.4.5
