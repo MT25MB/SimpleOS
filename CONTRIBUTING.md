@@ -115,7 +115,10 @@ We review kindly and assume good intent. If we ask for changes, it is about the 
 | `simpleos-shell/src/` | React renderer, hooks, styles and tests |
 | `scripts/` | ISO, VM, flash, release-notes and test scripts |
 | `docs/` | Website, caregiver guide and brand assets |
+| `scripts/render-guides.mjs` | Generates the styled guide pages from `docs/*.md` |
 | `.github/workflows/` | Test gate, image, Pages and release automation |
+
+After editing a Markdown guide, run `node scripts/render-guides.mjs` so its HTML page picks up the change. The generator copies the site's real header and footer, so both stay in sync.
 
 ## License
 

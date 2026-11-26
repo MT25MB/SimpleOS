@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="description" content="USB Install Walkthrough — plain-English guidance from the SimpleOS project." />
+    <title>USB Install Walkthrough — SimpleOS</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="script.js" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to main content</a>
+    <header class="site-header">
+      <div class="wrap header-inner">
+        <a class="brand" href="index.html#top" aria-label="SimpleOS, back to top">
+          <img
+            class="brand__mark"
+            src="assets/simpleos-logo.png"
+            alt=""
+            width="512"
+            height="512"
+          />
+          <span class="brand__word">SimpleOS</span>
+        </a>
+
+        <nav class="site-nav" aria-label="Main navigation">
+          <a href="index.html#why">Why it exists</a>
+          <a href="index.html#new">What's new</a>
+          <a href="index.html#architecture">How it's built</a>
+          <a href="index.html#start">Get started</a>
+          <a href="index.html#faq">Questions</a>
+          <a href="https://github.com/MT25MB/SimpleOS">GitHub</a>
+        </nav>
+
+        <div class="header-tools">
+          <div class="text-size" role="group" aria-label="Text size">
+            <span class="text-size__label">Text size</span>
+            <div class="text-size__options">
+              <label>
+                <input type="radio" name="text-size" value="1" checked />
+                <span>Normal</span>
+              </label>
+              <label>
+                <input type="radio" name="text-size" value="1.15" />
+                <span>Large</span>
+              </label>
+              <label>
+                <input type="radio" name="text-size" value="1.35" />
+                <span>Extra Large</span>
+              </label>
+            </div>
+          </div>
+          <button
+            type="button"
+            class="theme-toggle"
+            id="theme-toggle"
+            aria-pressed="false"
+            aria-label="Switch to dark mode"
+          >
+            <svg class="theme-toggle__sun" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <circle cx="12" cy="12" r="4" />
+              <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" />
+            </svg>
+            <svg class="theme-toggle__moon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z" />
+            </svg>
+            <span class="theme-toggle__label">Dark</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main id="main" class="guide-main">
+      <div class="wrap">
+        <nav class="guide-crumbs" aria-label="Breadcrumb">
+          <a href="index.html">Overview</a>
+          <span aria-hidden="true">/</span>
+          <span aria-current="page">USB Install Walkthrough</span>
+        </nav>
+        <article class="guide">
+          <h1>Installing SimpleOS from a USB stick</h1>
+<p>This guide is for a caregiver. It takes about 15 minutes once you have the installer file. Read it before you start, because one step erases a USB stick.</p>
+<h2>What you need</h2>
+<ul>
+<li>A USB stick of at least 8 GB. <strong>Everything on it will be erased.</strong></li>
+<li>The SimpleOS installer file (an <code>.iso</code>), or a Linux computer to build one.</li>
+<li>About 15 minutes, plus a few minutes for the first start to finish setup.</li>
+</ul>
+<h2>1. Get the installer</h2>
+<h3>The easy way</h3>
+<p>Download the latest installer from the <a href="https://github.com/MT25MB/SimpleOS/releases">releases page</a>. The ISO is larger than GitHub's limit for a single download, so it is attached as numbered parts plus a checksum.</p>
+<p><strong>Easiest:</strong> download <code>combine-iso-parts.bat</code> (Windows) or <code>combine-iso-parts.sh</code> (Linux/macOS) along with all the parts and the <code>.sha256</code> file. Put them in one folder and run the script. It joins the parts, checks the hash, and tells you when the ISO is ready. The manual steps below do the same thing without a script.</p>
+<p><strong>On Windows</strong>, open Command Prompt in that folder. Put the part names from the release page into this command, in order:</p>
+<div class="codeblock">
+<div class="codeblock__head"><span class="codeblock__lang">bat</span><button type="button" data-copy>Copy</button></div>
+<pre><code>cmd /c copy /b SimpleOS-vX.Y.Z.iso.part0+SimpleOS-vX.Y.Z.iso.part1+SimpleOS-vX.Y.Z.iso.part2 SimpleOS-vX.Y.Z.iso
+certutil -hashfile SimpleOS-vX.Y.Z.iso SHA256</code></pre>
+</div>
+<p>The <code>cmd /c</code> prefix makes this work in PowerShell too, where <code>copy</code> means Copy-Item and cannot join files. Or just run <code>combine-iso-parts.bat</code>.</p>
+<p>The hash must match the value in the <code>.sha256</code> file you downloaded. If there are more parts, add them to the <code>copy</code> command in order.</p>
+<p><strong>On Linux or macOS</strong>, open Terminal in that folder:</p>
+<div class="codeblock">
+<div class="codeblock__head"><span class="codeblock__lang">sh</span><button type="button" data-copy>Copy</button></div>
+<pre><code>cat SimpleOS-*.iso.part* &gt; SimpleOS.iso
+sha256sum -c SimpleOS-*.iso.sha256</code></pre>
+</div>
+<p>On macOS use <code>shasum -a 256 -c SimpleOS-*.iso.sha256</code>. If the check passes, continue below with the joined <code>.iso</code>.</p>
+<h3>Build it yourself (Linux)</h3>
+<p>On a Linux computer with Podman and sudo:</p>
+<div class="codeblock">
+<div class="codeblock__head"><span class="codeblock__lang">sh</span><button type="button" data-copy>Copy</button></div>
+<pre><code>git clone https://github.com/MT25MB/SimpleOS.git
+cd SimpleOS
+bash scripts/build-iso.sh</code></pre>
+</div>
+<p>The ISO appears in <code>output/</code>. Add <code>--build</code> if you also want to build the system image locally first.</p>
+<h2>2. Put the installer on a USB stick</h2>
+<p>Pick <strong>one</strong> method.</p>
+<h3>Linux — the SimpleOS script (recommended on Linux)</h3>
+<p>Plug in the USB stick, find its device name with <code>lsblk</code>, then run:</p>
+<div class="codeblock">
+<div class="codeblock__head"><span class="codeblock__lang">sh</span><button type="button" data-copy>Copy</button></div>
+<pre><code>bash scripts/flash-usb.sh output/simpleos.iso /dev/sdX</code></pre>
+</div>
+<p>Replace <code>/dev/sdX</code> with the real name of your USB stick. The script prints the model and size first. It refuses the computer's own system disk and any mounted drive. Type <code>FLASH</code> only when you are sure. Add <code>--dry-run</code> to look first.</p>
+<h3>Windows or macOS — a graphical tool</h3>
+<ul>
+<li><strong>Fedora Media Writer</strong> (&lt;https://getfedora.org/workstation/download&gt;) is simple and free.</li>
+<li><strong>Balena Etcher</strong> (&lt;https://www.balena.io/etcher/&gt;) also works.</li>
+</ul>
+<p>Choose the downloaded <code>.iso</code>, choose the USB stick, and start. Both tools ask you to confirm because the stick will be erased.</p>
+<p><strong>Stop now if you are unsure which drive is the USB stick.</strong> Choosing the wrong one can erase the computer you are using.</p>
+<h2>3. Boot from the USB stick</h2>
+<ol>
+<li>Plug the stick into the computer that will run SimpleOS.</li>
+<li>Start the computer and press the boot-menu key. It is usually <strong>F12</strong>, <strong>Esc</strong> or <strong>F8</strong>, depending on the computer. Choose the USB device. Pick the UEFI option if you see one.</li>
+<li>The installer starts. It uses the whole disk and creates the partitions automatically. There is no root password and no user-creation question: SimpleOS sets up the <code>senior</code> account on first boot.</li>
+<li>Wait for the installation to finish. The computer restarts.</li>
+<li>Remove the USB stick when asked, or once the restart begins.</li>
+</ol>
+<h2>4. Finish the caregiver setup</h2>
+<p>On the first start, the computer signs in by itself as <code>senior</code>. Give it a few minutes while it creates the account, adds the app store and installs Firefox, the photo viewer and RustDesk.</p>
+<p>Then open <strong>Caregiver Settings</strong> and:</p>
+<ol>
+<li>Set a caregiver PIN of at least four numbers. Write it down — it cannot be recovered if forgotten.</li>
+<li>Connect Wi-Fi and add a printer if you need one.</li>
+<li>Add up to four family contact cards, each with a video room link.</li>
+<li>Choose a text size, and decide whether to turn on Read Aloud, Hold to Speak, the photo frame and the health checks.</li>
+<li>Show the person the six big buttons and let them try while you are still there.</li>
+</ol>
+<p>The full walkthrough is in the <a href="caregiver-guide.html">caregiver guide</a>. If an update ever causes trouble, <a href="updates-and-recovery.html">Updates and recovery</a> explains how to go back to the previous version.</p>
+<p>For security problems, report privately through <a href="https://github.com/MT25MB/SimpleOS/blob/main/SECURITY.html">SECURITY.md</a>, not in a public issue.</p>
+        </article>
+        <nav class="guide-links" aria-label="Other guides">
+          <h2>More guides</h2>
+          <div class="guide-links__grid"><a href="caregiver-guide.html">Caregiver Guide</a>
+<a href="usb-install.html">USB Install Walkthrough</a>
+<a href="hardware-compatibility.html">Hardware Compatibility</a>
+<a href="hardware-support.html">Hardware Support and Power Behaviour</a>
+<a href="updates-and-recovery.html">Updates and Recovery</a></div>
+        </nav>
+        <p class="sr-only" id="copy-status" role="status" aria-live="polite"></p>
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <div class="wrap footer-inner">
+        <div class="footer__brand">
+          <span class="footer__word">SimpleOS</span>
+          <p>Free software under the MIT License. Made for people, not metrics.</p>
+        </div>
+        <nav aria-label="Footer links">
+          <a href="caregiver-guide.html">Caregiver guide</a>
+          <a href="usb-install.html">USB install walkthrough</a>
+          <a href="hardware-compatibility.html">Hardware compatibility</a>
+          <a href="updates-and-recovery.html">Updates and recovery</a>
+          <a href="https://github.com/MT25MB/SimpleOS/blob/main/LICENSE">Read the license</a>
+          <a href="https://github.com/MT25MB/SimpleOS">Source on GitHub</a>
+          <a href="https://github.com/MT25MB/SimpleOS/issues">Report a problem</a>
+        </nav>
+        <p class="footer__sources">
+          Plain-text sources:
+          <a href="caregiver-guide.md">Caregiver guide</a>
+          <a href="usb-install.md">USB install</a>
+          <a href="hardware-compatibility.md">Hardware compatibility</a>
+          <a href="hardware-support.md">Hardware support</a>
+          <a href="updates-and-recovery.md">Updates and recovery</a>
+        </p>
+      </div>
+    </footer>
+  </body>
+</html>

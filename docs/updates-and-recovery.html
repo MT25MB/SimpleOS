@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="description" content="Updates and Recovery — plain-English guidance from the SimpleOS project." />
+    <title>Updates and Recovery — SimpleOS</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="script.js" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to main content</a>
+    <header class="site-header">
+      <div class="wrap header-inner">
+        <a class="brand" href="index.html#top" aria-label="SimpleOS, back to top">
+          <img
+            class="brand__mark"
+            src="assets/simpleos-logo.png"
+            alt=""
+            width="512"
+            height="512"
+          />
+          <span class="brand__word">SimpleOS</span>
+        </a>
+
+        <nav class="site-nav" aria-label="Main navigation">
+          <a href="index.html#why">Why it exists</a>
+          <a href="index.html#new">What's new</a>
+          <a href="index.html#architecture">How it's built</a>
+          <a href="index.html#start">Get started</a>
+          <a href="index.html#faq">Questions</a>
+          <a href="https://github.com/MT25MB/SimpleOS">GitHub</a>
+        </nav>
+
+        <div class="header-tools">
+          <div class="text-size" role="group" aria-label="Text size">
+            <span class="text-size__label">Text size</span>
+            <div class="text-size__options">
+              <label>
+                <input type="radio" name="text-size" value="1" checked />
+                <span>Normal</span>
+              </label>
+              <label>
+                <input type="radio" name="text-size" value="1.15" />
+                <span>Large</span>
+              </label>
+              <label>
+                <input type="radio" name="text-size" value="1.35" />
+                <span>Extra Large</span>
+              </label>
+            </div>
+          </div>
+          <button
+            type="button"
+            class="theme-toggle"
+            id="theme-toggle"
+            aria-pressed="false"
+            aria-label="Switch to dark mode"
+          >
+            <svg class="theme-toggle__sun" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <circle cx="12" cy="12" r="4" />
+              <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" />
+            </svg>
+            <svg class="theme-toggle__moon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z" />
+            </svg>
+            <span class="theme-toggle__label">Dark</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main id="main" class="guide-main">
+      <div class="wrap">
+        <nav class="guide-crumbs" aria-label="Breadcrumb">
+          <a href="index.html">Overview</a>
+          <span aria-hidden="true">/</span>
+          <span aria-current="page">Updates and Recovery</span>
+        </nav>
+        <article class="guide">
+          <h1>Updates, rollback, and routine care</h1>
+<p>This page is for the person who looks after the computer. It explains what happens when SimpleOS updates itself, how to go back if an update causes trouble, and what a calm monthly check looks like.</p>
+<p>Nothing here needs a terminal. SimpleOS deliberately does not create an administrator account, so there is no secret password to remember and no way for the everyday user to change system files.</p>
+<h2>How updates work</h2>
+<p>The system part of SimpleOS is <strong>read-only</strong>. Think of the operating system as a sealed box that gets replaced as a whole, rather than a pile of files that get edited one at a time.</p>
+<ul>
+<li>New versions arrive as a complete, ready-to-use copy of the system.</li>
+<li>The copy is downloaded quietly in the background while the computer is in use.</li>
+<li>It only takes effect the next time the computer starts. Until then, the person keeps using the version they already know.</li>
+<li>The previous working copy is kept. If a new version misbehaves, you can start from that older copy instead.</li>
+<li>Your reminders and your caregiver PIN are stored in your home folder, outside the sealed system. They are kept across updates and restarts.</li>
+<li>Firefox, Loupe and RustDesk are apps installed on first boot. They update themselves in the usual way and are separate from the system copy.</li>
+</ul>
+<p>This is why a wrong click cannot damage the system files, and why an update that goes wrong does not have to mean reinstalling everything.</p>
+<h2>Checking for an update</h2>
+<ol>
+<li>Open <strong>Caregiver Settings</strong> and enter the PIN.</li>
+<li>Look at the <strong>Quick check</strong> section. The <strong>System</strong> line says whether the version has been checked and what it found.</li>
+<li>Press <strong>Check for updates</strong> if you want a fresh answer.</li>
+</ol>
+<p>You will see one of three messages:</p>
+<ul>
+<li><strong>&quot;Your system is up to date.&quot;</strong> Nothing to do.</li>
+<li><strong>&quot;An update is ready. Restart the computer to finish installing it.&quot;</strong> Choose a good moment and restart.</li>
+<li><strong>&quot;We couldn't check for updates just now.&quot;</strong> Usually a temporary network problem. Try again later; the computer keeps working as it is.</li>
+</ul>
+<h2>Before you restart into an update</h2>
+<ul>
+<li>Let the person finish what they are doing. The restart closes the launcher.</li>
+<li>Connect the charger on a laptop. Do not unplug the computer while it is restarting into a new version.</li>
+<li>Make sure you still know the caregiver PIN. There is no way to recover a forgotten one, and that stays true after an update.</li>
+<li>Reminders save themselves, so there is no separate save step.</li>
+</ul>
+<p>After the restart, give the computer a few minutes. The launcher comes back on its own. Then check that a reminder is still on the list, that Wi-Fi is connected, and that the PIN still opens Settings.</p>
+<h2>If something goes wrong after an update</h2>
+<p>Common signs are: the launcher does not appear, the computer keeps restarting, or an app that worked before no longer opens.</p>
+<h3>First, try a plain restart</h3>
+<p>Restart once and wait a few minutes. Some first starts after an update need time to finish setting things up.</p>
+<h3>Start from the previous working version</h3>
+<p>If the problem is still there, use the boot menu. This does not delete anything and does not need a password:</p>
+<ol>
+<li>Turn the computer off.</li>
+<li>Turn it on and, while it starts, hold <strong>Shift</strong> or tap <strong>Esc</strong> a few times. On some computers it is <strong>F12</strong> or <strong>F8</strong>. You should see a text menu.</li>
+<li>Choose the older option — it may be called <strong>previous deployment</strong>, <strong>Previous version</strong>, or show an earlier date.</li>
+<li>Let the computer start and check that the launcher is back.</li>
+</ol>
+<p>Your reminders, PIN and files are still there, because they were never part of the system copy that changed.</p>
+<p>A boot-menu choice can be just for that one start. If the computer keeps going back to the bad version, ask a technician to make the older version permanent. On a system where someone has set up administrator access, the command is <code>rpm-ostree rollback</code> followed by a restart. SimpleOS does not set up that access by default, so this is normally a job for whoever installed the machine.</p>
+<h3>If there is no older option in the menu</h3>
+<p>Boot from the USB installer you kept from setup and reinstall SimpleOS. Treat this as a last resort: a reinstall may not keep everything in the home folder, so ask for help before doing it if reminders matter.</p>
+<h2>A calm monthly check</h2>
+<p>About once a month, or after any big change, open <strong>Caregiver Settings</strong> and read the <strong>Quick check</strong> section:</p>
+<ul>
+<li><strong>Internet:</strong> connected to the expected network? If not, press **Open Wi-Fi Settings**.</li>
+<li><strong>Sound:</strong> ready? If not, press <strong>Check again</strong>. A temporary glitch often clears on its own.</li>
+<li><strong>Screen:</strong> on a desktop, &quot;no brightness control&quot; is normal, not a fault.</li>
+<li><strong>Remote help:</strong> is RustDesk installed and ready? If not, press <strong>Check again</strong>.</li>
+<li><strong>System:</strong> check for updates and restart when one is ready.</li>
+</ul>
+<p>Also worth doing:</p>
+<ul>
+<li>Confirm the printer still prints a test page.</li>
+<li>Confirm the person can open Video Call Family and Web &amp; Email.</li>
+<li>Confirm the caregiver PIN still opens Settings.</li>
+<li>Keep the USB installer in a labelled place. Note where it is in the caregiver guide or on a sticky note.</li>
+<li>Write the PIN down somewhere safe. It cannot be recovered.</li>
+</ul>
+<h2>What not to do</h2>
+<ul>
+<li>Do not open a terminal or try Linux commands. There is deliberately no terminal shortcut on the desktop.</li>
+<li>Do not install browser extensions. Firefox is locked to an approved setup so that scam and ad blocking cannot be turned off by a webpage.</li>
+<li>Do not share the caregiver PIN with the everyday user unless you want them to change settings themselves.</li>
+<li>Do not delete files in the home folder to &quot;clean up&quot; — reminders live there.</li>
+<li>Do not turn the computer off in the middle of a restart that is installing an update.</li>
+</ul>
+<h2>When to ask for help</h2>
+<p>Ask a technician or the project maintainers if:</p>
+<ul>
+<li>the computer will not start from either version;</li>
+<li>the same problem comes back after a rollback;</li>
+<li>the caregiver PIN is forgotten;</li>
+<li>a reminder or the PIN disappears after an update;</li>
+<li>you think a scam or malicious site may have been installed.</li>
+</ul>
+<p>For security problems or ways to escape the kiosk, report privately through <a href="https://github.com/MT25MB/SimpleOS/blob/main/SECURITY.html">SECURITY.md</a>, not in a public issue.</p>
+<h2>For maintainers: release checklist</h2>
+<p>This part is not for caregivers. It is the routine for keeping the repository ready for the next tag.</p>
+<ol>
+<li>Keep all finished work in <code>CHANGELOG.md</code> under <code>[Unreleased]</code>. Use the standard sections: Added, Changed, Fixed, Security.</li>
+<li>Decide the version by compatibility, not by commit count: a bug fix is a <strong>patch</strong> (<code>0.3.1</code>), a backward-compatible feature is a <strong>minor</strong> (<code>0.4.0</code>), and a breaking change is a <strong>major</strong> (<code>1.0.0</code>). Never move or retag a published version.</li>
+<li>Set the same version in <code>simpleos-shell/package.json</code>. It currently reads <code>1.4.8</code>, matching the latest release, <code>v1.4.8</code>.</li>
+<li>Turn <code>[Unreleased]</code> into <code>[vX.Y.Z]</code>, add the compare link, and add a fresh empty <code>[Unreleased]</code> section with a link from the new version to <code>HEAD</code>.</li>
+<li>Run <code>bash scripts/test-all.sh</code>. The same gate runs in CI and blocks the image, Pages and release jobs.</li>
+<li>Commit with a short conventional message, then push <code>main</code>.</li>
+<li>Tag and push the tag: <code>git tag -a vX.Y.Z -m &quot;SimpleOS vX.Y.Z&quot;</code> then <code>git push origin vX.Y.Z</code>. A tag matching <code>v<em>.</em>.*</code> triggers <code>.github/workflows/release.yml</code>, which re-runs the gate before publishing notes generated from the commit history.</li>
+<li>Confirm the GitHub Release, the attached <code>.iso</code> asset and the GHCR image were published, then update this page if the supported-version table changes.</li>
+<li>Keep the audited guardrails intact: the image must pass <code>bootc container lint</code>, first boot must keep its bounded retries and run-once marker, every Firefox policy key must match the official schema, and labwc must keep its <code>None</code> keybinds and <code>&lt;initial&gt;</code> workspace tag. The test suite checks each of these.</li>
+</ol>
+<p><code>README.md</code> intentionally does not hard-code a version, so it needs no edit for a routine patch or minor release.</p>
+<h2>Related pages</h2>
+<ul>
+<li><a href="caregiver-guide.html">Caregiver guide</a></li>
+<li><a href="hardware-support.html">Hardware support and power behaviour</a></li>
+<li><a href="https://github.com/MT25MB/SimpleOS#readme">README</a></li>
+<li><a href="https://mt25mb.github.io/SimpleOS/">Website</a></li>
+</ul>
+        </article>
+        <nav class="guide-links" aria-label="Other guides">
+          <h2>More guides</h2>
+          <div class="guide-links__grid"><a href="caregiver-guide.html">Caregiver Guide</a>
+<a href="usb-install.html">USB Install Walkthrough</a>
+<a href="hardware-compatibility.html">Hardware Compatibility</a>
+<a href="hardware-support.html">Hardware Support and Power Behaviour</a>
+<a href="updates-and-recovery.html">Updates and Recovery</a></div>
+        </nav>
+        <p class="sr-only" id="copy-status" role="status" aria-live="polite"></p>
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <div class="wrap footer-inner">
+        <div class="footer__brand">
+          <span class="footer__word">SimpleOS</span>
+          <p>Free software under the MIT License. Made for people, not metrics.</p>
+        </div>
+        <nav aria-label="Footer links">
+          <a href="caregiver-guide.html">Caregiver guide</a>
+          <a href="usb-install.html">USB install walkthrough</a>
+          <a href="hardware-compatibility.html">Hardware compatibility</a>
+          <a href="updates-and-recovery.html">Updates and recovery</a>
+          <a href="https://github.com/MT25MB/SimpleOS/blob/main/LICENSE">Read the license</a>
+          <a href="https://github.com/MT25MB/SimpleOS">Source on GitHub</a>
+          <a href="https://github.com/MT25MB/SimpleOS/issues">Report a problem</a>
+        </nav>
+        <p class="footer__sources">
+          Plain-text sources:
+          <a href="caregiver-guide.md">Caregiver guide</a>
+          <a href="usb-install.md">USB install</a>
+          <a href="hardware-compatibility.md">Hardware compatibility</a>
+          <a href="hardware-support.md">Hardware support</a>
+          <a href="updates-and-recovery.md">Updates and recovery</a>
+        </p>
+      </div>
+    </footer>
+  </body>
+</html>

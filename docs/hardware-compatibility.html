@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="description" content="Hardware Compatibility — plain-English guidance from the SimpleOS project." />
+    <title>Hardware Compatibility — SimpleOS</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="script.js" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to main content</a>
+    <header class="site-header">
+      <div class="wrap header-inner">
+        <a class="brand" href="index.html#top" aria-label="SimpleOS, back to top">
+          <img
+            class="brand__mark"
+            src="assets/simpleos-logo.png"
+            alt=""
+            width="512"
+            height="512"
+          />
+          <span class="brand__word">SimpleOS</span>
+        </a>
+
+        <nav class="site-nav" aria-label="Main navigation">
+          <a href="index.html#why">Why it exists</a>
+          <a href="index.html#new">What's new</a>
+          <a href="index.html#architecture">How it's built</a>
+          <a href="index.html#start">Get started</a>
+          <a href="index.html#faq">Questions</a>
+          <a href="https://github.com/MT25MB/SimpleOS">GitHub</a>
+        </nav>
+
+        <div class="header-tools">
+          <div class="text-size" role="group" aria-label="Text size">
+            <span class="text-size__label">Text size</span>
+            <div class="text-size__options">
+              <label>
+                <input type="radio" name="text-size" value="1" checked />
+                <span>Normal</span>
+              </label>
+              <label>
+                <input type="radio" name="text-size" value="1.15" />
+                <span>Large</span>
+              </label>
+              <label>
+                <input type="radio" name="text-size" value="1.35" />
+                <span>Extra Large</span>
+              </label>
+            </div>
+          </div>
+          <button
+            type="button"
+            class="theme-toggle"
+            id="theme-toggle"
+            aria-pressed="false"
+            aria-label="Switch to dark mode"
+          >
+            <svg class="theme-toggle__sun" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <circle cx="12" cy="12" r="4" />
+              <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" />
+            </svg>
+            <svg class="theme-toggle__moon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5Z" />
+            </svg>
+            <span class="theme-toggle__label">Dark</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main id="main" class="guide-main">
+      <div class="wrap">
+        <nav class="guide-crumbs" aria-label="Breadcrumb">
+          <a href="index.html">Overview</a>
+          <span aria-hidden="true">/</span>
+          <span aria-current="page">Hardware Compatibility</span>
+        </nav>
+        <article class="guide">
+          <h1>Hardware compatibility and setup checklist</h1>
+<p>SimpleOS runs on ordinary Intel and AMD computers. This page answers two questions a caregiver usually has: <em>will it run on this machine?</em> and <em>what do I need to plug in before I hand it over?</em></p>
+<p>Take it one step at a time. Nothing here is permanent, and none of these steps can damage the computer.</p>
+<h2>Minimum and recommended specifications</h2>
+<table class="compare">
+<thead><tr>
+<th scope="col">Part</th>
+<th scope="col">Minimum</th>
+<th scope="col">Recommended</th>
+</tr></thead><tbody>
+<tr>
+<td data-label="Part">Processor</td>
+<td data-label="Minimum">64-bit <strong>x86_64</strong> CPU with <strong>UEFI</strong> firmware</td>
+<td data-label="Recommended">A newer Intel or AMD x86_64 CPU with UEFI</td>
+</tr>
+<tr>
+<td data-label="Part">Memory</td>
+<td data-label="Minimum"><strong>4 GB RAM</strong></td>
+<td data-label="Recommended"><strong>8 GB RAM</strong> or more</td>
+</tr>
+<tr>
+<td data-label="Part">Storage</td>
+<td data-label="Minimum"><strong>32 GB SSD</strong> or larger</td>
+<td data-label="Recommended"><strong>64 GB SSD</strong> or larger</td>
+</tr>
+<tr>
+<td data-label="Part">Graphics</td>
+<td data-label="Minimum">Intel or AMD integrated graphics that can run Wayland and labwc</td>
+<td data-label="Recommended">Any modern Intel or AMD integrated graphics</td>
+</tr>
+<tr>
+<td data-label="Part">Sound</td>
+<td data-label="Minimum">Standard USB audio, or a built-in microphone and speakers, for <strong>Vosk</strong> voice commands</td>
+<td data-label="Recommended">Built-in microphone and speakers, or a simple USB headset</td>
+</tr>
+</tbody></table>
+<p>A few notes in plain English:</p>
+<ul>
+<li><strong>x86_64</strong> means a normal 64-bit Intel or AMD desktop or laptop. An ARM computer, a 32-bit-only PC, or a phone cannot run this image.</li>
+<li><strong>UEFI is required.</strong> A computer that only offers Legacy BIOS will not boot SimpleOS. Nearly every machine sold in the last decade has UEFI.</li>
+<li>You do <strong>not</strong> need a separate graphics card. The desktop uses software rendering so older integrated graphics keep working.</li>
+<li>An SSD matters more than raw speed. A spinning hard drive will work, but everything feels slower.</li>
+<li>A microphone is only needed for Hold to Speak. If the person will not use voice commands, the other five buttons work without one.</li>
+</ul>
+<h2>A calm setup checklist for caregivers</h2>
+<p>Do these steps while you still have the computer in front of you. If a step does not match what you see, skip it and come back with the release notes or the <a href="usb-install.html">USB install walkthrough</a>.</p>
+<h3>1. Check Secure Boot</h3>
+<p>Secure Boot is a safety feature that stops unsigned software from starting. The official release ISO may start with it on. A locally built ISO is unsigned, so you may need to turn Secure Boot off to install it.</p>
+<ol>
+<li>Restart the computer and press the setup key as it starts. It is usually <strong>F2</strong>, <strong>F10</strong>, <strong>F12</strong>, <strong>Delete</strong>, or <strong>Esc</strong>, depending on the make.</li>
+<li>Look for a tab called <strong>Security</strong>, <strong>Boot</strong>, or <strong>Authentication</strong>.</li>
+<li>Find <strong>Secure Boot</strong> and set it to <strong>Disabled</strong>. If the option is greyed out, set a supervisor password first, then come back to it.</li>
+<li>Press <strong>F10</strong> to save and exit. The computer restarts.</li>
+</ol>
+<p>Turning Secure Boot off does not erase anything or harm the computer. If you see a black screen with a message like &quot;Security Boot Fail&quot;, this is the step to revisit. You can turn Secure Boot back on later if you want; SimpleOS does not need it.</p>
+<h3>2. Start the computer from the USB stick</h3>
+<ol>
+<li>Plug the prepared USB stick into a USB port.</li>
+<li>Restart the computer and press the boot-menu key. It is often <strong>F12</strong>, <strong>Esc</strong>, <strong>F11</strong>, or <strong>F8</strong>.</li>
+<li>Choose the entry that names your USB stick. It may say <strong>UEFI: ...</strong> first. Pick the UEFI entry when there are two.</li>
+<li>Press <strong>Enter</strong>. The installer starts.</li>
+</ol>
+<p>Read each screen before you press anything. The installer only writes to the disk you choose. When the install finishes, remove the USB stick when asked, then restart. On the first start, give the computer a few minutes while it sets up accounts and installs the built-in applications.</p>
+<h3>3. Connect speakers, a microphone, or a webcam</h3>
+<p>For a video call with family, the computer needs a camera, a microphone, and something to hear through.</p>
+<ul>
+<li><strong>USB devices:</strong> plug them in. SimpleOS uses them straight away, with no setup screen and no driver install.</li>
+<li><strong>Built-in devices:</strong> most laptops already have a microphone, speakers, and a camera. Nothing to plug in.</li>
+<li><strong>Bluetooth devices:</strong> pair these once during setup, before you hand the computer over. The home screen does not have a Bluetooth menu, so a caregiver should do this part. If pairing is awkward, a USB device or a USB Bluetooth receiver is the simpler and more reliable choice.</li>
+</ul>
+<p>The browser is already set up so the family video rooms can use the camera and microphone without repeated permission questions. Other websites are not allowed to ask.</p>
+<h3>4. Check the Wi-Fi driver</h3>
+<p>Most common Intel and AMD Wi-Fi cards work because the image includes <code>linux-firmware</code> and NetworkManager. To check yours:</p>
+<ol>
+<li>Open <strong>Caregiver Settings</strong> with the PIN.</li>
+<li>Choose <strong>Wi-Fi &amp; Network</strong>. A window lists the networks in range.</li>
+<li>Pick your network and connect. If a password is needed, enter it here.</li>
+<li>Close the window with the <strong>Back to SimpleOS</strong> button.</li>
+</ol>
+<p>The header shows the connected network name, or a clear &quot;Not connected to Wi-Fi&quot; message. If no networks appear at all:</p>
+<ul>
+<li>check that the laptop's Wi-Fi is not switched off with a physical switch or an <strong>Fn</strong> key;</li>
+<li>move closer to the router and try again;</li>
+<li>ask a caregiver to choose <strong>Check for updates</strong> in Caregiver Settings;</li>
+<li>if the card is unusual, a small USB Wi-Fi adapter with a common chipset is an easy fix.</li>
+</ul>
+<h3>5. Using SimpleOS in VMware (or another virtual machine)</h3>
+<p>SimpleOS fills the <strong>guest display</strong> — the screen area inside the virtual machine. It always keeps the correct aspect ratio. If the picture inside the VMware window looks stretched sideways, or has black bars around it, that is VMware scaling the guest display to fit the host window, not a problem with SimpleOS.</p>
+<p>In VMware Workstation, fix the display once:</p>
+<ol>
+<li>With the virtual machine running, open the <strong>View</strong> menu.</li>
+<li>Choose <strong>Autofit</strong>, then <strong>Fit Guest Now</strong>. This makes VMware keep the guest's shape (aspect ratio) and add small black bars instead of stretching. Do <strong>not</strong> choose <strong>Stretch Guest</strong>.</li>
+<li>If you want the guest display to change size whenever you resize the VMware window, leave <strong>Autofit Guest</strong> switched on. Otherwise switch it off and use <strong>Fit Guest Now</strong> after resizing.</li>
+</ol>
+<p>A 16:9 guest display (for example 1920 × 1080) is the best match for most monitors. SimpleOS needs no extra display driver in VMware.</p>
+<h2>If something looks wrong</h2>
+<table class="compare">
+<thead><tr>
+<th scope="col">What you see</th>
+<th scope="col">What to try</th>
+</tr></thead><tbody>
+<tr>
+<td data-label="What you see">Black screen on first start</td>
+<td data-label="What to try">The machine needs UEFI. Check Secure Boot above.</td>
+</tr>
+<tr>
+<td data-label="What you see">The picture is stretched sideways in VMware</td>
+<td data-label="What to try">VMware menu <strong>View → Autofit → Fit Guest Now</strong>; do not use <strong>Stretch Guest</strong>.</td>
+</tr>
+<tr>
+<td data-label="What you see">No Wi-Fi networks at all</td>
+<td data-label="What to try">Check the Wi-Fi switch, then try a USB adapter.</td>
+</tr>
+<tr>
+<td data-label="What you see">No sound in a call</td>
+<td data-label="What to try">Plug in USB speakers, or check the volume buttons in the header.</td>
+</tr>
+<tr>
+<td data-label="What you see">Text is hard to read</td>
+<td data-label="What to try">Caregiver Settings, then Text size, then Large or Extra Large.</td>
+</tr>
+<tr>
+<td data-label="What you see">The Wi-Fi window will not close</td>
+<td data-label="What to try">Press the <strong>Back to SimpleOS</strong> button at the top of that window.</td>
+</tr>
+</tbody></table>
+<h2>About this documentation</h2>
+<p>The SimpleOS documentation site is built to be readable. Text never drops below <strong>18px</strong> and grows with the Text size control, colours meet <strong>WCAG AAA</strong> contrast, and every link and button is at least <strong>48 × 48px</strong>. If anything on these pages is hard to read or hard to press, please <a href="https://github.com/MT25MB/SimpleOS/issues">report it</a>.</p>
+        </article>
+        <nav class="guide-links" aria-label="Other guides">
+          <h2>More guides</h2>
+          <div class="guide-links__grid"><a href="caregiver-guide.html">Caregiver Guide</a>
+<a href="usb-install.html">USB Install Walkthrough</a>
+<a href="hardware-compatibility.html">Hardware Compatibility</a>
+<a href="hardware-support.html">Hardware Support and Power Behaviour</a>
+<a href="updates-and-recovery.html">Updates and Recovery</a></div>
+        </nav>
+        <p class="sr-only" id="copy-status" role="status" aria-live="polite"></p>
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <div class="wrap footer-inner">
+        <div class="footer__brand">
+          <span class="footer__word">SimpleOS</span>
+          <p>Free software under the MIT License. Made for people, not metrics.</p>
+        </div>
+        <nav aria-label="Footer links">
+          <a href="caregiver-guide.html">Caregiver guide</a>
+          <a href="usb-install.html">USB install walkthrough</a>
+          <a href="hardware-compatibility.html">Hardware compatibility</a>
+          <a href="updates-and-recovery.html">Updates and recovery</a>
+          <a href="https://github.com/MT25MB/SimpleOS/blob/main/LICENSE">Read the license</a>
+          <a href="https://github.com/MT25MB/SimpleOS">Source on GitHub</a>
+          <a href="https://github.com/MT25MB/SimpleOS/issues">Report a problem</a>
+        </nav>
+        <p class="footer__sources">
+          Plain-text sources:
+          <a href="caregiver-guide.md">Caregiver guide</a>
+          <a href="usb-install.md">USB install</a>
+          <a href="hardware-compatibility.md">Hardware compatibility</a>
+          <a href="hardware-support.md">Hardware support</a>
+          <a href="updates-and-recovery.md">Updates and recovery</a>
+        </p>
+      </div>
+    </footer>
+  </body>
+</html>

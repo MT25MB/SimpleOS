@@ -19,6 +19,13 @@ describe('flagship docs site contract', () => {
     expect(html).not.toMatch(/revolutionary|seamless|cutting-edge/i)
   })
 
+  it('caps prose in rem so the reading measure stays near 70 characters', () => {
+    expect(css).not.toMatch(/max-width: (48|58|62|66|68)ch/)
+    expect(css).toContain('max-width: 27rem')
+    expect(css).not.toMatch(/\.tabs[\s\S]{0,200}overflow-x/)
+    expect(css).not.toMatch(/\.codeblock pre[\s\S]{0,200}overflow-x/)
+  })
+
   it('keeps the warm editorial palette and the mono command font', () => {
     expect(css).toContain('#faf9f6')
     expect(css).toContain('#0f172a')
@@ -52,5 +59,52 @@ describe('flagship docs site contract', () => {
     expect(html).toContain('data-pin-gate')
     expect(html).toContain('data-action="read-aloud"')
     expect(js).toContain('showDetail(')
+  })
+})
+
+describe('unified guide pages', () => {
+  const guideHtml = (name: string) =>
+    readFileSync(resolve(root, `docs/${name}.html`), 'utf8')
+
+  const homeFooter = html.match(/<footer class="site-footer">[\s\S]*?<\/footer>/)?.[0] ?? ''
+
+  it('renders every Markdown guide as a styled HTML page', () => {
+    for (const name of [
+      'caregiver-guide',
+      'usb-install',
+      'hardware-compatibility',
+      'hardware-support',
+      'updates-and-recovery',
+    ]) {
+      const page = guideHtml(name)
+      expect(page, name).toContain('<link rel="stylesheet" href="styles.css" />')
+      expect(page, name).toContain('<script src="script.js" defer></script>')
+      expect(page, name).toContain('<main id="main" class="guide-main">')
+      expect(page, name).toContain('<h1>')
+      expect(page, name).toContain(homeFooter)
+    }
+  })
+
+  it('uses the home page header and shared controls on every guide', () => {
+    for (const name of ['caregiver-guide', 'hardware-compatibility', 'updates-and-recovery']) {
+      const page = guideHtml(name)
+      expect(page, name).toContain('<header class="site-header">')
+      expect(page, name).toContain('class="site-nav"')
+      expect(page, name).toContain('id="theme-toggle"')
+      expect(page, name).toContain('name="text-size"')
+      expect(page, name).toContain('aria-label="Breadcrumb"')
+      expect(page, name).toContain('id="copy-status"')
+      // In-page nav links are scoped to the home page, never dead on a guide.
+      expect(page, name).not.toMatch(/<nav class="site-nav"[\s\S]*?href="#/)
+    }
+  })
+
+  it('keeps copy controls on generated commands and links guides together', () => {
+    const page = guideHtml('usb-install')
+    expect(page).toContain('data-copy')
+    expect(page).toContain('aria-label="Other guides"')
+    const hardware = guideHtml('hardware-compatibility')
+    expect(hardware).toContain('class="compare"')
+    expect(hardware).toContain('href="usb-install.html"')
   })
 })
