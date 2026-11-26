@@ -6,7 +6,11 @@ All notable changes to SimpleOS are recorded here. The format follows
 
 ## [Unreleased]
 
-Nothing yet.
+### Changed
+
+- Redesigned the project website in `docs/` as a warm editorial "field manual": hairline rules, a single grounded teal accent, Plus Jakarta Sans / Atkinson Hyperlegible / JetBrains Mono typography, and a high-contrast dark mode.
+- Added an interactive browser-rendered kiosk preview on the home page, including the launcher, reminders, Read Aloud, and a PIN-gated Caregiver Settings demo.
+- Added a three-step Quickstart switcher with keyboard-accessible tabs and copy-to-clipboard buttons, a caregiver pain-point versus guardrail table, and a three-layer architecture diagram.
 
 ## [v1.4.8]
 
