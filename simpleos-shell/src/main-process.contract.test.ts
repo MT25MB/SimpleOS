@@ -80,6 +80,7 @@ describe('preload bridge contract', () => {
     expect(electronMain).toContain("'simpleos:close-settings'")
     expect(electronMain).toContain('alwaysOnTop: true')
     expect(electronMain).toContain('Back to SimpleOS')
+    expect(electronMain).toContain('Close settings and return to SimpleOS')
     expect(electronMain).toContain('settingsProcess.kill()')
     expect(preload).toContain("closeSettings: () => ipcRenderer.invoke('simpleos:close-settings')")
   })

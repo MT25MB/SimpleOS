@@ -212,10 +212,17 @@ function showSettingsExitButton(): void {
   const html = `<!doctype html><html lang="en"><head><meta charset="utf-8">
     <style>
       html,body{margin:0;height:100%;background:#0b1120;color:#fff;font-family:Inter,sans-serif}
-      button{width:100%;height:100%;min-height:72px;border:3px solid #fff;border-radius:12px;
+      body{display:flex;gap:8px;padding:8px}
+      button{height:100%;min-height:72px;border:3px solid #fff;border-radius:12px;
         background:#0b1120;color:#fff;font-size:22px;font-weight:700;cursor:pointer}
-      button:focus-visible{outline:6px solid #fff;outline-offset:3px}
-    </style></head><body><button type="button" onclick="window.close()">Back to SimpleOS</button></body></html>`
+      .close{width:84px;flex:none;font-size:34px;line-height:1}
+      .back{flex:1}
+      button:focus-visible{outline:6px solid #fde047;outline-offset:3px}
+    </style></head><body>
+      <button class="close" type="button" aria-label="Close settings and return to SimpleOS"
+        onclick="window.close()">&#10005;</button>
+      <button class="back" type="button" onclick="window.close()">Back to SimpleOS</button>
+    </body></html>`
   const button = new BrowserWindow({
     frame: false,
     resizable: false,
