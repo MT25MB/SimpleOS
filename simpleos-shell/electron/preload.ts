@@ -50,6 +50,7 @@ const bridge: SimpleOSBridge = {
   getAvatar: (fileName) => ipcRenderer.invoke('simpleos:contacts:avatar:get', fileName),
   callContact: (roomUrl) => ipcRenderer.invoke('simpleos:contacts:call', roomUrl),
   getFramePhotos: () => ipcRenderer.invoke('simpleos:photos:frame'),
+  openPhoto: (index) => ipcRenderer.invoke('simpleos:photos:open', index),
   getHealthStatus: () => ipcRenderer.invoke('simpleos:health'),
   runRecovery: (action) => ipcRenderer.invoke('simpleos:recovery', action),
 }

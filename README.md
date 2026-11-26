@@ -41,6 +41,7 @@ SimpleOS takes those problems seriously. The system cannot be damaged by a stray
 - **Easy to listen to.** Read Aloud speaks the screen and reminders using a local voice, and stops with one press or Escape.
 - **Easy to talk to.** Hold to Speak understands five simple commands locally with Vosk. No audio ever leaves the computer.
 - **Family one tap.** Up to four family contact cards open a private video room in the locked-down Firefox.
+- **Photo Album.** Pictures you save to the Downloads folder appear in a big photo album. Choose one and it opens in the photo viewer; no file browsing needed.
 - **Calm when idle.** An optional photo frame shows local family photos and a big clock, and closes instantly when touched.
 - **System health and safe recovery.** Caregiver Settings shows a plain-English health summary and can restart the launcher, check for updates, or roll back the last OS update with one confirmed press. Rollback is limited to one narrow system action; the everyday user never gets sudo.
 - **Checked in a real browser.** Playwright journeys cover the whole caregiver and senior experience, and axe-core checks WCAG AAA on every screen at 18px, 22px and 26px, with 48px touch targets and no clipped text.

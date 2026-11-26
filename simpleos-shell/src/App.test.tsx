@@ -40,6 +40,7 @@ function mockBridge(overrides: Partial<SimpleOSBridge> = {}): SimpleOSBridge {
     getAvatar: vi.fn().mockResolvedValue({ ok: true, value: { dataUrl: '' } }),
     callContact: vi.fn().mockResolvedValue(ok),
     getFramePhotos: vi.fn().mockResolvedValue({ ok: true, value: { photos: [] } }),
+    openPhoto: vi.fn().mockResolvedValue(ok),
     getHealthStatus: vi.fn().mockResolvedValue({
       ok: true,
       value: {
@@ -79,7 +80,6 @@ describe('App integration', () => {
 
   it.each([
     ['Web & Email', 'firefox'],
-    ['Photo Album', 'photos'],
     ['Ask for Help', 'rustdesk'],
   ])('launches %s via the allowlisted target %s', async (label, target) => {
     const user = userEvent.setup()
@@ -88,6 +88,22 @@ describe('App integration', () => {
     render(<App />)
     await user.click(screen.getByRole('button', { name: new RegExp(label) }))
     expect(bridge.launchApp).toHaveBeenCalledWith(target)
+  })
+
+  it('opens the Photo Album as an in-app view for downloaded pictures', async () => {
+    const user = userEvent.setup()
+    const bridge = mockBridge({
+      getFramePhotos: vi
+        .fn()
+        .mockResolvedValue({ ok: true, value: { photos: ['data:image/png;base64,AAAA'] } }),
+    })
+    window.simpleOS = bridge
+    render(<App />)
+    await user.click(screen.getByRole('button', { name: /Photo Album/ }))
+    expect(await screen.findByRole('heading', { name: 'Photo Album' })).toBeInTheDocument()
+    expect(bridge.launchApp).not.toHaveBeenCalled()
+    await user.click(screen.getByRole('button', { name: 'Open photo 1' }))
+    expect(bridge.openPhoto).toHaveBeenCalledWith(0)
   })
 
   it('shows a plain-English screen-sharing banner for RustDesk', async () => {

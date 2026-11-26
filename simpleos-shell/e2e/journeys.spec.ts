@@ -25,6 +25,22 @@ async function storedPin(page: Page): Promise<string | null> {
 }
 
 test.describe('Full caregiver and senior journeys', () => {
+  test('downloaded photos appear in the album and open safely', async ({ page }) => {
+    await openApp(page, {
+      photos: [
+        'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8AAAwAB/AF+gXeJAAAAAElFTkSuQmCC',
+      ],
+    })
+    await page.getByRole('button', { name: /Photo Album/ }).click()
+    await expect(page.getByRole('heading', { name: 'Photo Album' })).toBeVisible()
+    await page.getByRole('button', { name: 'Open photo 1' }).click()
+    await expect
+      .poll(async () =>
+        (await events(page)).some((event) => event.name === 'openPhoto' && event.detail === 0),
+      )
+      .toBe(true)
+  })
+
   test('a fresh computer completes the five-step setup and enters Senior Mode', async ({ page }) => {
     await openApp(page, { setupComplete: false, pin: '', transcript: 'open video call' })
     const wizard = page.locator('.setup-wizard')

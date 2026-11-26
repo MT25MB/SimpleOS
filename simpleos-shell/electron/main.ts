@@ -315,7 +315,12 @@ const MAX_CONTACT_NAME = 60
 const MAX_RELATIONSHIP = 40
 const MAX_AVATAR_BYTES = 2 * 1024 * 1024
 const MAX_FRAME_PHOTOS = 12
+const MAX_PHOTO_BYTES = 8 * 1024 * 1024
 const FRAME_DIR = path.join(os.homedir(), 'Pictures', 'SimpleOS')
+// Photos downloaded from the web or saved from email land here. The album and
+// idle frame both read this folder, in addition to the curated frame folder.
+const DOWNLOADS_DIR = path.join(os.homedir(), 'Downloads')
+const PHOTO_DIRS: readonly string[] = Object.freeze([DOWNLOADS_DIR, FRAME_DIR])
 const AVATAR_NAME = /^[A-Za-z0-9_-]{1,48}$/
 const IMAGE_EXT = /\.(png|jpe?g|webp)$/i
 
@@ -431,31 +436,62 @@ ipcMain.handle(
   },
 )
 
+/** Ordered, validated photos from Downloads first, then the frame folder. */
+function photoFiles(): string[] {
+  const found: string[] = []
+  for (const dir of PHOTO_DIRS) {
+    try {
+      const names = fs.readdirSync(dir).filter((name) => IMAGE_EXT.test(name)).sort()
+      for (const name of names) {
+        const full = path.join(dir, name)
+        try {
+          if (!fs.statSync(full).isFile() || fs.statSync(full).size > MAX_PHOTO_BYTES) continue
+        } catch {
+          continue
+        }
+        found.push(full)
+      }
+    } catch {
+      // A missing Downloads or frame folder is normal; keep the other one.
+    }
+  }
+  return found.slice(0, MAX_FRAME_PHOTOS)
+}
+
+/** Only ever return a data URL from a validated local file. */
+function photoDataUrls(): string[] {
+  const photos: string[] = []
+  for (const full of photoFiles()) {
+    try {
+      const bytes = fs.readFileSync(full)
+      const ext = path.extname(full).slice(1).toLowerCase()
+      const mime = ext === 'jpg' ? 'jpeg' : ext
+      photos.push(`data:image/${mime};base64,${bytes.toString('base64')}`)
+    } catch {
+      // Skip a file that disappeared between listing and reading.
+    }
+  }
+  return photos
+}
+
 ipcMain.handle(
   'simpleos:photos:frame',
   async (event): Promise<ValueResult<{ photos: string[] }>> => {
     if (!isTrustedSender(event)) return fail('UNKNOWN_TARGET')
-    try {
-      const files = fs
-        .readdirSync(FRAME_DIR)
-        .filter((name) => IMAGE_EXT.test(name))
-        .sort()
-        .slice(0, MAX_FRAME_PHOTOS)
-      const photos: string[] = []
-      for (const name of files) {
-        const full = path.join(FRAME_DIR, name)
-        const bytes = fs.readFileSync(full)
-        if (bytes.length > MAX_AVATAR_BYTES) continue
-        const ext = path.extname(name).slice(1).toLowerCase()
-        const mime = ext === 'jpg' ? 'jpeg' : ext
-        photos.push(`data:image/${mime};base64,${bytes.toString('base64')}`)
-      }
-      return { ok: true, value: { photos } }
-    } catch {
-      return { ok: true, value: { photos: [] } }
-    }
+    return { ok: true, value: { photos: photoDataUrls() } }
   },
 )
+
+/** Open one album photo by its index. The renderer never supplies a path. */
+ipcMain.handle('simpleos:photos:open', async (event, index: unknown): Promise<Result> => {
+  if (!isTrustedSender(event)) return fail('UNKNOWN_TARGET')
+  if (typeof index !== 'number' || !Number.isInteger(index) || index < 0) return fail('INVALID_INPUT')
+  const full = photoFiles()[index]
+  if (!full) return fail('INVALID_INPUT')
+  const allowed = PHOTO_DIRS.some((dir) => full.startsWith(`${dir}${path.sep}`))
+  if (!allowed) return fail('INVALID_INPUT')
+  return spawnDetached('flatpak', ['run', 'org.gnome.Loupe', full])
+})
 
 // -------------------------------------------------------------------- caregiver PIN
 

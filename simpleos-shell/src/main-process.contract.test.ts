@@ -178,6 +178,14 @@ describe('hardware control contract', () => {
     expect(electronMain).not.toContain("internet = wifi.connected ? 'Connected to the internet.'")
   })
 
+  it('reads album photos from Downloads and opens them by index only', () => {
+    expect(electronMain).toContain("const DOWNLOADS_DIR = path.join(os.homedir(), 'Downloads')")
+    expect(electronMain).toContain("'simpleos:photos:open'")
+    expect(electronMain).toContain("full.startsWith(`${dir}${path.sep}`)")
+    expect(electronMain).toContain("photoFiles()[index]")
+    expect(preload).toContain("openPhoto: (index) => ipcRenderer.invoke('simpleos:photos:open', index)")
+  })
+
   it('runs updates through a narrow privileged systemd unit', () => {
     expect(allowlists).toContain("'simpleos-update.service'")
     expect(allowlists).not.toContain("args: Object.freeze(['upgrade'])")

@@ -5,6 +5,7 @@ import { FamilyPanel } from './components/FamilyPanel'
 import { FontScaleControl } from './components/FontScaleControl'
 import { HardwareControls } from './components/HardwareControls'
 import { NoticeBanner } from './components/NoticeBanner'
+import { PhotoAlbum } from './components/PhotoAlbum'
 import { PhotoFrame } from './components/PhotoFrame'
 import { PinScreen } from './components/PinScreen'
 import { RemindersPanel } from './components/RemindersPanel'
@@ -37,7 +38,7 @@ import type {
   VolumeAction,
 } from './types'
 
-type View = 'home' | 'reminders' | 'caregiver' | 'family'
+type View = 'home' | 'reminders' | 'caregiver' | 'family' | 'photos'
 type PinMode = 'unlock' | 'create' | 'change'
 type Notice = { tone: 'info' | 'sharing' | 'caregiver'; message: string }
 const FRAME_KEY = 'simpleos.frameDelay'
@@ -111,15 +112,18 @@ export default function App() {
     })
   }, [])
 
-  // Load only local photos when the calm frame actually opens.
-  useEffect(() => {
-    if (!frame.active) return
+  async function refreshPhotos() {
     const bridge = window.simpleOS
     if (!bridge) return
-    void bridge.getFramePhotos().then((result) => {
-      if (result.ok) setFramePhotos(result.value.photos)
-    })
-  }, [frame.active])
+    const result = await bridge.getFramePhotos()
+    if (result.ok) setFramePhotos(result.value.photos)
+  }
+
+  // Keep both the album and the calm frame in sync with the local photo folders.
+  useEffect(() => {
+    if (!frame.active && view !== 'photos') return
+    void refreshPhotos()
+  }, [frame.active, view])
 
   // Read the screen people have just moved to, using only local speech.
   useEffect(() => {
@@ -173,6 +177,8 @@ export default function App() {
         await openCaregiver()
       } else if (tile.action.view === 'family') {
         setView('family')
+      } else if (tile.action.view === 'photos') {
+        setView('photos')
       } else {
         setView('reminders')
       }
@@ -441,6 +447,20 @@ export default function App() {
     if (!result.ok) setNotice({ tone: 'info', message: friendlyMessage(result.code) })
   }
 
+  async function handleOpenPhoto(index: number) {
+    setNotice(null)
+    const bridge = window.simpleOS
+    if (!bridge) {
+      setNotice({ tone: 'info', message: friendlyMessage('BRIDGE_UNAVAILABLE') })
+      return
+    }
+    const result = await bridge.openPhoto(index)
+    setNotice({
+      tone: 'info',
+      message: result.ok ? 'Opening your photo.' : friendlyMessage(result.code),
+    })
+  }
+
   async function handleOpenWifiSettings() {
     setNotice(null)
     const bridge = window.simpleOS
@@ -541,6 +561,12 @@ export default function App() {
                 contacts={contacts}
                 onCall={(contact) => void handleCallContact(contact)}
                 onFallback={() => void launchApp('jitsi', 'Video Call Family')}
+              />
+            ) : view === 'photos' ? (
+              <PhotoAlbum
+                photos={framePhotos}
+                onOpen={(index) => void handleOpenPhoto(index)}
+                onRefresh={() => void refreshPhotos()}
               />
             ) : (
               <CaregiverPanel

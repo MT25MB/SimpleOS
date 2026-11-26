@@ -8,6 +8,12 @@ All notable changes to SimpleOS are recorded here. The format follows
 
 Nothing yet.
 
+## [v1.4.6]
+
+### Added
+
+- The Photo Album is now an in-app screen that lists pictures saved to the Downloads folder (plus the existing frame folder). Choosing a photo opens it in the image viewer by index, so the renderer never supplies a file path.
+
 ## [v1.4.5]
 
 ### Fixed
@@ -354,7 +360,8 @@ contribute to, and a full automated quality gate.
 - First prototype: initial image definition, system configs, Electron launcher,
   build script and documentation.
 
-[Unreleased]: https://github.com/MT25MB/SimpleOS/compare/v1.4.5...HEAD
+[Unreleased]: https://github.com/MT25MB/SimpleOS/compare/v1.4.6...HEAD
+[v1.4.6]: https://github.com/MT25MB/SimpleOS/compare/v1.4.5...v1.4.6
 [v1.4.5]: https://github.com/MT25MB/SimpleOS/compare/v1.4.4...v1.4.5
 [v1.4.4]: https://github.com/MT25MB/SimpleOS/compare/v1.4.3...v1.4.4
 [v1.4.3]: https://github.com/MT25MB/SimpleOS/compare/v1.4.2...v1.4.3

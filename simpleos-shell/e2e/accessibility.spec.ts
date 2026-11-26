@@ -7,6 +7,7 @@ type Screen =
   | 'home grid'
   | 'reminders'
   | 'video calls'
+  | 'photo album'
   | 'pin keypad'
   | 'caregiver settings'
 
@@ -21,6 +22,7 @@ const SCREENS: Screen[] = [
   'home grid',
   'reminders',
   'video calls',
+  'photo album',
   'pin keypad',
   'caregiver settings',
 ]
@@ -48,6 +50,8 @@ async function gotoScreen(page: Page, screen: Screen, scale: number): Promise<vo
     await page.getByRole('button', { name: /Daily Reminders/ }).click()
   } else if (screen === 'video calls') {
     await page.getByRole('button', { name: /Video Call Family/ }).click()
+  } else if (screen === 'photo album') {
+    await page.getByRole('button', { name: /Photo Album/ }).click()
   } else if (screen === 'pin keypad' || screen === 'caregiver settings') {
     await page.getByRole('button', { name: /Caregiver Settings/ }).click()
     if (screen === 'caregiver settings') {

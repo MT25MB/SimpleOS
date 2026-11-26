@@ -58,7 +58,7 @@ describe('Electron renderer sandbox', () => {
   it('checks the sender on every single IPC handler', () => {
     const handlers = main.split('ipcMain.handle(').length - 1
     const checks = main.split('isTrustedSender(event)').length - 1
-    expect(handlers).toBe(26)
+    expect(handlers).toBe(27)
     expect(checks).toBe(handlers)
     expect(main).toContain('event.sender !== window.webContents')
     expect(main).toContain('event.senderFrame !== window.webContents.mainFrame')

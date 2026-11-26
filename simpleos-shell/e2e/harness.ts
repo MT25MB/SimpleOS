@@ -142,6 +142,10 @@ export async function openApp(page: Page, config: E2EConfig = {}): Promise<void>
         return ok
       },
       getFramePhotos: async () => ({ ok: true, value: { photos: read('photos', []) } }),
+      openPhoto: async (index: number) => {
+        log('openPhoto', index)
+        return ok
+      },
       getHealthStatus: async () => ({
         ok: true,
         value: {
@@ -149,7 +153,7 @@ export async function openApp(page: Page, config: E2EConfig = {}): Promise<void>
           audio: 'Sound output is ready.',
           microphone: 'Microphone is ready.',
           disk: 'Disk space is healthy: 20 GB free',
-          imageVersion: 'SimpleOS 1.4.5',
+          imageVersion: 'SimpleOS 1.4.6',
           lastUpdateCheck: 'Last checked today',
           summary: 'SimpleOS health summary',
         },

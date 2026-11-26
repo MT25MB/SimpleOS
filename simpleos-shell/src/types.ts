@@ -59,7 +59,7 @@ export type IconName = 'video' | 'web' | 'photos' | 'reminders' | 'help' | 'sett
 
 export type TileAction =
   | { kind: 'launch'; target: LaunchTarget }
-  | { kind: 'view'; view: 'reminders' | 'caregiver' | 'family' }
+  | { kind: 'view'; view: 'reminders' | 'caregiver' | 'family' | 'photos' }
 
 /** A caregiver-managed family contact. Stored only in ~/.config/simpleos. */
 export interface Contact {
@@ -186,8 +186,10 @@ export interface SimpleOSBridge {
   saveAvatar(fileName: string, imageBase64: string): Promise<ValueResult<{ fileName: string }>>
   getAvatar(fileName: string): Promise<ValueResult<{ dataUrl: string }>>
   callContact(roomUrl: string): Promise<Result>
-  /** Bounded list of local photos for the calm idle frame. */
+  /** Bounded list of local photos from Downloads and the frame folder. */
   getFramePhotos(): Promise<ValueResult<{ photos: string[] }>>
+  /** Open one album photo by index; the renderer never supplies a file path. */
+  openPhoto(index: number): Promise<Result>
   getHealthStatus(): Promise<ValueResult<HealthStatus>>
   runRecovery(action: RecoveryAction): Promise<ValueResult<{ summary: string }>>
 }

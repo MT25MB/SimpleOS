@@ -21,7 +21,7 @@ export const TILES: readonly LauncherTile[] = [
     title: 'Photo Album',
     subtitle: 'Look at your photos',
     icon: 'photos',
-    action: { kind: 'launch', target: 'photos' },
+    action: { kind: 'view', view: 'photos' },
   },
   {
     id: 'daily-reminders',

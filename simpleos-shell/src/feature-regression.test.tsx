@@ -50,6 +50,7 @@ function mockBridge(overrides: Partial<SimpleOSBridge> = {}): SimpleOSBridge {
     getAvatar: vi.fn().mockResolvedValue({ ok: true, value: { dataUrl: '' } }),
     callContact: vi.fn().mockResolvedValue(ok),
     getFramePhotos: vi.fn().mockResolvedValue({ ok: true, value: { photos: [] } }),
+    openPhoto: vi.fn().mockResolvedValue(ok),
     getHealthStatus: vi.fn().mockResolvedValue({
       ok: true,
       value: {
