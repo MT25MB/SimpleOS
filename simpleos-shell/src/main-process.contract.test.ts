@@ -192,6 +192,15 @@ describe('hardware control contract', () => {
     expect(preload).toContain("openPhoto: (index) => ipcRenderer.invoke('simpleos:photos:open', index)")
   })
 
+  it('exposes only restart and shutdown as fixed power commands', () => {
+    expect(allowlists).toContain('POWER_COMMANDS')
+    expect(allowlists).toContain("restartComputer: Object.freeze({ command: 'systemctl', args: Object.freeze(['reboot']) })")
+    expect(allowlists).toContain("shutdownComputer: Object.freeze({ command: 'systemctl', args: Object.freeze(['poweroff']) })")
+    expect(allowlists).not.toContain('hibernate')
+    expect(electronMain).toContain('Object.hasOwn(POWER_COMMANDS, action)')
+    expect(electronMain).toContain('void runApproved(POWER_COMMANDS[action], 10_000)')
+  })
+
   it('runs updates through a narrow privileged systemd unit', () => {
     expect(allowlists).toContain("'simpleos-update.service'")
     expect(allowlists).not.toContain("args: Object.freeze(['upgrade'])")

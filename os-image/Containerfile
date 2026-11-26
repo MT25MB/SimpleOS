@@ -147,6 +147,7 @@ COPY system-configs/systemd/simpleos-boot-marker.service /etc/systemd/system/sim
 COPY system-configs/systemd/simpleos-boot-marker.sh /usr/libexec/simpleos/boot-marker.sh
 COPY system-configs/polkit/50-simpleos-rollback.rules /etc/polkit-1/rules.d/50-simpleos-rollback.rules
 COPY system-configs/polkit/50-simpleos-update.rules /etc/polkit-1/rules.d/50-simpleos-update.rules
+COPY system-configs/polkit/50-simpleos-power.rules /etc/polkit-1/rules.d/50-simpleos-power.rules
 
 # The kiosk launcher itself. main.js resolves its renderer at ../dist from
 # dist-electron, so keeping both folders together preserves that contract.

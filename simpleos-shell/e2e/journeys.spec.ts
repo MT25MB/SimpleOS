@@ -25,6 +25,26 @@ async function storedPin(page: Page): Promise<string | null> {
 }
 
 test.describe('Full caregiver and senior journeys', () => {
+  test('restart and shut down ask first, then call the fixed power action', async ({ page }) => {
+    await openApp(page)
+    await page.getByRole('button', { name: 'Restart computer' }).click()
+    const dialog = page.getByRole('dialog')
+    await expect(dialog).toContainText('Restart the computer?')
+    await dialog.getByRole('button', { name: 'Cancel' }).click()
+    await expect(page.getByRole('dialog')).toHaveCount(0)
+
+    await page.getByRole('button', { name: 'Shut down' }).click()
+    await page.getByRole('dialog').getByRole('button', { name: 'Shut down' }).click()
+    await expect
+      .poll(async () =>
+        (await events(page)).some(
+          (event) => event.name === 'runRecovery' && event.detail === 'shutdownComputer',
+        ),
+      )
+      .toBe(true)
+    await expect(page.getByRole('status').filter({ hasText: 'Shutting' }).first()).toBeVisible()
+  })
+
   test('Ask for Help gives immediate feedback when launching remote help', async ({ page }) => {
     await openApp(page)
     await page.getByRole('button', { name: /Ask for Help/ }).click()

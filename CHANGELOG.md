@@ -12,6 +12,7 @@ Nothing yet.
 
 ### Added
 
+- **Restart computer** and **Shut down** controls now sit at the top of the screen. Each asks for confirmation and then runs one of two fixed, polkit-authorized systemd actions; no general admin rights are granted.
 - The Photo Album is now an in-app screen that lists pictures saved to the Downloads folder (plus the existing frame folder). Choosing a photo opens it in the image viewer by index, so the renderer never supplies a file path.
 
 ## [v1.4.5]

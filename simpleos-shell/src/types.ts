@@ -90,7 +90,7 @@ export interface HealthStatus {
   summary: string
 }
 
-export type RecoveryAction = 'restartLauncher' | 'rollBack'
+export type RecoveryAction = 'restartLauncher' | 'rollBack' | 'restartComputer' | 'shutdownComputer'
 
 export interface LauncherTile {
   id: string

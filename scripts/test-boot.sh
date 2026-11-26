@@ -145,6 +145,8 @@ log "Verifying kiosk session wiring in the built image"
     && command -v labwc \
     && test -d /usr/share/icons/Adwaita/cursors \
     && grep -q 'WLR_NO_HARDWARE_CURSORS=1' /etc/xdg/labwc/environment \
+    && test -f /etc/polkit-1/rules.d/50-simpleos-power.rules \
+    && grep -q 'org.freedesktop.login1.reboot' /etc/polkit-1/rules.d/50-simpleos-power.rules \
     && test -x /usr/libexec/simpleos/simpleos-shell \
     && grep -q 'session_ready' /usr/libexec/simpleos/boot-marker.sh' \
   || die "Built image is missing kiosk session wiring."

@@ -1,0 +1,12 @@
+// Allow the unprivileged daily user to restart or shut down only from an active
+// local session. No general admin rights, no other login1 actions.
+polkit.addRule(function (action, subject) {
+  if (subject.user == 'senior' && subject.active) {
+    if (
+      action.id == 'org.freedesktop.login1.reboot' ||
+      action.id == 'org.freedesktop.login1.power-off'
+    ) {
+      return polkit.Result.YES
+    }
+  }
+})

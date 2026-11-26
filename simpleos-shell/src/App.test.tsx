@@ -156,6 +156,39 @@ describe('App integration', () => {
     expect(screen.queryByText(/is starting\.$/)).toBeNull()
   })
 
+  it('asks for confirmation before restarting or shutting down the computer', async () => {
+    const user = userEvent.setup()
+    const bridge = mockBridge({
+      runRecovery: vi.fn().mockImplementation((action) =>
+        Promise.resolve({
+          ok: true,
+          value: {
+            summary:
+              action === 'shutdownComputer'
+                ? 'Shutting the computer down now.'
+                : 'Restarting the computer now.',
+          },
+        }),
+      ),
+    })
+    window.simpleOS = bridge
+    render(<App />)
+
+    await user.click(screen.getByRole('button', { name: 'Restart computer' }))
+    expect(screen.getByRole('dialog')).toHaveTextContent('Restart the computer?')
+    expect(bridge.runRecovery).not.toHaveBeenCalled()
+
+    await user.click(within(screen.getByRole('dialog')).getByRole('button', { name: 'Cancel' }))
+    expect(screen.queryByRole('dialog')).toBeNull()
+
+    await user.click(screen.getByRole('button', { name: 'Shut down' }))
+    const dialog = screen.getByRole('dialog')
+    expect(dialog).toHaveTextContent('Shut down the computer?')
+    await user.click(within(dialog).getByRole('button', { name: 'Shut down' }))
+    expect(bridge.runRecovery).toHaveBeenCalledWith('shutdownComputer')
+    expect(await screen.findByRole('status')).toHaveTextContent('Shutting the computer down now.')
+  })
+
   it('opens Daily Reminders as a local view', async () => {
     const user = userEvent.setup()
     const bridge = mockBridge()

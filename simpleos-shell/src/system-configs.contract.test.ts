@@ -266,6 +266,17 @@ describe('system guardrails contract', () => {
     expect(containerfile).toContain('polkit')
   })
 
+  it('allows only active local restart and shutdown through polkit', () => {
+    const rule = read('system-configs/polkit/50-simpleos-power.rules')
+    expect(rule).toContain('org.freedesktop.login1.reboot')
+    expect(rule).toContain('org.freedesktop.login1.power-off')
+    expect(rule).toContain("subject.user == 'senior'")
+    expect(rule).toContain('subject.active')
+    expect(rule).toContain('polkit.Result.YES')
+    expect(rule).not.toContain('org.freedesktop.login1.hibernate')
+    expect(containerfile).toContain('50-simpleos-power.rules')
+  })
+
   it('ships the offline voice runtime without any cloud dependency', () => {
     for (const pkg of ['espeak-ng', 'python3', 'python3-pip', 'unzip', 'curl']) {
       expect(containerfile, pkg).toMatch(new RegExp(`\\b${pkg}\\b`))

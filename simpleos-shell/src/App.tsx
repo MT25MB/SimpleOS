@@ -8,6 +8,7 @@ import { NoticeBanner } from './components/NoticeBanner'
 import { PhotoAlbum } from './components/PhotoAlbum'
 import { PhotoFrame } from './components/PhotoFrame'
 import { PinScreen } from './components/PinScreen'
+import { PowerControls } from './components/PowerControls'
 import { RemindersPanel } from './components/RemindersPanel'
 import { SetupWizard, type SetupWizardResult } from './components/SetupWizard'
 import { Tile } from './components/Tile'
@@ -40,8 +41,21 @@ import type {
 
 type View = 'home' | 'reminders' | 'caregiver' | 'family' | 'photos'
 type PinMode = 'unlock' | 'create' | 'change'
+type PowerAction = 'restartComputer' | 'shutdownComputer'
 type Notice = { tone: 'info' | 'sharing' | 'caregiver'; message: string }
 const FRAME_KEY = 'simpleos.frameDelay'
+const POWER_CONFIRM = {
+  restartComputer: {
+    title: 'Restart the computer?',
+    body: 'Everything closes and the computer starts again. Your reminders and PIN are saved.',
+    button: 'Restart computer',
+  },
+  shutdownComputer: {
+    title: 'Shut down the computer?',
+    body: 'The computer turns off. Press the power button to start it again.',
+    button: 'Shut down',
+  },
+} as const
 
 function initialFrameDelay(): FrameDelay {
   try {
@@ -70,6 +84,7 @@ export default function App() {
   const [framePhotos, setFramePhotos] = useState<string[]>([])
   const [health, setHealth] = useState<HealthStatus | null>(null)
   const [recoveryMessage, setRecoveryMessage] = useState<string | null>(null)
+  const [pendingPower, setPendingPower] = useState<PowerAction | null>(null)
   const [setupStatus, setSetupStatus] = useState<SetupStatus | null>(null)
   const [wizardOpen, setWizardOpen] = useState(false)
   const [seniorName, setSeniorName] = useState('')
@@ -467,6 +482,25 @@ export default function App() {
     if (!result.ok) setNotice({ tone: 'info', message: friendlyMessage(result.code) })
   }
 
+  async function confirmPower() {
+    if (!pendingPower) return
+    const bridge = window.simpleOS
+    setPendingPower(null)
+    if (!bridge) {
+      setNotice({ tone: 'info', message: friendlyMessage('BRIDGE_UNAVAILABLE') })
+      return
+    }
+    try {
+      const result = await bridge.runRecovery(pendingPower)
+      setNotice({
+        tone: 'info',
+        message: result.ok ? result.value.summary : friendlyMessage(result.code),
+      })
+    } catch {
+      setNotice({ tone: 'info', message: friendlyMessage('UNEXPECTED') })
+    }
+  }
+
   async function handleOpenPhoto(index: number) {
     setNotice(null)
     const bridge = window.simpleOS
@@ -521,6 +555,10 @@ export default function App() {
           onOpenWifiSettings={() => void handleOpenWifiSettings()}
           onAdjustVolume={(action) => void handleAdjustVolume(action)}
           onAdjustBrightness={(action) => void handleAdjustBrightness(action)}
+        />
+        <PowerControls
+          onRestart={() => setPendingPower('restartComputer')}
+          onShutDown={() => setPendingPower('shutdownComputer')}
         />
         <VoiceControls
           readAloudEnabled={readAloud.enabled}
@@ -639,6 +677,25 @@ export default function App() {
       )}
 
       {frame.active && <PhotoFrame photos={framePhotos} onDismiss={frame.dismiss} />}
+
+      {pendingPower && (
+        <dialog className="recovery__dialog" open aria-labelledby="power-confirm-title">
+          <h2 id="power-confirm-title">{POWER_CONFIRM[pendingPower].title}</h2>
+          <p>{POWER_CONFIRM[pendingPower].body}</p>
+          <div className="pin-screen__actions">
+            <button
+              type="button"
+              className="button button--secondary"
+              onClick={() => setPendingPower(null)}
+            >
+              Cancel
+            </button>
+            <button type="button" className="button" onClick={() => void confirmPower()}>
+              {POWER_CONFIRM[pendingPower].button}
+            </button>
+          </div>
+        </dialog>
+      )}
     </div>
   )
 }

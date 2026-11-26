@@ -19,6 +19,16 @@ const CONFIRM: Record<RecoveryAction, { title: string; body: string; button: str
     body: 'This undoes the last system update. Your files, reminders and PIN stay exactly as they are. The computer will restart afterwards.',
     button: 'Go back',
   },
+  restartComputer: {
+    title: 'Restart the computer?',
+    body: 'The computer will close everything and start again.',
+    button: 'Restart computer',
+  },
+  shutdownComputer: {
+    title: 'Shut down the computer?',
+    body: 'The computer will turn off. Press the power button to start it again.',
+    button: 'Shut down',
+  },
 }
 
 /** Plain-English health checks and three guarded, reversible recovery steps. */

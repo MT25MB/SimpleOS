@@ -98,6 +98,12 @@ export const HEALTH_COMMANDS: Readonly<Record<string, ApprovedCommand>> = Object
   }),
 })
 
+/** Power actions exposed in the header. Only these two fixed commands exist. */
+export const POWER_COMMANDS: Readonly<Record<string, ApprovedCommand>> = Object.freeze({
+  restartComputer: Object.freeze({ command: 'systemctl', args: Object.freeze(['reboot']) }),
+  shutdownComputer: Object.freeze({ command: 'systemctl', args: Object.freeze(['poweroff']) }),
+})
+
 /** Fixed, read-only commands used to build the header status strip. */
 export const HARDWARE_STATUS: Readonly<Record<string, ApprovedCommand>> = Object.freeze({
   wifi: Object.freeze({

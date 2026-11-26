@@ -28,6 +28,7 @@ import {
   HARDWARE_ACTIONS,
   HARDWARE_STATUS,
   HEALTH_COMMANDS,
+  POWER_COMMANDS,
   SAFE_ACTIONS,
   VOICE_COMMANDS,
   isAllowedVideoRoom,
@@ -1131,6 +1132,20 @@ ipcMain.handle(
             },
           }
         : fail('RECOVERY_FAILED')
+    }
+    if (typeof action === 'string' && Object.hasOwn(POWER_COMMANDS, action)) {
+      // Deliberately not awaited: systemctl starts the shutdown and may cut the
+      // IPC reply short. The UI shows the outcome before the machine powers off.
+      void runApproved(POWER_COMMANDS[action], 10_000)
+      return {
+        ok: true,
+        value: {
+          summary:
+            action === 'restartComputer'
+              ? 'Restarting the computer now.'
+              : 'Shutting the computer down now.',
+        },
+      }
     }
     return fail('UNKNOWN_TARGET')
   },

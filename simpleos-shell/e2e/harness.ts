@@ -158,7 +158,18 @@ export async function openApp(page: Page, config: E2EConfig = {}): Promise<void>
           summary: 'SimpleOS health summary',
         },
       }),
-      runRecovery: async () => ({ ok: true, value: { summary: 'Done.' } }),
+      runRecovery: async (action: string) => {
+        log('runRecovery', action)
+        return {
+          ok: true,
+          value: {
+            summary:
+              action === 'shutdownComputer'
+                ? 'Shutting the computer down now.'
+                : 'Restarting the computer now.',
+          },
+        }
+      },
     }
 
     // Force the local espeak fallback so read-aloud is observable in the log.

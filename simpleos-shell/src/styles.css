@@ -114,6 +114,15 @@ input {
   font-size: 1.125rem;
 }
 
+/* ------------------------------------------------------------ power group */
+
+.power {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
 /* --------------------------------------------------------- hardware strip */
 
 /* Sits on a second row of the header so the brand still has room to breathe. */
