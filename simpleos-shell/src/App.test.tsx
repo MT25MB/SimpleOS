@@ -90,6 +90,38 @@ describe('App integration', () => {
     expect(bridge.launchApp).toHaveBeenCalledWith(target)
   })
 
+  it('explains when remote help is not installed', async () => {
+    const user = userEvent.setup()
+    const bridge = mockBridge({
+      getHardwareStatus: vi.fn().mockResolvedValue({
+        ok: true,
+        value: {
+          wifi: { connected: true, ssid: 'Home Network' },
+          battery: { present: false, percent: null, charging: null },
+          brightnessAvailable: false,
+          audioAvailable: true,
+          rustdeskAvailable: false,
+        },
+      }),
+    })
+    window.simpleOS = bridge
+    render(<App />)
+    await user.click(screen.getByRole('button', { name: /Ask for Help/ }))
+    expect(await screen.findByText(/Remote help isn't installed/)).toBeInTheDocument()
+    expect(bridge.launchApp).not.toHaveBeenCalled()
+  })
+
+  it('shows a calm message if a launch fails unexpectedly', async () => {
+    const user = userEvent.setup()
+    const bridge = mockBridge({
+      launchApp: vi.fn().mockRejectedValue(new Error('boom')),
+    })
+    window.simpleOS = bridge
+    render(<App />)
+    await user.click(screen.getByRole('button', { name: /Web & Email/ }))
+    expect(await screen.findByRole('status')).toHaveTextContent(/something went wrong/i)
+  })
+
   it('opens the Photo Album as an in-app view for downloaded pictures', async () => {
     const user = userEvent.setup()
     const bridge = mockBridge({

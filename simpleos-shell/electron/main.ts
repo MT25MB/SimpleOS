@@ -182,13 +182,27 @@ function writeJsonAtomically(target: string, data: string): void {
   }
 }
 
+/** How long to watch for an immediate exit before calling a launch successful. */
+const LAUNCH_GRACE_MS = 1_500
+
 function spawnDetached(command: string, args: readonly string[]): Promise<Result> {
   return new Promise((resolve) => {
+    let settled = false
+    let timer: ReturnType<typeof setTimeout> | undefined
+    const finish = (result: Result) => {
+      if (settled) return
+      settled = true
+      if (timer) clearTimeout(timer)
+      resolve(result)
+    }
     const child = spawn(command, [...args], { detached: true, stdio: 'ignore' })
-    child.once('error', () => resolve(fail('APP_NOT_FOUND')))
+    child.once('error', () => finish(fail('APP_NOT_FOUND')))
+    // A flatpak can start successfully but exit immediately if the app is not
+    // installed. Treat that short exit as a real failure so the UI can explain it.
+    child.once('exit', (code) => finish(code === 0 ? OK : fail('APP_NOT_FOUND')))
     child.once('spawn', () => {
       child.unref()
-      resolve(OK)
+      timer = setTimeout(() => finish(OK), LAUNCH_GRACE_MS)
     })
   })
 }

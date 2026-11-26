@@ -25,6 +25,19 @@ async function storedPin(page: Page): Promise<string | null> {
 }
 
 test.describe('Full caregiver and senior journeys', () => {
+  test('Ask for Help gives immediate feedback when launching remote help', async ({ page }) => {
+    await openApp(page)
+    await page.getByRole('button', { name: /Ask for Help/ }).click()
+    await expect(
+      page.getByRole('status').filter({ hasText: 'Screen sharing is starting' }).first(),
+    ).toBeVisible()
+    await expect
+      .poll(async () =>
+        (await events(page)).some((event) => event.name === 'launchApp' && event.detail === 'rustdesk'),
+      )
+      .toBe(true)
+  })
+
   test('downloaded photos appear in the album and open safely', async ({ page }) => {
     await openApp(page, {
       photos: [

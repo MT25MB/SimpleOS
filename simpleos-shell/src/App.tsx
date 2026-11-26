@@ -156,19 +156,39 @@ export default function App() {
       return
     }
 
-    const result = await bridge.launchApp(target)
-    if (!result.ok) {
-      setNotice({ tone: 'info', message: friendlyMessage(result.code) })
-      return
+    if (target === 'rustdesk') {
+      setNotice({ tone: 'sharing', message: 'Opening RustDesk so someone can help…' })
+      try {
+        const status = await bridge.getHardwareStatus()
+        if (status.ok && !status.value.rustdeskAvailable) {
+          setNotice({
+            tone: 'info',
+            message:
+              "Remote help isn't installed on this computer yet. Ask a caregiver to set it up.",
+          })
+          return
+        }
+      } catch {
+        // The launch below still gives a clear result.
+      }
     }
 
-    setNotice({
-      tone: target === 'rustdesk' ? 'sharing' : 'info',
-      message:
-        target === 'rustdesk'
-          ? 'Screen sharing is starting. RustDesk will open, and you can stop sharing any time.'
-          : `${label} is opening.`,
-    })
+    try {
+      const result = await bridge.launchApp(target)
+      if (!result.ok) {
+        setNotice({ tone: 'info', message: friendlyMessage(result.code) })
+        return
+      }
+      setNotice({
+        tone: target === 'rustdesk' ? 'sharing' : 'info',
+        message:
+          target === 'rustdesk'
+            ? 'Screen sharing is starting. RustDesk will open, and you can stop sharing any time.'
+            : `${label} is opening.`,
+      })
+    } catch {
+      setNotice({ tone: 'info', message: friendlyMessage('UNEXPECTED') })
+    }
   }
 
   async function handleSelect(tile: LauncherTile) {

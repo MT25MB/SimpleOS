@@ -178,6 +178,12 @@ describe('hardware control contract', () => {
     expect(electronMain).not.toContain("internet = wifi.connected ? 'Connected to the internet.'")
   })
 
+  it('reports an app that exits immediately instead of claiming it opened', () => {
+    expect(electronMain).toContain('const LAUNCH_GRACE_MS = 1_500')
+    expect(electronMain).toContain("child.once('exit', (code) => finish(code === 0 ? OK : fail('APP_NOT_FOUND')))")
+    expect(electronMain).toContain('timer = setTimeout(() => finish(OK), LAUNCH_GRACE_MS)')
+  })
+
   it('reads album photos from Downloads and opens them by index only', () => {
     expect(electronMain).toContain("const DOWNLOADS_DIR = path.join(os.homedir(), 'Downloads')")
     expect(electronMain).toContain("'simpleos:photos:open'")
