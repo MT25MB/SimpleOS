@@ -350,6 +350,35 @@
               </p>
             </details>
             <details>
+              <summary>Will someone help me set it up?</summary>
+              <p>
+                Yes. On a new computer a calm five-step setup wizard asks for a
+                first name and text size, creates the caregiver PIN, checks Wi-Fi
+                and sound, adds family contacts and reminders, and shows where to
+                find remote help. It can be run again from Caregiver Settings.
+                The <a href="caregiver-guide.md">caregiver guide</a> walks through it.
+              </p>
+            </details>
+            <details>
+              <summary>Can I save my settings and move them?</summary>
+              <p>
+                Yes. Caregiver Settings can save a <code>simpleos-backup.json</code>
+                file and restore it after showing a preview. It contains the name,
+                text size, reminders, family cards, photo frame setting and remote
+                help ID. The caregiver PIN is never included.
+              </p>
+            </details>
+            <details>
+              <summary>How do you know it is readable?</summary>
+              <p>
+                Automated browser tests run through the whole setup and senior
+                experience. Accessibility checks use axe-core to look for WCAG AAA
+                problems on every screen at 18px, 22px and 26px. They also check
+                that buttons are at least 48 by 48 pixels and that no text is
+                clipped.
+              </p>
+            </details>
+            <details>
               <summary>Is anything sent anywhere?</summary>
               <p>
                 No telemetry, no accounts, no tracking. Firefox ships with

@@ -8,10 +8,15 @@ All notable changes to SimpleOS are recorded here. The format follows
 
 ### Added
 
+- A [hardware compatibility guide](docs/hardware-compatibility.md) with minimum and recommended specifications and a plain-English BIOS/UEFI and peripherals checklist for caregivers.
 - Caregiver configuration export and restore in Caregiver Settings. `simpleos-backup.json` carries the senior's name, text size, reminders, family cards, photo frame setting and remote-help ID — never the PIN or its hash. Restore validates the file with a strict schema, shows a preview, and only then applies it.
 
 - Playwright end-to-end journeys for the full first-run setup and Senior Mode (read-aloud, push-to-talk, reminders, family calls, idle photo frame and the PIN gate).
 - Automated axe-core WCAG AAA checks across six screens at all three text sizes, plus 48×48px target and horizontal-clipping assertions. `npm test` now runs both the unit suite and the browser suite.
+
+### Documentation
+
+- `README.md` and the website now describe the five-step setup wizard, the hardware compatibility guide, caregiver configuration backup and restore, and the automated Playwright/axe-core WCAG AAA suite.
 
 ### Fixed
 

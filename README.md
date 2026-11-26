@@ -28,7 +28,9 @@ SimpleOS takes those problems seriously. The system cannot be damaged by a stray
 ### What that looks like day to day
 
 - **Readable.** Text starts at 18 pixels and goes bigger with one click. The cursor is large. Windows open full screen.
+- **Guided first start.** On a new computer a calm five-step wizard sets the senior's name and text size, creates the caregiver PIN, checks Wi-Fi and sound, adds family cards and reminders, and shows where to find remote help. A caregiver can run it again any time.
 - **Few choices.** Six tiles on one screen, each with one obvious job.
+- **Settings you can take with you.** Caregiver Settings can save `simpleos-backup.json` and restore it after a preview. It holds the name, text size, reminders, family cards, photo frame setting and remote-help ID — never the PIN or its hash. See the [hardware compatibility guide](docs/hardware-compatibility.md) for what the computer needs.
 - **Safe from scams.** Firefox only allows HTTPS, blocks notification and location pop-ups, and ships with uBlock Origin locked in. Other extensions cannot be added.
 - **Nothing to break.** The system files are read-only. Updates arrive in one piece, and the last working version is always kept. The image is linted as a bootable container before it is published.
 - **Reliable first start.** Account setup retries a few times if Wi-Fi is patchy, then always lets the desktop start. It never waits forever.
@@ -41,12 +43,15 @@ SimpleOS takes those problems seriously. The system cannot be damaged by a stray
 - **Family one tap.** Up to four family contact cards open a private video room in the locked-down Firefox.
 - **Calm when idle.** An optional photo frame shows local family photos and a big clock, and closes instantly when touched.
 - **System health and safe recovery.** Caregiver Settings shows a plain-English health summary and can restart the launcher, check for updates, or roll back the last OS update with one confirmed press. Rollback is limited to one narrow system action; the everyday user never gets sudo.
+- **Checked in a real browser.** Playwright journeys cover the whole caregiver and senior experience, and axe-core checks WCAG AAA on every screen at 18px, 22px and 26px, with 48px touch targets and no clipped text.
 
 ### What is in the repository
 
 - `os-image/Containerfile` builds an immutable bootc image from uBlue's Fedora Atomic base. It includes labwc, greetd, Orca, CUPS, Flatpak, PipeWire, Firefox, Loupe and RustDesk. The clock defaults to UTC.
 - `system-configs/` holds the desktop, greetd autologin, Firefox policies, and the first-boot service. greetd signs straight into the `senior` account.
-- `simpleos-shell/` is the React and Electron launcher. It has six tiles, daily reminders saved to `~/.config/simpleos`, and caregiver settings behind a PIN.
+- `simpleos-shell/` is the React and Electron launcher. It has six tiles, the first-run setup wizard, daily reminders saved to `~/.config/simpleos`, caregiver settings behind a PIN, and configuration backup and restore.
+- `simpleos-shell/e2e/` holds the Playwright journeys and axe-core WCAG AAA checks. `npm test` runs both those browser tests and the unit suite.
+- `docs/` has the caregiver guide, the [hardware compatibility guide](docs/hardware-compatibility.md), the USB walkthrough and the recovery instructions.
 - `scripts/` has the ISO builder and a QEMU test script.
 - `.github/workflows/` builds and publishes the image to GHCR, publishes this site, and runs the tests.
 
