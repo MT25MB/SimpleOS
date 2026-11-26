@@ -38,7 +38,7 @@ fi
 # greetd's fallback session (agreety) runs as 'greeter'. Create it so a failed
 # autologin still lands in a usable session instead of an empty VT.
 if ! id -u greeter >/dev/null 2>&1; then
-  if useradd --create-home --groups video greeter; then
+  if useradd --create-home greeter; then
     log_info "Created fallback user 'greeter'."
   else
     log_warn "Could not create 'greeter'; greetd's fallback session will be unavailable."
@@ -66,6 +66,11 @@ for group in video audio lp; do
     fi
   fi
 done
+
+# The fallback greeter only needs the video group, and only if it exists.
+if getent group video >/dev/null 2>&1; then
+  usermod --append --groups video greeter >/dev/null 2>&1 || true
+fi
 
 # -----------------------------------------------------------------------------
 # 2. Make sure the home and SimpleOS config directories belong to 'senior'.
