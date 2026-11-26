@@ -342,6 +342,8 @@ describe('shell script syntax', () => {
       'scripts/flash-usb.sh',
       'system-configs/labwc/autostart',
       'system-configs/systemd/simpleos-firstboot.sh',
+      'system-configs/systemd/simpleos-boot-marker.sh',
+      'system-configs/systemd/simpleos-update.sh',
     ]
     const bash = findBash()
     for (const script of scripts) {

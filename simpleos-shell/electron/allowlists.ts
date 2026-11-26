@@ -28,7 +28,10 @@ export const SAFE_ACTIONS: Readonly<Record<string, ApprovedCommand>> = Object.fr
   networkSettings: ALLOWED_SETTINGS.network,
   printerSettings: ALLOWED_SETTINGS.printer,
   checkUpdates: Object.freeze({ command: 'rpm-ostree', args: Object.freeze(['status', '--json']) }),
-  triggerUpdate: Object.freeze({ command: 'rpm-ostree', args: Object.freeze(['upgrade']) }),
+  triggerUpdate: Object.freeze({
+    command: 'systemctl',
+    args: Object.freeze(['start', 'simpleos-update.service']),
+  }),
 })
 
 /**

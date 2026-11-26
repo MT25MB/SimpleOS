@@ -8,6 +8,14 @@ All notable changes to SimpleOS are recorded here. The format follows
 
 Nothing yet.
 
+## [v1.4.2]
+
+### Fixed
+
+- Wired Ethernet connections now count as connected. The header and health panel no longer claim "Not connected to Wi-Fi" on a VMware VM or any wired computer.
+- Removed the duplicate "Check for OS Updates" button; there is now one "Check for updates" and one separate "Install system update" button.
+- "Install system update" actually downloads and stages the next system version through a narrow, PIN-gated systemd unit and polkit rule, with the same least-privilege pattern already used for rollback.
+
 ## [v1.4.1]
 
 ### Fixed
@@ -328,7 +336,8 @@ contribute to, and a full automated quality gate.
 - First prototype: initial image definition, system configs, Electron launcher,
   build script and documentation.
 
-[Unreleased]: https://github.com/MT25MB/SimpleOS/compare/v1.4.1...HEAD
+[Unreleased]: https://github.com/MT25MB/SimpleOS/compare/v1.4.2...HEAD
+[v1.4.2]: https://github.com/MT25MB/SimpleOS/compare/v1.4.1...v1.4.2
 [v1.4.1]: https://github.com/MT25MB/SimpleOS/compare/v1.4.0...v1.4.1
 [v1.4.0]: https://github.com/MT25MB/SimpleOS/compare/v1.3.0...v1.4.0
 [v1.3.0]: https://github.com/MT25MB/SimpleOS/compare/v1.2.4...v1.3.0

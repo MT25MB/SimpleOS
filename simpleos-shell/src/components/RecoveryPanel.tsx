@@ -14,11 +14,6 @@ const CONFIRM: Record<RecoveryAction, { title: string; body: string; button: str
     body: 'The home screen will close and open again after a few seconds. Your reminders are already saved.',
     button: 'Restart launcher',
   },
-  checkUpdates: {
-    title: 'Check for updates?',
-    body: 'This only looks for a newer system version. It will not change anything yet.',
-    button: 'Check now',
-  },
   rollBack: {
     title: 'Go back to the previous version?',
     body: 'This undoes the last system update. Your files, reminders and PIN stay exactly as they are. The computer will restart afterwards.',
@@ -95,13 +90,6 @@ export function RecoveryPanel({ health, onCopySummary, onAction, message }: Reco
           onClick={() => setPending('restartLauncher')}
         >
           Restart Launcher
-        </button>
-        <button
-          type="button"
-          className="button button--secondary"
-          onClick={() => setPending('checkUpdates')}
-        >
-          Check for OS Updates
         </button>
         <button
           type="button"

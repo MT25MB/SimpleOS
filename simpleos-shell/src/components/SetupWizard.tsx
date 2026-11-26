@@ -260,8 +260,10 @@ export function SetupWizard({
             <h2 className="panel__subheading">Wi-Fi</h2>
             <p role="status" className="status status--info">
               {wifi.connected
-                ? `Connected to ${wifi.ssid ?? 'Wi-Fi'}.`
-                : 'Not connected to Wi-Fi.'}
+                ? wifi.kind === 'ethernet'
+                  ? `Connected by cable to ${wifi.ssid ?? 'the network'}.`
+                  : `Connected to ${wifi.ssid ?? 'Wi-Fi'}.`
+                : 'Not connected to a network.'}
             </p>
             <div className="setup-wizard__actions">
               <button type="button" className="button button--secondary" onClick={() => void refreshWifi()}>

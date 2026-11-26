@@ -34,6 +34,7 @@ interface CaregiverPanelProps {
   onOpenSettings: (target: SettingsTarget) => void
   onOpenRemoteHelp: () => void
   onCheckUpdates: () => void
+  onTriggerUpdate: () => void
   onChangePin: () => void
   onRerunSetup: () => void
   seniorName: string
@@ -60,6 +61,7 @@ export function CaregiverPanel({
   onOpenSettings,
   onOpenRemoteHelp,
   onCheckUpdates,
+  onTriggerUpdate,
   onChangePin,
   onRerunSetup,
   seniorName,
@@ -88,7 +90,6 @@ export function CaregiverPanel({
         updateSummary={updateSummary}
         onRefresh={onRefreshHardware}
         onOpenWifiSettings={() => onOpenSettings('network')}
-        onCheckUpdates={onCheckUpdates}
       />
 
       <RecoveryPanel
@@ -149,6 +150,14 @@ export function CaregiverPanel({
           onClick={onCheckUpdates}
         >
           Check for updates
+        </button>
+        <button
+          type="button"
+          className="button button--secondary"
+          aria-label="Install system update now"
+          onClick={onTriggerUpdate}
+        >
+          Install system update
         </button>
       </div>
 

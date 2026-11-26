@@ -5,7 +5,6 @@ interface QuickCheckPanelProps {
   updateSummary: string | null
   onRefresh: () => void
   onOpenWifiSettings: () => void
-  onCheckUpdates: () => void
 }
 
 interface CheckRowProps {
@@ -45,7 +44,6 @@ export function QuickCheckPanel({
   updateSummary,
   onRefresh,
   onOpenWifiSettings,
-  onCheckUpdates,
 }: QuickCheckPanelProps) {
   const { wifi, brightnessAvailable, audioAvailable, rustdeskAvailable } = hardware
 
@@ -61,8 +59,10 @@ export function QuickCheckPanel({
           label="Internet:"
           status={
             wifi.connected
-              ? `Wi-Fi is connected to ${wifi.ssid ?? 'your network'}.`
-              : 'Not connected to Wi-Fi.'
+              ? wifi.kind === 'ethernet'
+                ? `Connected by cable to ${wifi.ssid ?? 'the network'}.`
+                : `Wi-Fi is connected to ${wifi.ssid ?? 'your network'}.`
+              : 'Not connected to a network.'
           }
           action={wifi.connected ? undefined : 'Open Wi-Fi Settings'}
           onAction={onOpenWifiSettings}
@@ -98,8 +98,6 @@ export function QuickCheckPanel({
         <CheckRow
           label="System:"
           status={updateSummary ?? 'The system version has not been checked yet.'}
-          action="Check for updates"
-          onAction={onCheckUpdates}
         />
       </ul>
     </section>

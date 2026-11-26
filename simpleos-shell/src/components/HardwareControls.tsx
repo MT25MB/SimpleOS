@@ -30,11 +30,14 @@ export function HardwareControls({
     <section className="hardware" aria-label="Computer status and quick controls">
       {wifi.connected ? (
         <p className="hardware__chip hardware__chip--good">
-          <span aria-hidden="true">✓</span> Connected to {wifi.ssid ?? 'Wi-Fi'}
+          <span aria-hidden="true">✓</span>{' '}
+          {wifi.kind === 'ethernet'
+            ? `Connected by cable to ${wifi.ssid ?? 'the network'}`
+            : `Connected to ${wifi.ssid ?? 'Wi-Fi'}`}
         </p>
       ) : (
         <div className="hardware__wifi" role="status">
-          <span>Not connected to Wi-Fi.</span>
+          <span>Not connected to a network.</span>
           <button type="button" className="button button--small" onClick={onOpenWifiSettings}>
             Open Wi-Fi Settings
           </button>

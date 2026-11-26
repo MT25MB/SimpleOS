@@ -795,19 +795,20 @@ const BACKLIGHT_DIR = '/sys/class/backlight'
 
 /** Turn `nmcli --terse` output into one calm value for the header. */
 function parseWifiStatus(stdout: string | null): WifiStatus {
-  if (!stdout) return { connected: false, ssid: null }
+  if (!stdout) return { connected: false, ssid: null, kind: null }
   for (const line of stdout.split('\n')) {
     const fields = line.trim().split(':')
     // TYPE,STATE,CONNECTION — an SSID may itself contain a colon, so join the rest.
-    if (fields[0] !== 'wifi' || fields[1] !== 'connected') continue
+    const kind = fields[0] === 'wifi' || fields[0] === 'ethernet' ? fields[0] : null
+    if (!kind || fields[1] !== 'connected') continue
     const raw = fields
       .slice(2)
       .join(':')
       .replace(/[\u0000-\u001f\u007f]/g, '')
       .trim()
-    return { connected: true, ssid: raw ? raw.slice(0, MAX_SSID_LENGTH) : null }
+    return { connected: true, ssid: raw ? raw.slice(0, MAX_SSID_LENGTH) : null, kind }
   }
-  return { connected: false, ssid: null }
+  return { connected: false, ssid: null, kind: null }
 }
 
 /**
@@ -1028,7 +1029,11 @@ ipcMain.handle('simpleos:health', async (event): Promise<ValueResult<HealthStatu
   const wifi = parseWifiStatus(await runApproved(HARDWARE_STATUS.wifi))
   const sink = await runApproved(HARDWARE_STATUS.audio)
   const sources = await runApproved(HEALTH_COMMANDS.sources)
-  const internet = wifi.connected ? 'Connected to the internet.' : 'Not connected to Wi-Fi.'
+  const internet = wifi.connected
+    ? wifi.kind === 'ethernet'
+      ? `Connected by cable to ${wifi.ssid ?? 'the network'}.`
+      : `Connected to Wi-Fi${wifi.ssid ? `: ${wifi.ssid}` : ''}.`
+    : 'Not connected to a network.'
   const audio = sink && sink.trim() ? 'Sound output is ready.' : 'Sound output was not found.'
   const microphone = sources && sources.trim() ? 'Microphone is ready.' : 'Microphone was not found.'
   const disk = diskHealthText()

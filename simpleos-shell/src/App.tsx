@@ -251,6 +251,22 @@ export default function App() {
     })
   }
 
+  async function handleTriggerUpdate() {
+    setNotice(null)
+    const bridge = window.simpleOS
+    if (!bridge) {
+      setNotice({ tone: 'info', message: friendlyMessage('BRIDGE_UNAVAILABLE') })
+      return
+    }
+    const result = await bridge.runAction('triggerUpdate')
+    setNotice({
+      tone: 'caregiver',
+      message: result.ok
+        ? 'The update is downloading. Restart the computer when you are told it is ready.'
+        : friendlyMessage(result.code),
+    })
+  }
+
   async function handleCheckUpdates() {
     setCaregiverError(null)
     setUpdateSummary(null)
@@ -290,10 +306,6 @@ export default function App() {
     const result = await bridge.runRecovery(action)
     const message = result.ok ? result.value.summary : friendlyMessage(result.code)
     setRecoveryMessage(message)
-    if (result.ok && action === 'checkUpdates') {
-      const refreshed = await bridge.getHealthStatus()
-      if (refreshed.ok) setHealth(refreshed.value)
-    }
     return message
   }
 
@@ -548,6 +560,7 @@ export default function App() {
                 onOpenSettings={handleOpenSettings}
                 onOpenRemoteHelp={() => void launchApp('rustdesk', 'RustDesk')}
                 onCheckUpdates={handleCheckUpdates}
+                onTriggerUpdate={() => void handleTriggerUpdate()}
                 onChangePin={() => setPinMode('change')}
                 onRerunSetup={rerunSetup}
                 seniorName={seniorName}

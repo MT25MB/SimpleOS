@@ -149,7 +149,6 @@ describe('caregiver quick check', () => {
         updateSummary="Your system is up to date. Version 0.2.0."
         onRefresh={vi.fn()}
         onOpenWifiSettings={vi.fn()}
-        onCheckUpdates={vi.fn()}
       />,
     )
     expect(screen.getByRole('heading', { name: 'Quick check' })).toBeInTheDocument()
@@ -168,10 +167,9 @@ describe('caregiver quick check', () => {
         updateSummary={null}
         onRefresh={vi.fn()}
         onOpenWifiSettings={onOpenWifiSettings}
-        onCheckUpdates={vi.fn()}
       />,
     )
-    expect(screen.getByText('Not connected to Wi-Fi.')).toBeInTheDocument()
+    expect(screen.getByText('Not connected to a network.')).toBeInTheDocument()
     await user.click(screen.getByRole('button', { name: 'Open Wi-Fi Settings' }))
     expect(onOpenWifiSettings).toHaveBeenCalledOnce()
   })
@@ -185,7 +183,6 @@ describe('caregiver quick check', () => {
         updateSummary={null}
         onRefresh={onRefresh}
         onOpenWifiSettings={vi.fn()}
-        onCheckUpdates={vi.fn()}
       />,
     )
     expect(screen.getByText(/Sound isn't ready right now/)).toBeInTheDocument()
@@ -204,7 +201,6 @@ describe('caregiver quick check', () => {
         updateSummary={null}
         onRefresh={vi.fn()}
         onOpenWifiSettings={vi.fn()}
-        onCheckUpdates={vi.fn()}
       />,
     )
     expect(screen.getByText(/no brightness control/)).toBeInTheDocument()

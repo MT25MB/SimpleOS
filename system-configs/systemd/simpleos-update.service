@@ -1,0 +1,14 @@
+[Unit]
+Description=SimpleOS staged system update
+Documentation=https://github.com/MT25MB/SimpleOS
+
+[Service]
+Type=oneshot
+ExecStart=/usr/libexec/simpleos/update.sh
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=simpleos-update
+TimeoutStartSec=900
+
+[Install]
+WantedBy=multi-user.target

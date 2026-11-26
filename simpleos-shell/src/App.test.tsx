@@ -150,11 +150,29 @@ describe('App integration', () => {
     })
     window.simpleOS = bridge
     render(<App />)
-    expect(await screen.findByText('Not connected to Wi-Fi.')).toBeInTheDocument()
+    expect(await screen.findByText('Not connected to a network.')).toBeInTheDocument()
     await user.click(screen.getByRole('button', { name: 'Open Wi-Fi Settings' }))
     expect(bridge.runAction).toHaveBeenCalledWith('networkSettings')
     expect(screen.queryByText(/^Battery/)).toBeNull()
     expect(screen.queryByRole('group', { name: 'Screen brightness' })).toBeNull()
+  })
+
+  it('shows a wired connection as connected instead of missing Wi-Fi', async () => {
+    window.simpleOS = mockBridge({
+      getHardwareStatus: vi.fn().mockResolvedValue({
+        ok: true,
+        value: {
+          wifi: { connected: true, ssid: 'ens160', kind: 'ethernet' },
+          battery: { present: false, percent: null, charging: null },
+          brightnessAvailable: false,
+          audioAvailable: true,
+          rustdeskAvailable: true,
+        },
+      }),
+    })
+    render(<App />)
+    expect(await screen.findByText(/Connected by cable to ens160/)).toBeInTheDocument()
+    expect(screen.queryByText(/Not connected to a network/)).toBeNull()
   })
 
   it('shows laptop battery state and charging in plain English', async () => {
@@ -218,6 +236,21 @@ describe('App integration', () => {
     await waitFor(() => expect(bridge.completeSetup).toHaveBeenCalledWith('Mom', ''))
     expect(await screen.findByText(/Good (morning|afternoon|evening), Mom/)).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /Video Call Family/ })).toBeInTheDocument()
+  })
+
+  it('has one check button and a real install action for updates', async () => {
+    const user = userEvent.setup()
+    const bridge = mockBridge()
+    window.simpleOS = bridge
+    render(<App />)
+    await user.click(screen.getByRole('button', { name: /Caregiver Settings/ }))
+    await user.type(screen.getByLabelText('PIN'), '1234')
+    await user.click(screen.getByRole('button', { name: /Unlock/ }))
+
+    expect(screen.getAllByRole('button', { name: /Check for updates/ })).toHaveLength(1)
+    expect(screen.queryByRole('button', { name: 'Check for OS Updates' })).toBeNull()
+    await user.click(screen.getByRole('button', { name: /Install system update now/ }))
+    expect(bridge.runAction).toHaveBeenCalledWith('triggerUpdate')
   })
 
   it('can re-run the wizard from Caregiver Settings', async () => {

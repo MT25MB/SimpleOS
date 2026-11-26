@@ -171,6 +171,19 @@ describe('hardware control contract', () => {
     expect(electronMain).toContain('parseWifiStatus(')
   })
 
+  it('reports wired Ethernet as a network connection, not missing Wi-Fi', () => {
+    expect(electronMain).toContain("fields[0] === 'ethernet'")
+    expect(electronMain).toContain('Connected by cable')
+    expect(electronMain).toContain('Not connected to a network.')
+    expect(electronMain).not.toContain("internet = wifi.connected ? 'Connected to the internet.'")
+  })
+
+  it('runs updates through a narrow privileged systemd unit', () => {
+    expect(allowlists).toContain("'simpleos-update.service'")
+    expect(allowlists).not.toContain("args: Object.freeze(['upgrade'])")
+    expect(electronMain).toContain("name === 'triggerUpdate'")
+  })
+
   it('turns a failed control into one plain-English code', () => {
     expect(electronMain).toContain("fail('HARDWARE_UNAVAILABLE')")
     expect(messages).toContain('HARDWARE_UNAVAILABLE:')

@@ -57,7 +57,8 @@ for script in \
   scripts/flash-usb.sh \
   system-configs/labwc/autostart \
   system-configs/systemd/simpleos-firstboot.sh \
-  system-configs/systemd/simpleos-boot-marker.sh; do
+  system-configs/systemd/simpleos-boot-marker.sh \
+  system-configs/systemd/simpleos-update.sh; do
   [[ -f "$script" ]] || die "Missing expected script: $script"
   "$BASH_BIN" -n "$script" || die "Syntax error in $script"
   echo "    ok: $script"

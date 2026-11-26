@@ -18,10 +18,12 @@ export type BrightnessAction = 'brightnessUp' | 'brightnessDown'
 
 /** Wi-Fi state as a short, plain-English value. */
 export interface WifiStatus {
-  /** False also when Wi-Fi is off or the check could not be completed. */
+  /** True for Wi-Fi or wired Ethernet connections. */
   connected: boolean
-  /** The network name when connected, otherwise null. */
+  /** The network or connection name when connected, otherwise null. */
   ssid: string | null
+  /** Which kind of connection is up, when the main process reports it. */
+  kind?: 'wifi' | 'ethernet' | null
 }
 
 /** Battery state read from sysfs. Desktops report present: false. */
@@ -88,7 +90,7 @@ export interface HealthStatus {
   summary: string
 }
 
-export type RecoveryAction = 'restartLauncher' | 'checkUpdates' | 'rollBack'
+export type RecoveryAction = 'restartLauncher' | 'rollBack'
 
 export interface LauncherTile {
   id: string

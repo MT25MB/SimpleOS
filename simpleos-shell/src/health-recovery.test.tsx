@@ -44,7 +44,6 @@ describe('system health panel', () => {
 describe('guarded recovery actions', () => {
   it.each<[string, RecoveryAction]>([
     ['Restart Launcher', 'restartLauncher'],
-    ['Check for OS Updates', 'checkUpdates'],
     ['Roll Back Last OS Update', 'rollBack'],
   ])('%s requires confirmation before running', async (label) => {
     const user = userEvent.setup()
