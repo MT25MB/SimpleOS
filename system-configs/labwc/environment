@@ -13,6 +13,9 @@ QT_SCALE_FACTOR=1.25
 
 # Software rendering keeps the kiosk usable on old GPUs and in virtual machines.
 LIBGL_ALWAYS_SOFTWARE=1
+# VMware and other virtual GPUs often cannot show a hardware cursor. Force
+# wlroots to draw the pointer in software so it is visible in the kiosk.
+WLR_NO_HARDWARE_CURSORS=1
 
 # Electron's Ozone auto-detection needs these to choose the Wayland backend.
 XDG_SESSION_TYPE=wayland

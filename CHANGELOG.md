@@ -8,6 +8,12 @@ All notable changes to SimpleOS are recorded here. The format follows
 
 Nothing yet.
 
+## [v1.4.5]
+
+### Fixed
+
+- The pointer is now drawn in software via `WLR_NO_HARDWARE_CURSORS=1`, so it is visible in VMware and other virtual machines whose virtual GPU cannot show a hardware cursor.
+
 ## [v1.4.4]
 
 ### Fixed
@@ -348,7 +354,8 @@ contribute to, and a full automated quality gate.
 - First prototype: initial image definition, system configs, Electron launcher,
   build script and documentation.
 
-[Unreleased]: https://github.com/MT25MB/SimpleOS/compare/v1.4.4...HEAD
+[Unreleased]: https://github.com/MT25MB/SimpleOS/compare/v1.4.5...HEAD
+[v1.4.5]: https://github.com/MT25MB/SimpleOS/compare/v1.4.4...v1.4.5
 [v1.4.4]: https://github.com/MT25MB/SimpleOS/compare/v1.4.3...v1.4.4
 [v1.4.3]: https://github.com/MT25MB/SimpleOS/compare/v1.4.2...v1.4.3
 [v1.4.2]: https://github.com/MT25MB/SimpleOS/compare/v1.4.1...v1.4.2

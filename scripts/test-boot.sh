@@ -144,6 +144,7 @@ log "Verifying kiosk session wiring in the built image"
     && test -d /home/greeter \
     && command -v labwc \
     && test -d /usr/share/icons/Adwaita/cursors \
+    && grep -q 'WLR_NO_HARDWARE_CURSORS=1' /etc/xdg/labwc/environment \
     && test -x /usr/libexec/simpleos/simpleos-shell \
     && grep -q 'session_ready' /usr/libexec/simpleos/boot-marker.sh' \
   || die "Built image is missing kiosk session wiring."

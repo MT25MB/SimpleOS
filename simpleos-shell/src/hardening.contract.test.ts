@@ -64,6 +64,8 @@ describe('compositor and session resilience', () => {
   it('keeps a large cursor, maximized windows and no desktop click menus', () => {
     expect(environment).toContain('XCURSOR_SIZE=48')
     expect(environment).toContain('XCURSOR_THEME=Adwaita')
+    expect(environment).toContain('WLR_NO_HARDWARE_CURSORS=1')
+    expect(autostart).toContain('export XCURSOR_THEME XCURSOR_SIZE WLR_NO_HARDWARE_CURSORS')
     expect(environment).toContain('LIBGL_ALWAYS_SOFTWARE=1')
     expect(environment).toContain('XDG_SESSION_TYPE=wayland')
     expect(environment).toContain('XDG_CURRENT_DESKTOP=labwc')

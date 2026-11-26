@@ -149,7 +149,7 @@ export async function openApp(page: Page, config: E2EConfig = {}): Promise<void>
           audio: 'Sound output is ready.',
           microphone: 'Microphone is ready.',
           disk: 'Disk space is healthy: 20 GB free',
-          imageVersion: 'SimpleOS 1.4.4',
+          imageVersion: 'SimpleOS 1.4.5',
           lastUpdateCheck: 'Last checked today',
           summary: 'SimpleOS health summary',
         },

@@ -45,6 +45,7 @@ describe('system guardrails contract', () => {
     expect(containerfile).toMatch(/\badwaita-icon-theme\b/)
     expect(environment).toContain('XCURSOR_THEME=Adwaita')
     expect(environment).toContain('XCURSOR_SIZE=48')
+    expect(environment).toContain('WLR_NO_HARDWARE_CURSORS=1')
   })
 
   it('defaults to UTC and hides foot from menus', () => {
