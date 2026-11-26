@@ -8,6 +8,12 @@ All notable changes to SimpleOS are recorded here. The format follows
 
 Nothing yet.
 
+## [v1.4.4]
+
+### Fixed
+
+- greetd can no longer fail with "unable to set working directory". The `greeter` fallback account now gets a home directory, and both greetd sessions use `/` as a safe working directory. This restores autologin to the kiosk after a failed session.
+
 ## [v1.4.3]
 
 ### Fixed
@@ -342,7 +348,8 @@ contribute to, and a full automated quality gate.
 - First prototype: initial image definition, system configs, Electron launcher,
   build script and documentation.
 
-[Unreleased]: https://github.com/MT25MB/SimpleOS/compare/v1.4.3...HEAD
+[Unreleased]: https://github.com/MT25MB/SimpleOS/compare/v1.4.4...HEAD
+[v1.4.4]: https://github.com/MT25MB/SimpleOS/compare/v1.4.3...v1.4.4
 [v1.4.3]: https://github.com/MT25MB/SimpleOS/compare/v1.4.2...v1.4.3
 [v1.4.2]: https://github.com/MT25MB/SimpleOS/compare/v1.4.1...v1.4.2
 [v1.4.1]: https://github.com/MT25MB/SimpleOS/compare/v1.4.0...v1.4.1

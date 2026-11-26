@@ -59,7 +59,8 @@ describe('system guardrails contract', () => {
     expect(greetd).toContain('user = "senior"')
     expect(firstboot).toMatch(/for group in wheel sudo admin/)
     expect(firstboot).toContain('useradd --create-home --user-group')
-    expect(firstboot).toContain('useradd --no-create-home --groups video greeter')
+    expect(firstboot).toContain('useradd --create-home --groups video greeter')
+    expect(greetd).toContain('working_directory = "/"')
   })
 
   it('provides a gated serial boot milestone for headless testing', () => {
@@ -86,7 +87,7 @@ describe('system guardrails contract', () => {
     expect(containerfile).toContain('/etc/systemd/system/display-manager.service')
     expect(containerfile).toContain('/etc/systemd/system/default.target')
     expect(containerfile).toContain('useradd --create-home --user-group --shell /bin/bash senior')
-    expect(containerfile).toContain('useradd --no-create-home greeter')
+    expect(containerfile).toContain('useradd --create-home --groups video greeter')
     expect(containerfile).toContain('--no-sandbox')
     expect(containerfile).toContain('--disable-gpu')
     expect(containerfile).toContain('--disable-dev-shm-usage')

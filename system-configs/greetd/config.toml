@@ -10,7 +10,10 @@ vt = 1
 [default_session]
 command = "agreety --cmd labwc"
 user = "greeter"
+# Never depend on a home directory existing for the fallback session.
+working_directory = "/"
 
 [initial_session]
 command = "labwc"
 user = "senior"
+working_directory = "/"

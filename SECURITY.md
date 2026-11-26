@@ -54,7 +54,7 @@ If you are unsure whether something is in scope, send the private report anyway.
 | Version | Supported |
 | --- | --- |
 | Current `main` | Yes |
-| `v1.4.3` (latest release) | Yes |
+| `v1.4.4` (latest release) | Yes |
 | `v0.2.0` and earlier | No — historical prototypes |
 
 Fixes land on `main` first and are included in the next tagged release.

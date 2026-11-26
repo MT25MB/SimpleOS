@@ -141,6 +141,7 @@ log "Verifying kiosk session wiring in the built image"
     && test "$(readlink -f /etc/systemd/system/default.target)" = /usr/lib/systemd/system/graphical.target \
     && id -u senior \
     && id -u greeter \
+    && test -d /home/greeter \
     && command -v labwc \
     && test -d /usr/share/icons/Adwaita/cursors \
     && test -x /usr/libexec/simpleos/simpleos-shell \

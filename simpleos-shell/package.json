@@ -1,6 +1,6 @@
 {
   "name": "simpleos-shell",
-  "version": "1.4.3",
+  "version": "1.4.4",
   "private": true,
   "description": "Full-screen accessibility launcher for SimpleOS",
   "license": "MIT",
