@@ -8,6 +8,12 @@ All notable changes to SimpleOS are recorded here. The format follows
 
 Nothing yet.
 
+## [v1.4.3]
+
+### Fixed
+
+- CI now installs the Playwright Chromium browser in the `build-image.yml` helper job that runs `npm test`, so every quality gate can run the browser and accessibility suite.
+
 ## [v1.4.2]
 
 ### Fixed
@@ -336,7 +342,8 @@ contribute to, and a full automated quality gate.
 - First prototype: initial image definition, system configs, Electron launcher,
   build script and documentation.
 
-[Unreleased]: https://github.com/MT25MB/SimpleOS/compare/v1.4.2...HEAD
+[Unreleased]: https://github.com/MT25MB/SimpleOS/compare/v1.4.3...HEAD
+[v1.4.3]: https://github.com/MT25MB/SimpleOS/compare/v1.4.2...v1.4.3
 [v1.4.2]: https://github.com/MT25MB/SimpleOS/compare/v1.4.1...v1.4.2
 [v1.4.1]: https://github.com/MT25MB/SimpleOS/compare/v1.4.0...v1.4.1
 [v1.4.0]: https://github.com/MT25MB/SimpleOS/compare/v1.3.0...v1.4.0

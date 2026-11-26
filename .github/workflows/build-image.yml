@@ -92,6 +92,10 @@ jobs:
         # Fail loudly if package.json and package-lock.json ever drift apart.
         run: npm ci
 
+      - name: Install the Chromium browser for end-to-end tests
+        # npm test runs the Playwright browser suite as well as the unit tests.
+        run: npx playwright install --with-deps chromium
+
       - name: Test
         run: npm run test
 

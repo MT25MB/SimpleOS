@@ -302,6 +302,14 @@ describe('GitHub Actions workflows', () => {
     expect((release.permissions as Record<string, unknown>).contents).toBe('read')
   })
 
+  it('installs Chromium in every workflow that runs the browser suite', () => {
+    for (const file of ['.github/workflows/test.yml', '.github/workflows/build-image.yml']) {
+      const workflow = read(file)
+      expect(workflow, file).toContain('npx playwright install --with-deps chromium')
+      expect(workflow, file).toContain('npm run test')
+    }
+  })
+
   it('gates the image, Pages and release workflows on the test workflow', () => {
     for (const file of [
       '.github/workflows/build-image.yml',
