@@ -24,6 +24,7 @@ describe('flagship docs site contract', () => {
   it('caps prose in rem so the reading measure stays near 70 characters', () => {
     expect(css).not.toMatch(/max-width: (48|58|62|66|68)ch/)
     expect(css).toContain('max-width: 27rem')
+    expect(css).toContain('overflow-wrap: anywhere')
     expect(css).not.toMatch(/\.tabs[\s\S]{0,200}overflow-x/)
     expect(css).not.toMatch(/\.codeblock pre[\s\S]{0,200}overflow-x/)
   })

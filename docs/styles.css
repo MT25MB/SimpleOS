@@ -1432,6 +1432,9 @@ pre code {
 
 .guide {
   max-width: 42rem;
+  /* Long URLs and commands in the source guides must never push the page
+     wider than the viewport on a phone. */
+  overflow-wrap: anywhere;
 }
 
 .guide h1 {
