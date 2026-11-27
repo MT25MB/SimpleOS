@@ -6,6 +6,13 @@ All notable changes to SimpleOS are recorded here. The format follows
 
 ## [Unreleased]
 
+### Security
+
+- `setup:complete` no longer marks the caregiver session unlocked; only a successful PIN entry or PIN creation does.
+- The legacy `open-settings` channel now enforces the same PIN gate as `run-action` for printer settings.
+- State files use an unpredictable temp name with exclusive creation, removing a concurrent-write race and a symlink redirection risk.
+- Avatar reads are capped at the existing 2 MB limit so a corrupt file cannot be turned into an oversized data URL.
+
 ### Changed
 
 - Added canonical, OpenGraph and Twitter/X metadata, a 512px favicon and Apple touch icon to the site and every generated guide page. Added `docs/_layouts/default.html` and `_config.yml` as Jekyll-compatible parity for local builds.

@@ -172,9 +172,12 @@ function isRemindersFile(value: unknown): value is RemindersFile {
 
 /** Write to a temp file first so a crash cannot leave a half-written file. */
 function writeJsonAtomically(target: string, data: string): void {
-  const temp = `${target}.tmp-${process.pid}`
+  // An unpredictable name plus exclusive creation prevents two concurrent
+  // saves from clobbering each other, and stops a pre-planted symlink from
+  // redirecting the write to another file.
+  const temp = `${target}.tmp-${process.pid}-${crypto.randomBytes(8).toString('hex')}`
   fs.mkdirSync(path.dirname(target), { recursive: true })
-  fs.writeFileSync(temp, data, { encoding: 'utf8', mode: 0o600 })
+  fs.writeFileSync(temp, data, { encoding: 'utf8', mode: 0o600, flag: 'wx' })
   fs.renameSync(temp, target)
   try {
     fs.chmodSync(target, 0o600)
@@ -443,7 +446,9 @@ ipcMain.handle(
       return fail('INVALID_INPUT')
     }
     try {
-      const bytes = fs.readFileSync(path.join(avatarDir(), safe))
+      const full = path.join(avatarDir(), safe)
+      if (fs.statSync(full).size > MAX_AVATAR_BYTES) return fail('INVALID_INPUT')
+      const bytes = fs.readFileSync(full)
       return { ok: true, value: { dataUrl: `data:image/png;base64,${bytes.toString('base64')}` } }
     } catch {
       return fail('STORAGE_FAILED')
@@ -656,8 +661,9 @@ ipcMain.handle(
         completedAt: new Date().toISOString(),
       }
       writeJsonAtomically(setupPath(), JSON.stringify(file, null, 2))
-      // The wizard has just created the PIN, so this process is unlocked too.
-      pinUnlocked = true
+      // Do not unlock here. `simpleos:pin:set` already unlocks when the wizard
+      // creates the PIN; marking setup complete is not proof of possession and
+      // must never grant access to PIN-gated actions on its own.
       return OK
     } catch {
       return fail('STORAGE_FAILED')
@@ -803,6 +809,9 @@ ipcMain.handle(
     if (typeof target !== 'string' || !Object.hasOwn(ALLOWED_SETTINGS, target)) {
       return fail('UNKNOWN_TARGET')
     }
+    // Keep the legacy channel under the same gate as run-action so a renderer
+    // cannot open printer settings without the caregiver PIN.
+    if (target === 'printer' && !pinUnlocked) return fail('PIN_REQUIRED')
     return spawnSettings(ALLOWED_SETTINGS[target])
   },
 )
