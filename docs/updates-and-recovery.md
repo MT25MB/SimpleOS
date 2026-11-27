@@ -153,7 +153,7 @@ ready for the next tag.
    and a breaking change is a **major** (`1.0.0`). Never move or retag a
    published version.
 3. Set the same version in `simpleos-shell/package.json`. It currently reads
-   `1.4.8`, matching the latest release, `v1.4.8`.
+   `1.4.9`, matching the latest release, `v1.4.9`.
 4. Turn `[Unreleased]` into `[vX.Y.Z]`, add the compare link, and add a fresh
    empty `[Unreleased]` section with a link from the new version to `HEAD`.
 5. Run `bash scripts/test-all.sh`. The same gate runs in CI and blocks the

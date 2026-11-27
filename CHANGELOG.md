@@ -6,6 +6,10 @@ All notable changes to SimpleOS are recorded here. The format follows
 
 ## [Unreleased]
 
+Nothing yet.
+
+## [v1.4.9]
+
 ### Security
 
 - `setup:complete` no longer marks the caregiver session unlocked; only a successful PIN entry or PIN creation does.
@@ -391,7 +395,8 @@ contribute to, and a full automated quality gate.
 - First prototype: initial image definition, system configs, Electron launcher,
   build script and documentation.
 
-[Unreleased]: https://github.com/MT25MB/SimpleOS/compare/v1.4.8...HEAD
+[Unreleased]: https://github.com/MT25MB/SimpleOS/compare/v1.4.9...HEAD
+[v1.4.9]: https://github.com/MT25MB/SimpleOS/compare/v1.4.8...v1.4.9
 [v1.4.8]: https://github.com/MT25MB/SimpleOS/compare/v1.4.7...v1.4.8
 [v1.4.7]: https://github.com/MT25MB/SimpleOS/compare/v1.4.6...v1.4.7
 [v1.4.6]: https://github.com/MT25MB/SimpleOS/compare/v1.4.5...v1.4.6
