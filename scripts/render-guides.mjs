@@ -191,6 +191,7 @@ const links = guides
 
 for (const [file, title] of guides) {
   const md = readFileSync(resolve(docs, file), 'utf8')
+  const description = `${title} — plain-English guidance from the SimpleOS project.`
   const { html: body, headings } = markdownToHtml(md)
   const toc = headings
     .filter((h) => h.level === 2)
@@ -202,8 +203,31 @@ for (const [file, title] of guides) {
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="color-scheme" content="light dark" />
-    <meta name="description" content="${escapeHtml(title)} — plain-English guidance from the SimpleOS project." />
     <title>${escapeHtml(title)} — SimpleOS</title>
+    <meta name="description" content="${escapeHtml(description)}" />
+    <link rel="canonical" href="https://mt25mb.github.io/SimpleOS/${file.replace(/\.md$/, '.html')}" />
+    <meta name="theme-color" content="#faf9f6" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0b1120" media="(prefers-color-scheme: dark)" />
+
+    <meta property="og:type" content="article" />
+    <meta property="og:site_name" content="SimpleOS" />
+    <meta property="og:title" content="${escapeHtml(title)} — SimpleOS" />
+    <meta property="og:description" content="${escapeHtml(description)}" />
+    <meta property="og:url" content="https://mt25mb.github.io/SimpleOS/${file.replace(/\.md$/, '.html')}" />
+    <meta property="og:image" content="https://mt25mb.github.io/SimpleOS/assets/simpleos-banner.png" />
+    <meta property="og:image:width" content="1240" />
+    <meta property="og:image:height" content="600" />
+    <meta property="og:image:alt" content="SimpleOS: an immutable base, a simplified launcher, and built-in scam protection." />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="${escapeHtml(title)} — SimpleOS" />
+    <meta name="twitter:description" content="${escapeHtml(description)}" />
+    <meta name="twitter:image" content="https://mt25mb.github.io/SimpleOS/assets/simpleos-banner.png" />
+
+    <link rel="icon" type="image/png" sizes="512x512" href="assets/simpleos-logo.png" />
+    <link rel="apple-touch-icon" href="assets/simpleos-logo.png" />
+    <link rel="preload" href="assets/fonts/plus-jakarta-sans.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="assets/fonts/atkinson-400.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="stylesheet" href="styles.css" />
     <script src="script.js" defer></script>
   </head>

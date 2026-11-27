@@ -6,6 +6,8 @@ const root = resolve(__dirname, '../..')
 const html = readFileSync(resolve(root, 'docs/index.html'), 'utf8')
 const css = readFileSync(resolve(root, 'docs/styles.css'), 'utf8')
 const js = readFileSync(resolve(root, 'docs/script.js'), 'utf8')
+const guideHtml = (name: string) =>
+  readFileSync(resolve(root, `docs/${name}.html`), 'utf8')
 
 describe('flagship docs site contract', () => {
   it('uses bespoke 1.75px SVG icons and no emoji', () => {
@@ -32,7 +34,36 @@ describe('flagship docs site contract', () => {
     expect(css).toContain('#e2e8f0')
     expect(css).toContain('#0f766e')
     expect(css).toContain('--font-mono: "JetBrains Mono"')
-    expect(css).toContain('@import url(\'https://fonts.googleapis.com')
+    expect(css).not.toContain('fonts.googleapis.com')
+    expect(css).toContain('assets/fonts/atkinson-400.woff2')
+    expect(css).toContain('assets/fonts/plus-jakarta-sans.woff2')
+    expect(css).toContain('assets/fonts/jetbrains-mono.woff2')
+  })
+
+  it('ships complete, self-contained head metadata and icons', () => {
+    for (const page of [html, ...['caregiver-guide', 'usb-install', 'hardware-compatibility', 'hardware-support', 'updates-and-recovery'].map((n) => guideHtml(n))]) {
+      expect(page).toContain('<link rel="canonical" href="https://mt25mb.github.io/SimpleOS/')
+      expect(page).toContain('property="og:title"')
+      expect(page).toContain('property="og:description"')
+      expect(page).toContain('property="og:image" content="https://mt25mb.github.io/SimpleOS/assets/simpleos-banner.png"')
+      expect(page).toContain('property="og:image:width" content="1240"')
+      expect(page).toContain('property="og:image:height" content="600"')
+      expect(page).toContain('name="twitter:card" content="summary_large_image"')
+      expect(page).toContain('rel="icon" type="image/png" sizes="512x512"')
+      expect(page).toContain('rel="apple-touch-icon"')
+      expect(page).toContain('rel="preload"')
+      expect(page).not.toContain('fonts.googleapis.com')
+      expect(page).not.toMatch(/<script(?![^>]*\bdefer\b)[^>]*src=/)
+    }
+  })
+
+  it('keeps the Jekyll layout head and chrome aligned with the deployed pages', () => {
+    const layout = readFileSync(resolve(root, 'docs/_layouts/default.html'), 'utf8')
+    expect(layout).toContain('property="og:image:width" content="1240"')
+    expect(layout).toContain('<header class="site-header">')
+    expect(layout).toContain('<footer class="site-footer">')
+    expect(layout).toContain('assets/simpleos-logo.png')
+    expect(readFileSync(resolve(root, 'docs/_config.yml'), 'utf8')).toContain('baseurl: /SimpleOS')
   })
 
   it('ships a comparison table, a layered architecture, and direct trust links', () => {
@@ -63,9 +94,6 @@ describe('flagship docs site contract', () => {
 })
 
 describe('unified guide pages', () => {
-  const guideHtml = (name: string) =>
-    readFileSync(resolve(root, `docs/${name}.html`), 'utf8')
-
   const homeFooter = html.match(/<footer class="site-footer">[\s\S]*?<\/footer>/)?.[0] ?? ''
 
   it('renders every Markdown guide as a styled HTML page', () => {

@@ -1,0 +1,8 @@
+# Optional Jekyll configuration for local preview builds.
+# The published site is deployed as a static artifact (see deploy-pages.yml),
+# so GitHub Pages does not run Jekyll. The generated *.html pages are canonical.
+url: https://mt25mb.github.io
+baseurl: /SimpleOS
+title: SimpleOS
+description: A free, immutable Linux desktop for older adults. Big text, clear choices, and built-in protection from scams.
+theme: null

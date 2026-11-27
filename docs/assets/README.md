@@ -38,6 +38,10 @@ If a file is still too large, lower the PNG compression level trade-off by switc
 
 The two original PNGs at the repository root are the source exports this folder was made from. Keep future masters and scratch exports in a folder outside the repository. Large source formats such as PSD, AI, XCF, Figma and Sketch files, plus `assets-src/` and `artwork/`, are ignored in the root `.gitignore`, so they will not be staged by accident. Only the two compressed PNGs above belong in this folder.
 
+## Self-hosted fonts
+
+`assets/fonts/` holds four WOFF2 files: Atkinson Hyperlegible 400 and 700, and the variable JetBrains Mono and Plus Jakarta Sans faces. They are served from our own origin so the site makes no third-party requests. All four are published under the SIL Open Font License 1.1 by Google Fonts; keep that licence notice with the files if they are replaced.
+
 ## Using the images
 
 - The logo is decorative when the wordmark sits next to it, so give the image tag an empty `alt` attribute.

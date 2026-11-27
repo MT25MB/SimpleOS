@@ -1,7 +1,35 @@
 /* SimpleOS site — "Editorial Field Manual".
    Warm paper, hairline rules, one grounded teal accent. No gradients, no glow,
-   no decorative motion. Fonts load from Google Fonts with local fallbacks. */
-@import url('https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@400;500;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap');
+   no decorative motion. Fonts are self-hosted so the page has no third-party
+   requests and first paint never waits on an external stylesheet. */
+@font-face {
+  font-family: "Atkinson Hyperlegible";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("assets/fonts/atkinson-400.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Atkinson Hyperlegible";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("assets/fonts/atkinson-700.woff2") format("woff2");
+}
+@font-face {
+  font-family: "JetBrains Mono";
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url("assets/fonts/jetbrains-mono.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Plus Jakarta Sans";
+  font-style: normal;
+  font-weight: 500 800;
+  font-display: swap;
+  src: url("assets/fonts/plus-jakarta-sans.woff2") format("woff2");
+}
 
 :root {
   --font-scale: 1;

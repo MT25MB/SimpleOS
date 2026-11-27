@@ -45,7 +45,9 @@ describe('docs links and assets', () => {
   })
 
   it('uses only https external links to the expected repository', () => {
-    const links = [...site.matchAll(/href="(https?:\/\/[^"]+)"/g)].map((m) => m[1])
+    // Only navigational anchors must point at the repository. The canonical
+    // link and social metadata deliberately use the Pages origin.
+    const links = [...site.matchAll(/<a[^>]*href="(https?:\/\/[^"]+)"/g)].map((m) => m[1])
     expect(links.length).toBeGreaterThan(0)
     for (const link of links) {
       expect(link.startsWith('https://')).toBe(true)
