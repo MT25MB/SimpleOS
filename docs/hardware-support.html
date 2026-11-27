@@ -74,14 +74,22 @@
     <main id="main" class="guide-main">
       <div class="wrap">
         <nav class="guide-crumbs" aria-label="Breadcrumb">
-          <a href="index.html">Overview</a>
+          <a href="index.html">← Back to SimpleOS home</a>
           <span aria-hidden="true">/</span>
           <span aria-current="page">Hardware Support and Power Behaviour</span>
         </nav>
+        <nav class="guide-toc" aria-labelledby="toc-title">
+          <p class="guide-toc__title" id="toc-title">On this page</p>
+          <ol><li><a href="#what-the-image-includes">What the image includes</a></li>
+<li><a href="#power-defaults">Power defaults</a></li>
+<li><a href="#what-you-see-in-the-shell">What you see in the shell</a></li>
+<li><a href="#security-boundary">Security boundary</a></li>
+<li><a href="#decision-log">Decision log</a></li></ol>
+        </nav>
         <article class="guide">
-          <h1>Hardware support and power behaviour</h1>
+          <h1 id="hardware-support-and-power-behaviour">Hardware support and power behaviour</h1>
 <p>This page records how SimpleOS handles real laptop and desktop hardware, and why. It is both the design record and a plain-English reference for whoever sets the computer up.</p>
-<h2>What the image includes</h2>
+<h2 id="what-the-image-includes">What the image includes</h2>
 <p>The immutable image layers firmware and drivers for common Intel and AMD machines on top of the uBlue base:</p>
 <ul>
 <li><code>linux-firmware</code> — Wi-Fi, Bluetooth and GPU firmware</li>
@@ -97,13 +105,13 @@
 <li>plus the existing PipeWire/WirePlumber, CUPS and Orca stack</li>
 </ul>
 <p><code>NetworkManager</code>, <code>bluetooth</code>, <code>power-profiles-daemon</code>, <code>upower</code> and <code>cups</code> are enabled at boot. The daily <code>senior</code> account is added to the <code>video</code>, <code>audio</code> and <code>lp</code> groups so brightness, sound and printing work without ever giving that account administrative rights.</p>
-<h2>Power defaults</h2>
+<h2 id="power-defaults">Power defaults</h2>
 <p>Two systemd drop-ins ship in <code>system-configs/systemd/</code>:</p>
 <ul>
 <li><code>logind.conf.d/10-simpleos-power.conf</code> — closing the lid, pressing the power key or leaving the computer idle does <strong>not</strong> suspend it. A video call or a long reading session is never cut short, and the screen does not go black and look broken.</li>
 <li><code>sleep.conf.d/10-simpleos-sleep.conf</code> — normal suspend is allowed, but hibernation and hybrid sleep are disabled so a wake never comes back in a surprising state.</li>
 </ul>
-<h2>What you see in the shell</h2>
+<h2 id="what-you-see-in-the-shell">What you see in the shell</h2>
 <p>The header shows a small hardware strip:</p>
 <ul>
 <li><strong>Wi-Fi:</strong> the connected network name, or a clear &quot;Not connected to Wi-Fi&quot; message with a single <strong>Open Wi-Fi Settings</strong> button.</li>
@@ -111,9 +119,9 @@
 <li><strong>Volume:</strong> bigger/smaller and mute buttons.</li>
 <li><strong>Screen brightness:</strong> lighter/darker buttons, hidden when the machine has no backlight.</li>
 </ul>
-<h2>Security boundary</h2>
+<h2 id="security-boundary">Security boundary</h2>
 <p>The renderer never sends a command, argument, device path or network name. It sends only fixed keys such as <code>volumeUp</code> or <code>brightnessDown</code>; the main process looks them up in frozen allowlists in <code>electron/allowlists.ts</code>. Battery state is read directly from <code>/sys/class/power_supply</code> with no external process. Every call returns a plain <code>{ ok, code? }</code> result, and error codes are shown as short, calm sentences.</p>
-<h2>Decision log</h2>
+<h2 id="decision-log">Decision log</h2>
 <table class="compare">
 <thead><tr>
 <th scope="col">Decision</th>
@@ -143,12 +151,15 @@
 </tbody></table>
         </article>
         <nav class="guide-links" aria-label="Other guides">
-          <h2>More guides</h2>
-          <div class="guide-links__grid"><a href="caregiver-guide.html">Caregiver Guide</a>
+          <p class="guide-links__title">More guides</p>
+          <div class="guide-links__grid">
+            <a href="index.html">← Back to SimpleOS home</a>
+            <a href="caregiver-guide.html">Caregiver Guide</a>
 <a href="usb-install.html">USB Install Walkthrough</a>
 <a href="hardware-compatibility.html">Hardware Compatibility</a>
 <a href="hardware-support.html">Hardware Support and Power Behaviour</a>
-<a href="updates-and-recovery.html">Updates and Recovery</a></div>
+<a href="updates-and-recovery.html">Updates and Recovery</a>
+          </div>
         </nav>
         <p class="sr-only" id="copy-status" role="status" aria-live="polite"></p>
       </div>

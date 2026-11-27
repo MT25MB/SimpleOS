@@ -74,15 +74,22 @@
     <main id="main" class="guide-main">
       <div class="wrap">
         <nav class="guide-crumbs" aria-label="Breadcrumb">
-          <a href="index.html">Overview</a>
+          <a href="index.html">← Back to SimpleOS home</a>
           <span aria-hidden="true">/</span>
           <span aria-current="page">Hardware Compatibility</span>
         </nav>
+        <nav class="guide-toc" aria-labelledby="toc-title">
+          <p class="guide-toc__title" id="toc-title">On this page</p>
+          <ol><li><a href="#minimum-and-recommended-specifications">Minimum and recommended specifications</a></li>
+<li><a href="#a-calm-setup-checklist-for-caregivers">A calm setup checklist for caregivers</a></li>
+<li><a href="#if-something-looks-wrong">If something looks wrong</a></li>
+<li><a href="#about-this-documentation">About this documentation</a></li></ol>
+        </nav>
         <article class="guide">
-          <h1>Hardware compatibility and setup checklist</h1>
+          <h1 id="hardware-compatibility-and-setup-checklist">Hardware compatibility and setup checklist</h1>
 <p>SimpleOS runs on ordinary Intel and AMD computers. This page answers two questions a caregiver usually has: <em>will it run on this machine?</em> and <em>what do I need to plug in before I hand it over?</em></p>
 <p>Take it one step at a time. Nothing here is permanent, and none of these steps can damage the computer.</p>
-<h2>Minimum and recommended specifications</h2>
+<h2 id="minimum-and-recommended-specifications">Minimum and recommended specifications</h2>
 <table class="compare">
 <thead><tr>
 <th scope="col">Part</th>
@@ -123,9 +130,9 @@
 <li>An SSD matters more than raw speed. A spinning hard drive will work, but everything feels slower.</li>
 <li>A microphone is only needed for Hold to Speak. If the person will not use voice commands, the other five buttons work without one.</li>
 </ul>
-<h2>A calm setup checklist for caregivers</h2>
+<h2 id="a-calm-setup-checklist-for-caregivers">A calm setup checklist for caregivers</h2>
 <p>Do these steps while you still have the computer in front of you. If a step does not match what you see, skip it and come back with the release notes or the <a href="usb-install.html">USB install walkthrough</a>.</p>
-<h3>1. Check Secure Boot</h3>
+<h3 id="1-check-secure-boot">1. Check Secure Boot</h3>
 <p>Secure Boot is a safety feature that stops unsigned software from starting. The official release ISO may start with it on. A locally built ISO is unsigned, so you may need to turn Secure Boot off to install it.</p>
 <ol>
 <li>Restart the computer and press the setup key as it starts. It is usually <strong>F2</strong>, <strong>F10</strong>, <strong>F12</strong>, <strong>Delete</strong>, or <strong>Esc</strong>, depending on the make.</li>
@@ -134,7 +141,7 @@
 <li>Press <strong>F10</strong> to save and exit. The computer restarts.</li>
 </ol>
 <p>Turning Secure Boot off does not erase anything or harm the computer. If you see a black screen with a message like &quot;Security Boot Fail&quot;, this is the step to revisit. You can turn Secure Boot back on later if you want; SimpleOS does not need it.</p>
-<h3>2. Start the computer from the USB stick</h3>
+<h3 id="2-start-the-computer-from-the-usb-stick">2. Start the computer from the USB stick</h3>
 <ol>
 <li>Plug the prepared USB stick into a USB port.</li>
 <li>Restart the computer and press the boot-menu key. It is often <strong>F12</strong>, <strong>Esc</strong>, <strong>F11</strong>, or <strong>F8</strong>.</li>
@@ -142,7 +149,7 @@
 <li>Press <strong>Enter</strong>. The installer starts.</li>
 </ol>
 <p>Read each screen before you press anything. The installer only writes to the disk you choose. When the install finishes, remove the USB stick when asked, then restart. On the first start, give the computer a few minutes while it sets up accounts and installs the built-in applications.</p>
-<h3>3. Connect speakers, a microphone, or a webcam</h3>
+<h3 id="3-connect-speakers-a-microphone-or-a-webcam">3. Connect speakers, a microphone, or a webcam</h3>
 <p>For a video call with family, the computer needs a camera, a microphone, and something to hear through.</p>
 <ul>
 <li><strong>USB devices:</strong> plug them in. SimpleOS uses them straight away, with no setup screen and no driver install.</li>
@@ -150,7 +157,7 @@
 <li><strong>Bluetooth devices:</strong> pair these once during setup, before you hand the computer over. The home screen does not have a Bluetooth menu, so a caregiver should do this part. If pairing is awkward, a USB device or a USB Bluetooth receiver is the simpler and more reliable choice.</li>
 </ul>
 <p>The browser is already set up so the family video rooms can use the camera and microphone without repeated permission questions. Other websites are not allowed to ask.</p>
-<h3>4. Check the Wi-Fi driver</h3>
+<h3 id="4-check-the-wi-fi-driver">4. Check the Wi-Fi driver</h3>
 <p>Most common Intel and AMD Wi-Fi cards work because the image includes <code>linux-firmware</code> and NetworkManager. To check yours:</p>
 <ol>
 <li>Open <strong>Caregiver Settings</strong> with the PIN.</li>
@@ -165,7 +172,7 @@
 <li>ask a caregiver to choose <strong>Check for updates</strong> in Caregiver Settings;</li>
 <li>if the card is unusual, a small USB Wi-Fi adapter with a common chipset is an easy fix.</li>
 </ul>
-<h3>5. Using SimpleOS in VMware (or another virtual machine)</h3>
+<h3 id="5-using-simpleos-in-vmware-or-another-virtual-machine">5. Using SimpleOS in VMware (or another virtual machine)</h3>
 <p>SimpleOS fills the <strong>guest display</strong> — the screen area inside the virtual machine. It always keeps the correct aspect ratio. If the picture inside the VMware window looks stretched sideways, or has black bars around it, that is VMware scaling the guest display to fit the host window, not a problem with SimpleOS.</p>
 <p>In VMware Workstation, fix the display once:</p>
 <ol>
@@ -174,7 +181,7 @@
 <li>If you want the guest display to change size whenever you resize the VMware window, leave <strong>Autofit Guest</strong> switched on. Otherwise switch it off and use <strong>Fit Guest Now</strong> after resizing.</li>
 </ol>
 <p>A 16:9 guest display (for example 1920 × 1080) is the best match for most monitors. SimpleOS needs no extra display driver in VMware.</p>
-<h2>If something looks wrong</h2>
+<h2 id="if-something-looks-wrong">If something looks wrong</h2>
 <table class="compare">
 <thead><tr>
 <th scope="col">What you see</th>
@@ -205,16 +212,19 @@
 <td data-label="What to try">Press the <strong>Back to SimpleOS</strong> button at the top of that window.</td>
 </tr>
 </tbody></table>
-<h2>About this documentation</h2>
+<h2 id="about-this-documentation">About this documentation</h2>
 <p>The SimpleOS documentation site is built to be readable. Text never drops below <strong>18px</strong> and grows with the Text size control, colours meet <strong>WCAG AAA</strong> contrast, and every link and button is at least <strong>48 × 48px</strong>. If anything on these pages is hard to read or hard to press, please <a href="https://github.com/MT25MB/SimpleOS/issues">report it</a>.</p>
         </article>
         <nav class="guide-links" aria-label="Other guides">
-          <h2>More guides</h2>
-          <div class="guide-links__grid"><a href="caregiver-guide.html">Caregiver Guide</a>
+          <p class="guide-links__title">More guides</p>
+          <div class="guide-links__grid">
+            <a href="index.html">← Back to SimpleOS home</a>
+            <a href="caregiver-guide.html">Caregiver Guide</a>
 <a href="usb-install.html">USB Install Walkthrough</a>
 <a href="hardware-compatibility.html">Hardware Compatibility</a>
 <a href="hardware-support.html">Hardware Support and Power Behaviour</a>
-<a href="updates-and-recovery.html">Updates and Recovery</a></div>
+<a href="updates-and-recovery.html">Updates and Recovery</a>
+          </div>
         </nav>
         <p class="sr-only" id="copy-status" role="status" aria-live="polite"></p>
       </div>

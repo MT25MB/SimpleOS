@@ -74,21 +74,29 @@
     <main id="main" class="guide-main">
       <div class="wrap">
         <nav class="guide-crumbs" aria-label="Breadcrumb">
-          <a href="index.html">Overview</a>
+          <a href="index.html">← Back to SimpleOS home</a>
           <span aria-hidden="true">/</span>
           <span aria-current="page">USB Install Walkthrough</span>
         </nav>
+        <nav class="guide-toc" aria-labelledby="toc-title">
+          <p class="guide-toc__title" id="toc-title">On this page</p>
+          <ol><li><a href="#what-you-need">What you need</a></li>
+<li><a href="#1-get-the-installer">1. Get the installer</a></li>
+<li><a href="#2-put-the-installer-on-a-usb-stick">2. Put the installer on a USB stick</a></li>
+<li><a href="#3-boot-from-the-usb-stick">3. Boot from the USB stick</a></li>
+<li><a href="#4-finish-the-caregiver-setup">4. Finish the caregiver setup</a></li></ol>
+        </nav>
         <article class="guide">
-          <h1>Installing SimpleOS from a USB stick</h1>
+          <h1 id="installing-simpleos-from-a-usb-stick">Installing SimpleOS from a USB stick</h1>
 <p>This guide is for a caregiver. It takes about 15 minutes once you have the installer file. Read it before you start, because one step erases a USB stick.</p>
-<h2>What you need</h2>
+<h2 id="what-you-need">What you need</h2>
 <ul>
 <li>A USB stick of at least 8 GB. <strong>Everything on it will be erased.</strong></li>
 <li>The SimpleOS installer file (an <code>.iso</code>), or a Linux computer to build one.</li>
 <li>About 15 minutes, plus a few minutes for the first start to finish setup.</li>
 </ul>
-<h2>1. Get the installer</h2>
-<h3>The easy way</h3>
+<h2 id="1-get-the-installer">1. Get the installer</h2>
+<h3 id="the-easy-way">The easy way</h3>
 <p>Download the latest installer from the <a href="https://github.com/MT25MB/SimpleOS/releases">releases page</a>. The ISO is larger than GitHub's limit for a single download, so it is attached as numbered parts plus a checksum.</p>
 <p><strong>Easiest:</strong> download <code>combine-iso-parts.bat</code> (Windows) or <code>combine-iso-parts.sh</code> (Linux/macOS) along with all the parts and the <code>.sha256</code> file. Put them in one folder and run the script. It joins the parts, checks the hash, and tells you when the ISO is ready. The manual steps below do the same thing without a script.</p>
 <p><strong>On Windows</strong>, open Command Prompt in that folder. Put the part names from the release page into this command, in order:</p>
@@ -106,7 +114,7 @@ certutil -hashfile SimpleOS-vX.Y.Z.iso SHA256</code></pre>
 sha256sum -c SimpleOS-*.iso.sha256</code></pre>
 </div>
 <p>On macOS use <code>shasum -a 256 -c SimpleOS-*.iso.sha256</code>. If the check passes, continue below with the joined <code>.iso</code>.</p>
-<h3>Build it yourself (Linux)</h3>
+<h3 id="build-it-yourself-linux">Build it yourself (Linux)</h3>
 <p>On a Linux computer with Podman and sudo:</p>
 <div class="codeblock">
 <div class="codeblock__head"><span class="codeblock__lang">sh</span><button type="button" data-copy>Copy</button></div>
@@ -115,23 +123,23 @@ cd SimpleOS
 bash scripts/build-iso.sh</code></pre>
 </div>
 <p>The ISO appears in <code>output/</code>. Add <code>--build</code> if you also want to build the system image locally first.</p>
-<h2>2. Put the installer on a USB stick</h2>
+<h2 id="2-put-the-installer-on-a-usb-stick">2. Put the installer on a USB stick</h2>
 <p>Pick <strong>one</strong> method.</p>
-<h3>Linux — the SimpleOS script (recommended on Linux)</h3>
+<h3 id="linux-the-simpleos-script-recommended-on-linux">Linux — the SimpleOS script (recommended on Linux)</h3>
 <p>Plug in the USB stick, find its device name with <code>lsblk</code>, then run:</p>
 <div class="codeblock">
 <div class="codeblock__head"><span class="codeblock__lang">sh</span><button type="button" data-copy>Copy</button></div>
 <pre><code>bash scripts/flash-usb.sh output/simpleos.iso /dev/sdX</code></pre>
 </div>
 <p>Replace <code>/dev/sdX</code> with the real name of your USB stick. The script prints the model and size first. It refuses the computer's own system disk and any mounted drive. Type <code>FLASH</code> only when you are sure. Add <code>--dry-run</code> to look first.</p>
-<h3>Windows or macOS — a graphical tool</h3>
+<h3 id="windows-or-macos-a-graphical-tool">Windows or macOS — a graphical tool</h3>
 <ul>
 <li><strong>Fedora Media Writer</strong> (&lt;https://getfedora.org/workstation/download&gt;) is simple and free.</li>
 <li><strong>Balena Etcher</strong> (&lt;https://www.balena.io/etcher/&gt;) also works.</li>
 </ul>
 <p>Choose the downloaded <code>.iso</code>, choose the USB stick, and start. Both tools ask you to confirm because the stick will be erased.</p>
 <p><strong>Stop now if you are unsure which drive is the USB stick.</strong> Choosing the wrong one can erase the computer you are using.</p>
-<h2>3. Boot from the USB stick</h2>
+<h2 id="3-boot-from-the-usb-stick">3. Boot from the USB stick</h2>
 <ol>
 <li>Plug the stick into the computer that will run SimpleOS.</li>
 <li>Start the computer and press the boot-menu key. It is usually <strong>F12</strong>, <strong>Esc</strong> or <strong>F8</strong>, depending on the computer. Choose the USB device. Pick the UEFI option if you see one.</li>
@@ -139,7 +147,7 @@ bash scripts/build-iso.sh</code></pre>
 <li>Wait for the installation to finish. The computer restarts.</li>
 <li>Remove the USB stick when asked, or once the restart begins.</li>
 </ol>
-<h2>4. Finish the caregiver setup</h2>
+<h2 id="4-finish-the-caregiver-setup">4. Finish the caregiver setup</h2>
 <p>On the first start, the computer signs in by itself as <code>senior</code>. Give it a few minutes while it creates the account, adds the app store and installs Firefox, the photo viewer and RustDesk.</p>
 <p>Then open <strong>Caregiver Settings</strong> and:</p>
 <ol>
@@ -153,12 +161,15 @@ bash scripts/build-iso.sh</code></pre>
 <p>For security problems, report privately through <a href="https://github.com/MT25MB/SimpleOS/blob/main/SECURITY.html">SECURITY.md</a>, not in a public issue.</p>
         </article>
         <nav class="guide-links" aria-label="Other guides">
-          <h2>More guides</h2>
-          <div class="guide-links__grid"><a href="caregiver-guide.html">Caregiver Guide</a>
+          <p class="guide-links__title">More guides</p>
+          <div class="guide-links__grid">
+            <a href="index.html">← Back to SimpleOS home</a>
+            <a href="caregiver-guide.html">Caregiver Guide</a>
 <a href="usb-install.html">USB Install Walkthrough</a>
 <a href="hardware-compatibility.html">Hardware Compatibility</a>
 <a href="hardware-support.html">Hardware Support and Power Behaviour</a>
-<a href="updates-and-recovery.html">Updates and Recovery</a></div>
+<a href="updates-and-recovery.html">Updates and Recovery</a>
+          </div>
         </nav>
         <p class="sr-only" id="copy-status" role="status" aria-live="polite"></p>
       </div>

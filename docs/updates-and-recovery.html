@@ -74,15 +74,27 @@
     <main id="main" class="guide-main">
       <div class="wrap">
         <nav class="guide-crumbs" aria-label="Breadcrumb">
-          <a href="index.html">Overview</a>
+          <a href="index.html">← Back to SimpleOS home</a>
           <span aria-hidden="true">/</span>
           <span aria-current="page">Updates and Recovery</span>
         </nav>
+        <nav class="guide-toc" aria-labelledby="toc-title">
+          <p class="guide-toc__title" id="toc-title">On this page</p>
+          <ol><li><a href="#how-updates-work">How updates work</a></li>
+<li><a href="#checking-for-an-update">Checking for an update</a></li>
+<li><a href="#before-you-restart-into-an-update">Before you restart into an update</a></li>
+<li><a href="#if-something-goes-wrong-after-an-update">If something goes wrong after an update</a></li>
+<li><a href="#a-calm-monthly-check">A calm monthly check</a></li>
+<li><a href="#what-not-to-do">What not to do</a></li>
+<li><a href="#when-to-ask-for-help">When to ask for help</a></li>
+<li><a href="#for-maintainers-release-checklist">For maintainers: release checklist</a></li>
+<li><a href="#related-pages">Related pages</a></li></ol>
+        </nav>
         <article class="guide">
-          <h1>Updates, rollback, and routine care</h1>
+          <h1 id="updates-rollback-and-routine-care">Updates, rollback, and routine care</h1>
 <p>This page is for the person who looks after the computer. It explains what happens when SimpleOS updates itself, how to go back if an update causes trouble, and what a calm monthly check looks like.</p>
 <p>Nothing here needs a terminal. SimpleOS deliberately does not create an administrator account, so there is no secret password to remember and no way for the everyday user to change system files.</p>
-<h2>How updates work</h2>
+<h2 id="how-updates-work">How updates work</h2>
 <p>The system part of SimpleOS is <strong>read-only</strong>. Think of the operating system as a sealed box that gets replaced as a whole, rather than a pile of files that get edited one at a time.</p>
 <ul>
 <li>New versions arrive as a complete, ready-to-use copy of the system.</li>
@@ -93,7 +105,7 @@
 <li>Firefox, Loupe and RustDesk are apps installed on first boot. They update themselves in the usual way and are separate from the system copy.</li>
 </ul>
 <p>This is why a wrong click cannot damage the system files, and why an update that goes wrong does not have to mean reinstalling everything.</p>
-<h2>Checking for an update</h2>
+<h2 id="checking-for-an-update">Checking for an update</h2>
 <ol>
 <li>Open <strong>Caregiver Settings</strong> and enter the PIN.</li>
 <li>Look at the <strong>Quick check</strong> section. The <strong>System</strong> line says whether the version has been checked and what it found.</li>
@@ -105,7 +117,7 @@
 <li><strong>&quot;An update is ready. Restart the computer to finish installing it.&quot;</strong> Choose a good moment and restart.</li>
 <li><strong>&quot;We couldn't check for updates just now.&quot;</strong> Usually a temporary network problem. Try again later; the computer keeps working as it is.</li>
 </ul>
-<h2>Before you restart into an update</h2>
+<h2 id="before-you-restart-into-an-update">Before you restart into an update</h2>
 <ul>
 <li>Let the person finish what they are doing. The restart closes the launcher.</li>
 <li>Connect the charger on a laptop. Do not unplug the computer while it is restarting into a new version.</li>
@@ -113,11 +125,11 @@
 <li>Reminders save themselves, so there is no separate save step.</li>
 </ul>
 <p>After the restart, give the computer a few minutes. The launcher comes back on its own. Then check that a reminder is still on the list, that Wi-Fi is connected, and that the PIN still opens Settings.</p>
-<h2>If something goes wrong after an update</h2>
+<h2 id="if-something-goes-wrong-after-an-update">If something goes wrong after an update</h2>
 <p>Common signs are: the launcher does not appear, the computer keeps restarting, or an app that worked before no longer opens.</p>
-<h3>First, try a plain restart</h3>
+<h3 id="first-try-a-plain-restart">First, try a plain restart</h3>
 <p>Restart once and wait a few minutes. Some first starts after an update need time to finish setting things up.</p>
-<h3>Start from the previous working version</h3>
+<h3 id="start-from-the-previous-working-version">Start from the previous working version</h3>
 <p>If the problem is still there, use the boot menu. This does not delete anything and does not need a password:</p>
 <ol>
 <li>Turn the computer off.</li>
@@ -127,9 +139,9 @@
 </ol>
 <p>Your reminders, PIN and files are still there, because they were never part of the system copy that changed.</p>
 <p>A boot-menu choice can be just for that one start. If the computer keeps going back to the bad version, ask a technician to make the older version permanent. On a system where someone has set up administrator access, the command is <code>rpm-ostree rollback</code> followed by a restart. SimpleOS does not set up that access by default, so this is normally a job for whoever installed the machine.</p>
-<h3>If there is no older option in the menu</h3>
+<h3 id="if-there-is-no-older-option-in-the-menu">If there is no older option in the menu</h3>
 <p>Boot from the USB installer you kept from setup and reinstall SimpleOS. Treat this as a last resort: a reinstall may not keep everything in the home folder, so ask for help before doing it if reminders matter.</p>
-<h2>A calm monthly check</h2>
+<h2 id="a-calm-monthly-check">A calm monthly check</h2>
 <p>About once a month, or after any big change, open <strong>Caregiver Settings</strong> and read the <strong>Quick check</strong> section:</p>
 <ul>
 <li><strong>Internet:</strong> connected to the expected network? If not, press **Open Wi-Fi Settings**.</li>
@@ -146,7 +158,7 @@
 <li>Keep the USB installer in a labelled place. Note where it is in the caregiver guide or on a sticky note.</li>
 <li>Write the PIN down somewhere safe. It cannot be recovered.</li>
 </ul>
-<h2>What not to do</h2>
+<h2 id="what-not-to-do">What not to do</h2>
 <ul>
 <li>Do not open a terminal or try Linux commands. There is deliberately no terminal shortcut on the desktop.</li>
 <li>Do not install browser extensions. Firefox is locked to an approved setup so that scam and ad blocking cannot be turned off by a webpage.</li>
@@ -154,7 +166,7 @@
 <li>Do not delete files in the home folder to &quot;clean up&quot; — reminders live there.</li>
 <li>Do not turn the computer off in the middle of a restart that is installing an update.</li>
 </ul>
-<h2>When to ask for help</h2>
+<h2 id="when-to-ask-for-help">When to ask for help</h2>
 <p>Ask a technician or the project maintainers if:</p>
 <ul>
 <li>the computer will not start from either version;</li>
@@ -164,7 +176,7 @@
 <li>you think a scam or malicious site may have been installed.</li>
 </ul>
 <p>For security problems or ways to escape the kiosk, report privately through <a href="https://github.com/MT25MB/SimpleOS/blob/main/SECURITY.html">SECURITY.md</a>, not in a public issue.</p>
-<h2>For maintainers: release checklist</h2>
+<h2 id="for-maintainers-release-checklist">For maintainers: release checklist</h2>
 <p>This part is not for caregivers. It is the routine for keeping the repository ready for the next tag.</p>
 <ol>
 <li>Keep all finished work in <code>CHANGELOG.md</code> under <code>[Unreleased]</code>. Use the standard sections: Added, Changed, Fixed, Security.</li>
@@ -178,7 +190,7 @@
 <li>Keep the audited guardrails intact: the image must pass <code>bootc container lint</code>, first boot must keep its bounded retries and run-once marker, every Firefox policy key must match the official schema, and labwc must keep its <code>None</code> keybinds and <code>&lt;initial&gt;</code> workspace tag. The test suite checks each of these.</li>
 </ol>
 <p><code>README.md</code> intentionally does not hard-code a version, so it needs no edit for a routine patch or minor release.</p>
-<h2>Related pages</h2>
+<h2 id="related-pages">Related pages</h2>
 <ul>
 <li><a href="caregiver-guide.html">Caregiver guide</a></li>
 <li><a href="hardware-support.html">Hardware support and power behaviour</a></li>
@@ -187,12 +199,15 @@
 </ul>
         </article>
         <nav class="guide-links" aria-label="Other guides">
-          <h2>More guides</h2>
-          <div class="guide-links__grid"><a href="caregiver-guide.html">Caregiver Guide</a>
+          <p class="guide-links__title">More guides</p>
+          <div class="guide-links__grid">
+            <a href="index.html">← Back to SimpleOS home</a>
+            <a href="caregiver-guide.html">Caregiver Guide</a>
 <a href="usb-install.html">USB Install Walkthrough</a>
 <a href="hardware-compatibility.html">Hardware Compatibility</a>
 <a href="hardware-support.html">Hardware Support and Power Behaviour</a>
-<a href="updates-and-recovery.html">Updates and Recovery</a></div>
+<a href="updates-and-recovery.html">Updates and Recovery</a>
+          </div>
         </nav>
         <p class="sr-only" id="copy-status" role="status" aria-live="polite"></p>
       </div>

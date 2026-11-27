@@ -80,7 +80,7 @@ describe('unified guide pages', () => {
       expect(page, name).toContain('<link rel="stylesheet" href="styles.css" />')
       expect(page, name).toContain('<script src="script.js" defer></script>')
       expect(page, name).toContain('<main id="main" class="guide-main">')
-      expect(page, name).toContain('<h1>')
+      expect(page, name).toMatch(/<h1[ >]/)
       expect(page, name).toContain(homeFooter)
     }
   })
@@ -93,9 +93,13 @@ describe('unified guide pages', () => {
       expect(page, name).toContain('id="theme-toggle"')
       expect(page, name).toContain('name="text-size"')
       expect(page, name).toContain('aria-label="Breadcrumb"')
+      expect(page, name).toContain('href="index.html">← Back to SimpleOS home')
+      expect(page, name).toContain('class="guide-toc"')
+      expect(page, name).toMatch(/<h2 id="[a-z0-9-]+">/)
       expect(page, name).toContain('id="copy-status"')
       // In-page nav links are scoped to the home page, never dead on a guide.
-      expect(page, name).not.toMatch(/<nav class="site-nav"[\s\S]*?href="#/)
+      const nav = page.match(/<nav class="site-nav"[\s\S]*?<\/nav>/)?.[0] ?? ''
+      expect(nav, name).not.toContain('href="#')
     }
   })
 

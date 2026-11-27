@@ -72,9 +72,23 @@ function table(rows) {
   return out.join('\n')
 }
 
+function slugify(text, used) {
+  const base = text
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '')
+  let id = base || 'section'
+  let n = 2
+  while (used.has(id)) id = `${base}-${n++}`
+  used.add(id)
+  return id
+}
+
 function markdownToHtml(md) {
   const lines = md.replace(/\r\n/g, '\n').split('\n')
   const out = []
+  const headings = []
+  const usedIds = new Set()
   let paragraph = []
   let list = null
 
@@ -116,7 +130,9 @@ function markdownToHtml(md) {
       flushParagraph()
       flushList()
       const level = heading[1].length
-      out.push(`<h${level}>${inline(heading[2])}</h${level}>`)
+      const id = slugify(heading[2], usedIds)
+      if (level > 1) headings.push({ level, text: heading[2], id })
+      out.push(`<h${level} id="${id}">${inline(heading[2])}</h${level}>`)
       continue
     }
     if (line.trim().startsWith('|')) {
@@ -158,7 +174,7 @@ function markdownToHtml(md) {
   }
   flushParagraph()
   flushList()
-  return out.join('\n')
+  return { html: out.join('\n'), headings }
 }
 
 const guides = [
@@ -175,7 +191,11 @@ const links = guides
 
 for (const [file, title] of guides) {
   const md = readFileSync(resolve(docs, file), 'utf8')
-  const body = markdownToHtml(md)
+  const { html: body, headings } = markdownToHtml(md)
+  const toc = headings
+    .filter((h) => h.level === 2)
+    .map((h) => `<li><a href="#${h.id}">${inline(h.text)}</a></li>`)
+    .join('\n')
   const page = `<!doctype html>
 <html lang="en">
   <head>
@@ -194,16 +214,23 @@ for (const [file, title] of guides) {
     <main id="main" class="guide-main">
       <div class="wrap">
         <nav class="guide-crumbs" aria-label="Breadcrumb">
-          <a href="index.html">Overview</a>
+          <a href="index.html">← Back to SimpleOS home</a>
           <span aria-hidden="true">/</span>
           <span aria-current="page">${escapeHtml(title)}</span>
+        </nav>
+        <nav class="guide-toc" aria-labelledby="toc-title">
+          <p class="guide-toc__title" id="toc-title">On this page</p>
+          <ol>${toc}</ol>
         </nav>
         <article class="guide">
           ${body}
         </article>
         <nav class="guide-links" aria-label="Other guides">
-          <h2>More guides</h2>
-          <div class="guide-links__grid">${links}</div>
+          <p class="guide-links__title">More guides</p>
+          <div class="guide-links__grid">
+            <a href="index.html">← Back to SimpleOS home</a>
+            ${links}
+          </div>
         </nav>
         <p class="sr-only" id="copy-status" role="status" aria-live="polite"></p>
       </div>
